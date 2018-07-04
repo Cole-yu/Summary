@@ -1,17 +1,16 @@
 # 	AngularJS学习总结
-
+```
 ng-app指令初始化一个AngularJS应用程序
 ng-controller
 模块(module)定义了一个AngularJS应用
-
 var app=angular.module("myApp",[]);
 app.controller('myCtrl',function($scope){
 	$scope.firstName="Jone";
 	$scope.lastName="Doe";
 });
-
 ng-init初始化变量的值
 ng-repeat等价于angular2中的\*ngFor
+```
 
 ###	创建自定义指令
 	<div ng-app="myApp">
@@ -68,6 +67,7 @@ ng-repeat等价于angular2中的\*ngFor
 ### scope作用域
 *  	作用范围
 *	根作用域
+	```
 	所有的应用都有一个 $rootScope，它可以作用在 ng-app 指令包含的所有 HTML 元素中。$rootScope 可作用于整个应用中。是各个 controller 中 scope 的桥梁。用 rootscope 定义的值，可以在各个 controller 中使用。
 	<div ng-app="myApp" ng-controller="myCtrl">
 		<h1>{{lastname}} 家族成员:</h1>
@@ -82,6 +82,7 @@ ng-repeat等价于angular2中的\*ngFor
 		    $rootScope.lastname = "Refsnes";
 		});
 	</script>
+	```
 
 ### 控制器
 	控制器的$scope(相当于作用域、控制范围)
