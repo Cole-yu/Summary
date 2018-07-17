@@ -107,8 +107,7 @@
 		height: 0px;
 		background-color: red;
 		border-style: solid;		
-		border-width: 100px;
-		border-color: green pink blue black;
+		border-width: 100px;		
 		border-color: green transparent transparent;		
 	}
 	当box-sizing:border-box;		//边框会计算在宽度内,因此当宽度小于2倍的border时(即宽度不够时,内容区域自然不会显示出来)
@@ -195,15 +194,83 @@
 	关键点： 
 	* 注意两个div必须一左一右浮动
 	* calc的宽度必须要减去的宽度要与固定宽度保持一致
-	```
+	```	
 
 
 # 	属性选择器
-
 ### 子串匹配属性选择器
 	[abc^="def"]    选择abc属性以"def"开头的所有元素
 	[abc$="def"]    选择abc属性以"def"结尾的所有元素
 	[abc*="def"]    选择abc属性中包含子串"def"的所有元素
 
-	
 
+# 	Flex布局
+	参考链接：http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html
+
+### 声明Flex项目
+	display:flex;
+	display:-webkit-flex;
+
+### 6个属性
+	flex-direction
+	flex-wrap
+	flex-flow
+	justify-content
+	align-items
+	align-content
+
+### flex-direction属性
+	决定主轴的方向（即项目的排列方向）	
+	.box {
+	  flex-direction: row | row-reverse | column | column-reverse;
+	}
+	row（默认值）：主轴为水平方向，起点在左端。
+	row-reverse：主轴为水平方向，起点在右端。
+	column：主轴为垂直方向，起点在上沿。
+	column-reverse：主轴为垂直方向，起点在下沿。
+
+### flex-wrap属性
+	如何换行
+	.box{
+	  flex-wrap: nowrap | wrap | wrap-reverse;
+	}
+	nowrap（默认）：不换行。
+	wrap：换行，第一行在上方，新的一行在下方。
+	wrap-reverse：换行，第一行在下方，新的一行在上方。
+
+### flex-flow属性
+	flex-flow属性是flex-direction属性和flex-wrap属性的简写形式，默认值为row nowrap。	
+
+### justify-content属性
+	justify-content属性定义了项目在主轴上的对齐方式。
+	.box {
+	  justify-content: flex-start | flex-end | center | space-between | space-around;
+	}	
+	flex-start（默认值）：左对齐
+	flex-end：右对齐
+	center： 居中
+	space-between：两端对齐，项目之间的间隔都相等。
+	space-around：每个项目两侧的间隔相等。所以，项目之间的间隔比项目与边框的间隔大一倍。
+
+### align-items属性
+	align-items属性定义项目在交叉轴上如何对齐。	
+	.box {
+	  align-items: flex-start | flex-end | center | baseline | stretch;
+	}
+	flex-start：交叉轴的起点对齐。
+	flex-end：交叉轴的终点对齐。
+	center：交叉轴的中点对齐。
+	baseline: 项目的第一行文字的基线对齐。
+	stretch（默认值）：如果项目未设置高度或设为auto，将占满整个容器的高度。
+
+### align-content属性
+	align-content属性定义了多根水平轴线的布局排列方式。如果项目只有一根轴线，该属性不起作用。
+	.box {
+	  align-content: flex-start | flex-end | center | space-between | space-around | stretch;
+	}
+	flex-start：与交叉轴的起点对齐。水平轴线从垂直方向的顶部依此向下排列
+	flex-end：与交叉轴的终点对齐。水平轴线分布在垂直方向上的底部区域,且最后一根与底部对齐
+	center：与交叉轴的中点对齐。水平轴线分布在中间区域
+	space-between：与交叉轴两端对齐，轴线之间的间隔平均分布。
+	space-around：每根轴线两侧的间隔都相等。所以，轴线之间的间隔比轴线与边框的间隔大一倍。
+	stretch（默认值）：轴线占满整个交叉轴。

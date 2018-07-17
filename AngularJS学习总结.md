@@ -131,7 +131,7 @@
     <li ng-repeat="item in items |filter: 25 as results track by item.age "></li>
 	```
 
-### scope
+### 神奇的$scope
 	$scope充当MVC中的Data-Model角色
 	$scope是一个POLO(Plan Old JavaScript Object)
 	$scope提供了一些工具方法$watch()/$apply()
@@ -139,6 +139,7 @@
 	子$scope对象会继承父$scope上的属性
 	每一个Angular应用只有一个根$scope对象(一般位于ng-app上,叫做$rootScope)
 	$scope可以传播事件,类似DOM事件,可以向上也可以向下传播事件
+	可以用angular.element($0).scope()进行调试
 *  	作用范围
 *	根作用域
 	```
@@ -366,6 +367,29 @@
 	声明依赖关系的三种方式：http://www.angularjs.net.cn/tutorial/17.html 的依赖注入
 	DI可以用在各种不太的地方，主要用在controller和factory中
 
+### injector对象
+1.	创建一个injector对象
+	var injector=angular.injector(['myModule','ng']);
+
+2.  $injector常用的方法
+* get:$injector.get('serviceName')根据名字获得服务的实例
+	```
+	injector.get('$injector');
+	```
+* has
+	```
+	injector.has("$rootscope");	//ture
+	```
+* invoke(调用)：向目标注入其他服务或函数
+	```
+	angular.injector(['myModule','ng']).invoke(function(myService){
+		alert(myService.my);
+	});
+	$("#"+elementId).injector().invoke(function($compile, $rootScope) {   //向指定的dom元素中注入$scmpile,$rootScope服务
+        $compile($("#"+elementId))($rootScope);
+    }
+	```
+
 ### 路由(ngRoute模块)
 	AngularJS路由就是通过 # + 标记 帮助我们区分不同的逻辑页面并将不同的页面绑定到对应的控制器上。
 1. 	引入angular-route.js文件,该文件定义Angular的ngRoute模块,ngRoute模块向我们提供了路由。
@@ -571,9 +595,24 @@
 	TortoiseGit  	版本控制工具
 	Grunt   		自动化构建工具
 	bower   		模块依赖管理工具
-	karma  			单元测试工具(jasmine框架,coverage测试用例覆盖率检测)
+	karma  			单元测试工具(Jasmine框架,coverage测试用例覆盖率检测)
 		describe 分组
 		it(string,function) 测试用例
 		expect(expression)  断言,期望
 		matcher					匹配
+	Node.js
+	Chrome
+	Protractor
 
+### MVC
+	代码规模越来越大，切分职责是大势所趋
+	为了复用，很多逻辑是一模一样的
+	为了后期维护方便：修改一块功能不影响其他功能
+	MVC只是手段,最终的目标是模块化和复用	
+
+### Controller使用注意事项
+	不要试图去复用Controller，一个控制器负责一个视图
+	不要在controller中操作DOM
+	不要在controller里面做数据格式化，ng有很好用的表单控件
+	不要在controller里面做数据过滤操作，ng有$filter服务
+	不要让controller之间相互调用，控制器之间的交互应该通过事件进行
