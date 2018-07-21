@@ -54,7 +54,8 @@
 		    };
 		});
 	</script>
-####使用方式
+
+#### 使用方式
 *	当html标签来使用
 * 	属性来使用
 	```
@@ -410,6 +411,7 @@
         <li><a href="#/blabla">其他</a></li>
     </ul>
     <div ng-view></div>
+    angular1.6 版本以后,路由导航的格式改变,需要将href="#/"改成href="#!/";
     ```
 *   控制器：
 	```
@@ -616,3 +618,220 @@
 	不要在controller里面做数据格式化，ng有很好用的表单控件
 	不要在controller里面做数据过滤操作，ng有$filter服务
 	不要让controller之间相互调用，控制器之间的交互应该通过事件进行
+
+# 	angularJS实战
+### angularJS四大核心特性
+1.  MVC
+2.  模块化和依赖注入
+3.  双向数据绑定
+3.  指令
+
+### templateCache服务
+	引入$templateCache.js文件
+	$templateCache缓存模板,使其可以在多个指令中使用
+	缓存模板
+	app.ru
+	n(function($templateCache){
+		$templateCache.put('hello.html',"<div>Hello kitty</div>")  //用put存储模板
+	})；
+	调用模板
+	app.directive('hello',function($templateCache){
+		return {
+			restrict:'AECM',
+			template:$templateCache.get('hello.html'),     //用get获取模板
+			replace:true
+		}
+	});
+
+### compile与link
+	加载阶段,编译阶段,链接阶段
+	加载angular.js找到ng-app
+	编译阶段:找到所有指令,对模板自身进行转换
+	链接阶段:在模型与视图之间进行关联,操作Dom,绑定事件监听器并监听
+
+### 指令的compile方法
+	指令代码：
+	app.directive('alotofhello',function(){
+		restrict:'AE',
+		compile:function(element,attrs,transclude){        	//编译阶段无法使用scope;因为只有到link阶段,scope才会被创建出来
+			//这里开始对标签元素自身进行一些变换
+			console.log('指令编译...');
+			var tpl=element.children.clone();
+			for(var i=0;i<attrs.alotofhello-1;i++){
+				element.append(tpl.clone());
+			}
+			return function(scope,element,attrs,controller){  //链接函数link()
+				console.log('指令链接...');
+			}
+		},
+		link:function(scope,element,attrs,controller){		//当compile函数下的link方法与指令下的link函数同时存在时,指令下的link函数无效
+			console.log('指令的link函数不会被调用');   		//无效,因为compile下也有link函数
+		}
+	});
+	html代码：
+	<div alotofhello="5">
+		<p>慕课网-指令的compile学习</p>
+	</div>
+
+### 指令如何与控制器交互
+	//指令
+	app.directive("loader",function(){
+		return {
+			restrict:'AE',
+			link:function(scope,element,attrs,controller){
+				element.bind('mouseenter',function(event){
+					scope.$apply(attrs.howtoload);
+				})
+			}
+		}
+	});
+	//页面代码
+	<div ng-controller="ctrl">
+		<loader howToLoad="ctrlLoad"></loader>
+	</div>
+	//控制器代码
+	app.controller('ctrl',function($scope){
+		$scope.ctrlLoad=function(){
+			//toDoSomething();
+		}
+	})
+
+### 指令如何与指令交互
+	指令代码：
+	app.directive('superman',function(){
+		return {
+			scope:{},   //创建独立作用域
+			restrict:'AE',
+			controller:function($scope){    //controller把指令中的方法暴露出去，供外部使用
+				$scope.abilities:[];
+				this.addStrength=function(){
+					$scope.abilities.push('strength');
+				};
+				this.addSpeed=function(){
+					$scope.abilities.push('addSpeed');
+				};
+				this.addLight=function(){
+					$scope.abilities.push('addLight');
+				};
+			},
+			link:function(scope,element,attrs){   //处理指令中内部的事务,绑定事件和属性
+				element.addClass('btn btn-primary');
+				element.bind('mouseenter',function(){
+					console.log(scope.abilities);
+				});
+			}
+		}
+	});
+	app.directive('strength',function(){
+		return {
+			require:"^superman",      //依赖superman指令
+			link:function(scope,element,attrs,supermanCtrl){
+				supermanCtrl.addStrength();     //调用父指令的控制器中暴露出来的方法addSpeed
+			}
+		}
+	});
+	app.directive('speed',function(){
+		return {
+			require:"^superman",
+			link:function(scope,element,attrs,supermanCtrl){
+				supermanCtrl.addSpeed();    
+			}
+		}
+	});
+	app.directive('light',function(){
+		return {
+			require:"^superman",
+			link:function(scope,element,attrs,supermanCtrl){
+				supermanCtrl.addLight();
+			}
+		}
+	});
+	html代码：
+	<superman strength>动感超人</superman>       		//鼠标移入时控制台打印strength
+	<superman strength speed>动感超人</superman>			//鼠标移入时控制台打印strength,speed
+	<superman strength speed light>动感超人</superman>	//鼠标移入时控制台打印strength,speed,light
+
+### 指令的scope属性
+1.	scope的绑定策略
+	* @ 把当前属性作为字符串进行传递，可以绑定外层scope的值，在属性中插入{{}}即可
+	* = 与父scope的属性进行双向绑定	
+	* & 传递一个来自父scope的函数，然后可以调用该函数
+	```	
+	html代码：
+	<div ng-controller="myCtrl">
+		<drink flavor="{{ctrlFlavor}}"></drink>
+	</div>
+	指令代码
+	app.directive('drink',function(){
+		return {
+			restrict:'AECM',
+			scope:{
+				flavor:"@"
+			},
+			template:"<div>{{flavor}}</div>"
+		}
+	})
+	```
+
+### $scope对象的$watch方法，及$timeout服务防频繁操作(防页面抖动)
+	app.controller('ctrl',['$scope','$timeout','userlistService',
+		function($scope,$timeout,userListService){
+			var timeout;
+			$scope.$watch('username',function(newUserName){
+				if(newUserName){
+					if(timeout){
+						$timeout.cancel(timeout);
+					}
+					timeout=$timeout(function(){
+						userListService.userList(newUserName)
+							.success(function(data,status){
+								$scope.users=data;
+							});
+					});
+				}
+			});
+		}]
+	);
+
+### AngularJS原理解析
+	angular.module()
+	angular.injector()
+	get() has() .invoke()
+	angularJS的实现方式
+
+### provider模式
+	策略模式和工厂模式
+	所有provider都可以用来进行注入
+	provider/factory/service/constant/value    //从左向右,灵活性越来越差
+	以下类型的函数可以接受注入：
+	controller/directive/filter/service/factory等
+	//provider
+	app.provider('helloAngular',function(){   //provider是基础，其余都是调用provider函数来实现的
+		return {
+			$get:function(){
+				var name="慕课网";
+				function getName(){
+					return name;
+				}
+				return {
+					getName:getName
+				};
+			}
+		};
+	});
+	//factory
+	app.factory('helloAngular',function(){
+		var name="慕课网";
+		function getName(){
+			return name;
+		}
+		return {
+			getName:getName
+		};
+	});
+	//app.service('helloAngular',function(){
+		this.name="慕课网";
+		this.getName=function(){
+			return this.name
+		};
+	});
