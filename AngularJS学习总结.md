@@ -50,7 +50,19 @@
 		var app = angular.module("myApp", []);
 		app.directive("runoobDirective", function() {
 		    return {
-		        template : "<h1>自定义指令!</h1>"
+		    	restrict:'AECM",
+		    	scope:{		//绑定策略
+		    		//@,=,&
+		    	}
+		        template:"<h1>自定义指令!</h1>",
+		        replace:true,
+		        transclude:true,
+		        compile:function(element,attrs,transclude){
+						//...
+		        },
+		        link:function(scope,element,attrs,controller){
+						//...
+		        }
 		    };
 		});
 	</script>
@@ -114,17 +126,17 @@
     	<a href="" ng-click="removeExp($index)">X</a>
     </li>
 	```
-*	过滤器：
+*	过滤器:
 	```
     对item的每个属性进行模糊匹配
     <li ng-repeat="item in items |filter: 25"></li>            //把包含25的项都显示保留下来
 	```
-*	绑定属性过滤：
+*	绑定属性过滤:
 	```
 	对item的某个属性进行模糊匹配
 	<li ng-repeat="item in items |filter: 25 track by item.age"></li>
 	```
-*	保存匹配结果：
+*	保存匹配结果:
 	```
     把匹配到的结果另存到results数组变量,可供外部使用
     <li ng-repeat="item in items |filter: 25 as results"></li>
@@ -610,7 +622,7 @@
 	代码规模越来越大，切分职责是大势所趋
 	为了复用，很多逻辑是一模一样的
 	为了后期维护方便：修改一块功能不影响其他功能
-	MVC只是手段,最终的目标是模块化和复用	
+	MVC只是手段,最终的目标是模块化和复用
 
 ### Controller使用注意事项
 	不要试图去复用Controller，一个控制器负责一个视图
@@ -623,8 +635,85 @@
 ### angularJS四大核心特性
 1.  MVC
 2.  模块化和依赖注入
-3.  双向数据绑定
 3.  指令
+4.  双向数据绑定
+
+### grunt自动化构建工具
+	uglify 	混淆代码
+	watch	监听文件
+	concat 	合并文件
+
+### bower
+	自动安装依赖的组件
+	组件之间的依赖检测
+	版本兼容性自动检测
+	npm install bower -g
+	bower install jquery
+	bower uninstall bootstrap
+
+### http-server(Web容器)--基于NodeJS的HTTP接口,用于测试http请求
+	安装http-server
+	npm install -g http-server
+	打开任务管理器,进入项目文件夹所在目录,在命令行工具中输入http-server
+	http-server
+
+### 单元测试(runner)
+*	Karma
+	```
+	执行测试用例的容器,自身不提供编写测试用例代码的语法
+	```
+*	Karma-chrome-launcher
+	```
+	启动chrome浏览器
+	```
+*   karma-coverage
+	```
+	检查测试用例覆盖率
+	```	
+*	jasmine(茉莉花)
+	```
+	提供了一套编写测试用例的语法,测试框架
+	```
+
+### ng-animate
+	ng-enter
+	ng-leave	
+
+### angular-ui-router
+	通过.语法来进行父子路由嵌套
+	通过@语法来进行子路由多视图设置
+	app.config(function($stateProvider,$urlRouterProvider){
+		$urlRouterProvider.otherwise('/index');
+		$stateProvider
+			.state('index',{
+				url:'/index',
+				views:{
+					'':{
+						templateUrl:'tpls/index.html'
+					},
+					'topbar@index':{
+						templateUrl:'tpls/topbar.html'
+					},
+					'main@index':{
+						templateUrl:'tpls/html.html'
+					}
+				}				
+			})
+			.state('usermng',{
+				url:'/usermng',
+				views:{
+					'main@index':{
+						templateUrl:'tpls/usermng.html',
+						controller:usermngCtrl
+					}
+				}
+			})
+	});
+	tpls/index.html模板代码：
+	<div>
+		<div ui-view="topbar"></div>
+		<div ui-view="main"></div>
+	</div>
 
 ### templateCache服务
 	引入$templateCache.js文件
@@ -643,9 +732,24 @@
 		}
 	});
 
-### compile与link
+### 指令中的ng-transclude属性：使指令之间可以互相嵌套着使用
+	指令代码：
+	app.directive('hello',function(){
+		return {
+			restrict:'AE',
+			transclude:true,
+			template:'<div>Hello everyone!<div ng-transclude></div></div>'
+		}
+	})；
+	html代码：
+	<hello><div>这里是指令中希望保存下来的内容</div></hello>
+	显示结果：
+	Hello everyone!
+	这里是指令中希望保存下来的内容
+
+### compile与link(指令的三个阶段)
 	加载阶段,编译阶段,链接阶段
-	加载angular.js找到ng-app
+	加载阶段:加载angular.js,找到ng-app
 	编译阶段:找到所有指令,对模板自身进行转换
 	链接阶段:在模型与视图之间进行关联,操作Dom,绑定事件监听器并监听
 
@@ -674,27 +778,39 @@
 	</div>
 
 ### 指令如何与控制器交互
-	//指令
+	//实现指令与多个控制器中交互,实现指令的复用
 	app.directive("loader",function(){
 		return {
 			restrict:'AE',
+			template:'<div>content</div>'
 			link:function(scope,element,attrs,controller){
 				element.bind('mouseenter',function(event){
-					scope.$apply(attrs.howtoload);
-				})
+					//scope.loadData();
+					//scope.$apply('loadData()');  //调用html模板所在父scope的loadData方法
+					//html是不区分大小写的,因此html中的howToLoad会被转化为小写的howtoload
+					scope.$apply(attrs.howtoload); //获取指令的howtoload属性值作为方法执行					
+				});
 			}
 		}
 	});
 	//页面代码
-	<div ng-controller="ctrl">
-		<loader howToLoad="ctrlLoad"></loader>
+	<div ng-controller="ctrl-1">
+		<loader howToLoad="loadData1"></loader>
+	</div>
+	<div ng-controller="ctrl-2">
+		<loader howToLoad="loadData2"></loader>
 	</div>
 	//控制器代码
-	app.controller('ctrl',function($scope){
-		$scope.ctrlLoad=function(){
+	app.controller('ctrl-1',function($scope){
+		$scope.loadData1=function(){
 			//toDoSomething();
 		}
-	})
+	});
+	app.controller('ctrl-2',function($scope){
+		$scope.loadData2=function(){
+			//toDoSomething();
+		}
+	});
 
 ### 指令如何与指令交互
 	指令代码：
@@ -751,11 +867,12 @@
 	<superman strength speed>动感超人</superman>			//鼠标移入时控制台打印strength,speed
 	<superman strength speed light>动感超人</superman>	//鼠标移入时控制台打印strength,speed,light
 
-### 指令的scope属性
+### 指令的scope属性(独立scope,相同指令间的属性不共用)
 1.	scope的绑定策略
-	* @ 把当前属性作为字符串进行传递，可以绑定外层scope的值，在属性中插入{{}}即可
+	* @ 把当前属性作为字符串进行传递(不是对象),可以绑定外层scope的值,在属性中插入{{}}即可
 	* = 与父scope的属性进行双向绑定	
 	* & 传递一个来自父scope的函数，然后可以调用该函数
+2.  @示例用法
 	```	
 	html代码：
 	<div ng-controller="myCtrl">
@@ -770,7 +887,33 @@
 			},
 			template:"<div>{{flavor}}</div>"
 		}
-	})
+	});
+	```
+3.	&示例用法
+	```
+	控制器代码:
+	app.controller('myCtrl',['$scope',function($scope){
+		$scope.sayHello=function(name){
+			alert('hello'+name);
+		}
+	}]);
+	指令代码:
+	app.directive('greeting',function(){
+		return {
+			restrict:'AE',
+			scope:{
+				greet:'&'
+			},
+			template:`<input type="text" ng-model="username" /><br/>
+				<button class="btn btn-defalut" ng-click="greet({name:username})">Greeting</button><br/>`
+				//通过greet(name:username)将username的值作为参数传递给greet(name),等价于sayHello(name);
+				//而username来自于模板的双向数据绑定;
+		}
+	});
+	html代码:
+	<div ng-controller="myCtrl">
+		<greeting greet="sayHello(name)"></greeting>
+	</div>
 	```
 
 ### $scope对象的$watch方法，及$timeout服务防频繁操作(防页面抖动)
@@ -796,7 +939,7 @@
 ### AngularJS原理解析
 	angular.module()
 	angular.injector()
-	get() has() .invoke()
+	.get().has().invoke()
 	angularJS的实现方式
 
 ### provider模式
