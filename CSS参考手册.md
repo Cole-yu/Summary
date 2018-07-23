@@ -274,3 +274,52 @@
 	space-between：与交叉轴两端对齐，轴线之间的间隔平均分布。
 	space-around：每根轴线两侧的间隔都相等。所以，轴线之间的间隔比轴线与边框的间隔大一倍。
 	stretch（默认值）：轴线占满整个交叉轴。
+
+
+### 使用自定义字体
+	@font-face {
+		font-family: 'ui-grid';
+		src: url('ui-grid.eot');
+		src: url('ui-grid.eot#iefix') format('embedded-opentype'), url('ui-grid.woff') format('woff'), url('ui-grid.ttf') format('truetype'), url('ui-grid.svg?#ui-grid') format('svg');
+		font-weight: normal;
+		font-style: normal;
+	}
+
+### CSS3渐变	
+1.  线性渐变
+	```
+	语法：background: linear-gradient(direction, color-stop1, color-stop2, ...);
+	* direction:(top/bottom/left/right或者角度值180deg)		
+	默认从上到下进行渐变
+	top:从上到下()
+	left 从左向右
+	right:从右向左	
+	left top:从左上角到右下角
+	示例：
+	#bg{
+		background-color:linear-gradient(red 10%, green 65%, blue 90%);
+	}	
+	#grad{
+		background:linear-gradient(180deg, red 10%, blue 35%);
+	}
+	repeating-linear-gradient() 函数用于重复线性渐变：
+	#grad{
+		background:repeat-linear-gradient(180deg, red 10%, blue 25%);
+	}
+	```
+2. 	径向渐变
+	```
+	语法：background: radial-gradient(center, shape size, start-color, ..., last-color);
+	* shape 参数定义了形状。它可以是值circle或ellipse。其中,circle表示圆形,ellipse表示椭圆形。默认值是ellipse。
+	#grad {
+		background:radial-gradient(circel, red 5%, green 15%, blue 60%);
+	}
+	带有不同尺寸大小关键字的径向渐变：
+	#grad1 {  
+  		background:radial-gradient(60% 55%, closest-side,blue,green,yellow,black);   
+	}
+	repeating-radial-gradient() 函数用于重复径向渐变：
+	#grad {  
+  		background:repeating-radial-gradient(red, yellow 10%, green 15%);
+  	}
+  	```

@@ -56,7 +56,7 @@
 		    	}
 		        template:"<h1>自定义指令!</h1>",
 		        replace:true,
-		        transclude:true,
+		        transclude:true,  		//transclude(嵌入)
 		        compile:function(element,attrs,transclude){
 						//...
 		        },
