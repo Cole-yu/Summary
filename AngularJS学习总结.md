@@ -57,6 +57,12 @@
 		        template:"<h1>自定义指令!</h1>",
 		        replace:true,
 		        transclude:true,  		//transclude(嵌入)
+		       	controller:function(){	
+		       		var scopes=[];
+					this.addScope=function(scope){ //可以把子组件的作用域push进当前指令中,进行其他业务逻辑操作
+						scopes.push(scope);
+					}
+		       	}
 		        compile:function(element,attrs,transclude){
 						//...
 		        },
@@ -868,28 +874,31 @@
 	<superman strength speed light>动感超人</superman>	//鼠标移入时控制台打印strength,speed,light
 
 ### 指令的scope属性(独立scope,相同指令间的属性不共用)
+注意事项：因为html不区分大小写,因此在html中的指令,用属性进行绑定时,必须全部转化为小写形式,否则指令不会执行,没有值显示出来
 1.	scope的绑定策略
 	* @ 把当前属性作为字符串进行传递(不是对象),可以绑定外层scope的值,在属性中插入{{}}即可
 	* = 与父scope的属性进行双向绑定	
 	* & 传递一个来自父scope的函数，然后可以调用该函数
 2.  @示例用法
 	```	
+	原理：控制器中的selectedProductName值,通过指令的属性绑定机制selectedProductName="{{selectedProductName}}"传递进指令内部
+		指令内部通过独立作用域scope:{productName:"@selectedproductname"}在内部又绑定到productName变量(selectedProductName因为html不区分大小而变转化为selectedproductname)
 	html代码：
 	<div ng-controller="myCtrl">
-		<drink flavor="{{ctrlFlavor}}"></drink>
+		<drink selectedProductName="{{selectedProductName}}"></drink>
 	</div>
 	指令代码
 	app.directive('drink',function(){
 		return {
 			restrict:'AECM',
 			scope:{
-				flavor:"@"
+				productName:"@selectedproductname"
 			},
-			template:"<div>{{flavor}}</div>"
+			template:"<div>{{productName}}</div>"
 		}
 	});
 	```
-3.	&示例用法
+3.	&示例用法：如果函数有参数,可以通过键值的形式传递，如果greet(name)方法=>greet({name:username})传递函数参数值
 	```
 	控制器代码:
 	app.controller('myCtrl',['$scope',function($scope){
@@ -978,3 +987,31 @@
 			return this.name
 		};
 	});
+
+### 没有模板的指令,监听页面滚动到底部的事件,执行控制器中的方法
+	html模板代码：
+	<body ng-controller = "myCtrl">
+		<div id="wrapper" when-scrolled="loadMore()">
+		</div>
+	</body>
+	指令代码:
+	app.directive('whenScrolled', function() {  
+	    return {
+	    	restrict:"AECM",
+	    	link：function(scope, element, attr) {
+		        // 内层DIV的滚动加载
+		        var raw = elm[0];
+		        element.bind('scroll', function(){ 
+		            if (raw.scrollTop + raw.offsetHeight >= raw.scrollHeight) {
+		                scope.$apply(attr.whenScrolled);
+		            };
+		        });
+		    };
+	    }  
+	});
+	控制器代码：
+	app.controller('myCtrl',['#scope',function(scope){
+		scope.loadMore=function(){
+			console.log('到底了');
+		}
+	}]);

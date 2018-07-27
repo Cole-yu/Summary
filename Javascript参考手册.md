@@ -83,7 +83,7 @@
 1. 	Array
 	```
 	属性有length,prototype,constructor
-	方法：concat,join,pop,push,reverse,shift,slice,sort,splice,toString,unshift
+	方法：concat,join,pop,push,reverse,shift,slice,sort,splice,toString,unshift,find,findIndex,reduce,map,filter,forEach
 	```
 2.  Boolean
 3.  Date
