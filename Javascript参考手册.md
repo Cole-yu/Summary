@@ -97,13 +97,13 @@
 	```
 *	Date对象方法
 	```
-		getDay()   //0-6星期
-		getFullYear()  //年份2018
-		getMonth()     //月份0-11
-		getDate()  	   //1-31几号
-		getHours()     //小时0-23
-		getMinutes()   //分钟0-59
-		getSeconds()   //秒0-59
+		getDay()   		//0-6星期
+		getFullYear()  	//年份2018
+		getMonth()     	//月份0-11
+		getDate()  	   	//1-31几号
+		getHours()     	//小时0-23
+		getMinutes()   	//分钟0-59
+		getSeconds()   	//秒0-59
 		getMillseconds()//毫秒0-999
 		getTime()       //返回1970年1月1日至今的毫秒数
 	以上方法把get替换成set,均可用来设置Data对象相应的值,如var date=new Date; date.setFullYear(2020);
@@ -616,8 +616,7 @@
 	function checkCookie()
 	{
 	  var username=getCookie("username");
-	  if (username!="")
-	  {
+	  if (username!=""){
 	    alert("Welcome again " + username);
 	  }
 	  else 

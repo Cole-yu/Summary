@@ -217,3 +217,51 @@
 		console.log('连接已关闭');
 	};
 
+### html5新增特性
+	用于绘画的canvas元素
+	矢量图形SVG
+	地理位置
+	用于媒介回放的video和audio元素
+	本地离线存储
+	web存储: localStorage和sessionStorage
+	应用程序缓存: cache manifest
+	服务器推送事件server-sent event
+	新的特殊内容元素：article,footer,header,nav,section
+	新的表单控件:calendar,date,time,email,url,search
+	拖放(dragstart,dragover,drog) 原理:dom节点的增加和删除
+	input增加了新的type类型
+	email,url,number,range,Date pickers(date, month, week, time, datetime, datetime-local),search,color
+
+
+### 地理位置geolocation属性
+	navigator.geolocation.getCurrentPosition(showPosition);
+	//如果getCurrentPosition()运行成功，则向参数showPosition中规定的函数返回一个coordinates对象
+	function showPosition(position){
+		console.log(position.coords.latitude,position.coords.longitude);
+	}
+
+
+### 应用程序缓存
+	Cache Manifest文件
+	启用应用程序缓存
+	<html manifest="demo.appcache">...</html>		//manifest 文件的建议的文件扩展名是：".appcache"。
+		
+	manifest 文件可分为三个部分：
+		CACHE MANIFEST - 在此标题下列出的文件将在首次下载后进行缓存
+		NETWORK - 在此标题下列出的文件需要与服务器的连接，且不会被缓存
+		FALLBACK - 在此标题下列出的文件规定当页面无法访问时的回退页面（比如 404 页面）
+		
+	实例代码：
+	CACHE MANIFEST
+	# 2012-02-21 v1.0.0
+	/theme.css
+	/logo.gif
+	/main.js
+		
+	NETWORK:
+	login.asp
+		
+	FALLBACK:
+	/html5/ /404.html
+
+
