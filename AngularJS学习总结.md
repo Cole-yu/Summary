@@ -756,7 +756,7 @@
 ### compile与link(指令的三个阶段)
 	加载阶段,编译阶段,链接阶段
 	加载阶段:加载angular.js,找到ng-app
-	编译阶段:找到所有指令,对模板自身进行转换
+	编译阶段:找到所有指令,对模板自身进行转换(在compile函数中操作scope会报错,因为在链接阶段scope才会绑定到元素上)
 	链接阶段:在模型与视图之间进行关联,操作Dom,绑定事件监听器并监听
 
 ### 指令的compile方法
@@ -981,7 +981,8 @@
 			getName:getName
 		};
 	});
-	//app.service('helloAngular',function(){
+	//service
+	app.service('helloAngular',function(){
 		this.name="慕课网";
 		this.getName=function(){
 			return this.name
@@ -1015,3 +1016,37 @@
 			console.log('到底了');
 		}
 	}]);
+
+###	页面防抖动代码,防止频繁触发事件,300毫秒延迟
+	var timer=null;
+	if(timer){
+		$timeout.cancel(timer);
+	}
+	timer=$timeout(function(){
+		addHeight();
+	},300);
+
+
+### AngularJS核心原理解析	
+	angular.js源码解析
+	publishExternalAPI(angular);
+	setupModuleLoader(window)函数建立模块机制(模块加载器);
+	注册内核provider(两个最重要的provider:$parse与$rootScope);
+	angularInit:防止多次初始化ng-app;
+	bootstrap:创建injector、拉起内核和启动模块、调用compile服务;
+
+### angularJS的启动过程
+	自执行函数执行完后构建一个angular全局对象
+	检查是否多次启动angular,如果没有则启动
+	尝试绑定jQuery,bindJQuery(),如果导入了jquery,则使用window.jquery,否则绑定自定义的jqLite
+	publishExternalAPI扩展angular的API:
+		调用setupModuleLoader方法创建模块(module)定义
+		加载工具setupModuleLoader(挂在全局对象window.angular上)
+		注册内置的指令和provider
+	调用angularInit(),执行bootstrap方法,createInjector方法创建一个注册器,调用compile方法编译指令
+
+### Provider与Injector
+	注入的三种方式:推断式注入,标注式注入,内联式注入
+	Provider模式及$injector对象
+	内置的provider分析($ControllerProvider)
+	injector源码分析(创建、注册、调用)
