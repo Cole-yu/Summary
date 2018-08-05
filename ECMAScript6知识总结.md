@@ -89,11 +89,53 @@
 	configurable,enumerable,value,writable
 
 ### 存取描述符
-	configurable,enumerable,get,set	
+	configurable,enumerable,get,set
 
-###  新增let和const,块级作用域
+### 新增let和const,块级作用域
+1.	var
+	```
+	var命令会发生"变量提升"现象,即变量可以在声明之前使用,值为undefined
+	```
+2.	let	
+	* 不存在变量提升
+	* 不允许重复声明
+	* 暂时性死区
+	```
+	只要一进入当前作用域,所要使用的变量就已经存在了,但是不可获取,只有等到声明变量的那一行代码出现,才可以获取和使用该变量。	
+	只要块级作用域内存在let命令,它所声明的变量就"绑定"(binding)这个区域,不再受外部的影响
+	块级作用域的出现使得广泛应用的立即执行函数表达式(IIFE)不再必要了
+	```
+3.  const
+	* 原理:并不是变量的值不得改动,而是变量指向的那个内存地址所保存的数据不得改动	
+	```
+	对于简单类型的数据(数值、字符串、布尔值),值就保存在变量指向的那个内存地址。
+	对于复合类型的数据(主要是对象和数组),变量指向的内存地址,保存的只是一个指向实际数据的指针,const只能保证这个指针是固定的(即总是指向另一个固定的地址),至于它指向的数据结构是不是可变的,就完全不能控制了。
+	```
 
-###  结构赋值
+### 顶层对象(window,global)
+	浏览器里面,顶层对象是window,但Node和Web Worker没有window;
+	浏览器和Web Worker里面,self也指向顶层对象,但是Node没有self;
+	Node里面,顶层对象是global,但其他环境都不支持;
+		
+	判断当前环境运行时:
+	方法一:
+	(typeof window !== 'undefined'
+	    ? window
+	    : (typeof process === 'object' &&
+	    	typeof require === 'function' &&
+	        typeof global === 'object')
+	        ? global
+	        : this);
+		
+	方法二:	     
+	var getGlobal = function () {
+		if (typeof self !== 'undefined') { return self; }
+	    if (typeof window !== 'undefined') { return window; }
+	    if (typeof global !== 'undefined') { return global; }
+	    throw new Error('unable to locate global object');
+	};
+
+### 结构赋值
 
 ###  ...展开剩余运算符
 *	将数组展开,分别获取数组的每个元素
