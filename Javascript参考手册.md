@@ -390,12 +390,12 @@
 	<script>
 		function wrapper(){	  	
 			var val=1;	  					// 外包函数的局部变量
-			return function(){	  		// 返回一个内嵌的匿名函数对象
-				return ++val;			// 匿名函数内部访问其外包函数的局部变量
+			return function(){	  			// 返回一个内嵌的匿名函数对象
+				return ++val;				// 匿名函数内部访问其外包函数的局部变量
 			}
 		}
 		// 外包函数执行完毕后,返回一个匿名函数对象;该匿名函数被全局函数下的result变量引用,形成闭包
-		var result=wrapper();     		// result:function(){ return ++val; }
+		var result=wrapper();     			// result:function(){ return ++val; }
 		// 在全局函数作用域下,通过执行result(引用地址指向闭包函数)来访问外包函数下的局部变量
 		console.log(result());
   	</script>
