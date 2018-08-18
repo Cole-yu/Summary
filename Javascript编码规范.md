@@ -210,12 +210,146 @@
 	```
 5.  闭包
 	```
-	闭包中局部变量是传引用,不是传值
+	闭包中局部变量是传引用,不是传值;产生循环引用,进一步导致内存泄漏。
 	函数对象,活动对象,作用域链,执行上下文对象(执行环境),垃圾回收机制(GC)
+	```
+6.  setTimeout/setInterval
+	```
+	不要给setTimeout或者setInterval传递字符串参数.javascript会把传入的字符串参数解析执行。
+	setTimeout("alert('test')",2000);
+	```
+
+####其他规范
+1. 	禁止修改内置对象的原型
+	```
+	内置对象作为一套公共接口,具有约定俗成的行为方式，修改其原型，可能破坏接口语义。
+	错误示例：修改了数组对象的index方法
+	array.prototype..indexOf=function(){
+		return -1
+	}
+	```
+2. 	降低与XHTML的耦合性
+	```
+	不要过于依赖DOM的一些内容特征来调用不同的脚本代码,而应该定义不同功能的方法,然后在DOM调用,这样不管DOM是按钮还是链接,方法的调用都是一样的。	
+	```
+3.  变量与恒量相比
+	表达式或者变量与恒量相比时,总是将恒量放在等号/不等号的左边。假如你在等式中漏了一个等号,语法检查器会为你报错。
+4. 	没有含义的数字
+	尽量避免赤裸裸的数字,它们应该使用常量来代替
+5. 	页面卸载、局部刷新调整时,要注销相应的定时器和延时器
+	clearInterval
+6.  页面卸载时要注销绑定的事件监听
+	el.addEventListener(type,listener,options);
+	el.removeEventListener('click',listener);
+7.  避免嵌入式的赋值
+8.  删除不再使用的代码段
+
+####陷阱和技巧
+1.  parseInt必须指定基数。如果不指定parseInt的第二个参数,如果前缀为"0x",按16进制转换;如果前缀为"0"的字符串,在chrome和firefox下,默认为10进制转换,但在IE浏览器下按照8进制转换。如果以1~9数字开头,将被解析为十进制的整数。
+2.  布尔表达式
+	```
+	0,-0,null,""(空字符串),false,undefined,NaN,对于上面7个值,if(x)返回false
+	'0',[](空数组),{}(空对象),对于上面3个值,if(x)返回true
+	```
+3.  DOM节点ID
+	```
+	DOM节点的ID命名使用英文字母、_和数字,避免使用.<>等其他特殊字符,常用作CSS等的选择器
+	```
+4.	遍历NodeList
+	```
+	var el=document.getElementsByClassName("btn");
+	for(var i=0,len=el.length;i<len;i++){
+		//doSomething(el[i]);		
+	}
+	```
+5.  遗漏的参数
+	```
+	给可选参数或者新增参数设置默认值。
+	function addParams(country){
+		var country=country||"China";	//如果没有传入country这个参数，给出默认值China 
+	}
+	```
+6.  HTML id冲突
+	```
+	尽量不要使用HTML中的ID作为Javascript的变量名,这样将使得难以追踪业务逻辑错误
 	```
 
 ### 注释规则
-
+1.  一般规则
+	```
+	当代码不清晰时使用注释,用来阐明代码的意图,而不要做无谓的注释
+	//dialogActived表示对话框激活状态,true表示显示,false表示隐藏
+	var dialogActived=false;
+	* 不容易理解的代码总是需要注释
+	* 容易被其他开发人员误认为是错误的,这些代码需要加上注释,比如一些技巧性的用法:
+	while(element&&(element=element[axis])) //注意:这里是赋值不是比较
+	{
+		//doSomething();
+	}
+	* 特定浏览器专用的用法需要被注释,如不同浏览器下的鼠标滚轮方向判断：
+	function scroll(e) {  
+        e = e || window.event;  
+        if (e.wheelDelta) {  				//判断浏览器IE,谷歌滑轮事件
+            if (e.wheelDelta > 0) { 		//当滑轮向上滚动时  
+               //事件
+            }  
+            if (e.wheelDelta < 0) { 		//当滑轮向下滚动时  
+                //事件 
+            }  
+        } else if (e.detail) {  			//Firefox滑轮事件  
+            if (e.detail> 0) { 				//当滑轮向上滚动时  
+               //事件 
+            }  
+            if (e.detail< 0) { 				//当滑轮向下滚动时  
+                //事件  
+            }  
+        }  
+    }  
+	```
+2.  函数注释
+	```
+	/*
+		对比的类型和对象
+		@param {Number} type 1表示按时间,2表示按EMUI版本,3表示按产品
+		@param {Object} item 当前特性对象,包含特性名称,特性编码
+		@return {Array} 新数组
+	*/
+	function compare(type,item){
+		//doSomething();
+	}
+	```
+3.  版权信息
+	```
+	示例：
+	/*
+		Title:页面信息(如：新闻建立页面)
+		Description:描述信息(如：建立和修改新闻信息)
+		Copyright:Copyright (c) 2011-2012 yfx All Rights Reserved
+		Nameplace:AddNewDetailInfo
+		@author:作者姓名
+		@version:1.00
+	*/
+	```
 
 ### 浏览器兼容问题
-
+	为了获得最大的可移植性和兼容性,尽量依赖标准方法
+	说明：在开放式系统中,我们不能约束系统使用者的运行环境,要充分考虑兼容性问题
+1.  HTML对象获取问题：document.getElementById("idName")或jquery:$(selector)
+2.  event.x与event.y问题：startX=event.x?event.x:event.pageX;
+3.  window.location.href问题：使用win.location来代替window.location.href
+4.  js获取对象的属性：$(selector).attr("attribute");将jquery对象转换为dom对象获取效率更高,$(selector)[0].id,$(selector)[0].name
+5.  js设置对象的属性：$(selector).attr({Id:id,Name:name,Title:title});
+6.  js获取对象的样式：$(selector).css("background");
+7.  js设置对象的属性：$(selector).css({Background:"#DDDDDD",Position:"absolute","z-index":99});
+8.  js获取对象的物理位置
+	```
+	var offset=$(selector).offset();
+	var offLeft=offset.left;			//相对页面X轴位移
+	var offTop=offset.top;				//相对页面Y轴位移
+	var positon=$(selector).position();
+	var positionLeft=position.Left;  	//相对定位的X轴位移
+	var positionTop=position.top;       //相对定位的Y轴位移
+	//offset可以理解为相对于根目录的的坐标位移(整个文档document)
+	//position是相对于它的父级元素的坐标位置
+	```
+9.  js事件源位移：var e=event||window.event;var x=e.pageX;var y=e.pageY;
