@@ -154,7 +154,7 @@
 	$scope充当MVC中的Data-Model角色
 	$scope是一个POLO(Plan Old JavaScript Object)
 	$scope提供了一些工具方法$watch()/$apply()
-	$scope是一个树型结构，于DOM标签平行
+	$scope是一个树型结构,与DOM标签平行
 	子$scope对象会继承父$scope上的属性
 	每一个Angular应用只有一个根$scope对象(一般位于ng-app上,叫做$rootScope)
 	$scope可以传播事件,类似DOM事件,可以向上也可以向下传播事件
@@ -187,7 +187,7 @@
 
 ### 控制器
 	控制器的$scope(相当于作用域、控制范围)
-	<div ng-controller=""DemoController as demo></div>          //给DemoController取个别名demo,简化名称和使用
+	<div ng-controller="DemoController as demo"></div> //给DemoController取个别名demo,简化名称和使用
 	<ul>
 		<li ng-repeat="item in demo.items">{{item.name}}</li>
 	</ul>
@@ -301,7 +301,7 @@
 		    <option value="dogs">Dogs
 		    <option value="tuts">Tutorials
 		    <option value="cars">Cars
-		</select>	
+		</select>
 	</form>
 	<div ng-switch="myVar">
 	  <div ng-switch-when="dogs">
@@ -872,6 +872,13 @@
 	<superman strength>动感超人</superman>       		//鼠标移入时控制台打印strength
 	<superman strength speed>动感超人</superman>			//鼠标移入时控制台打印strength,speed
 	<superman strength speed light>动感超人</superman>	//鼠标移入时控制台打印strength,speed,light
+* require用法
+	```
+	? 寻找require值对应的指令中的控制器,如果在指令链的父指令(即require的值所对应的指令)中没有找到需要的控制器，则当前指令中的link函数的第四个参数将会是null。
+	^ 如果在指令链的父指令中没有找到需要的控制器，则会进一步往指令链上游寻找需要的控制器。
+	?^ 教程的解释是：我们可选择地加载需要的指令并在父指令链中进行查找。
+	没有前缀的情况: 如果没有前缀，则指令就会在自身所提供的控制器中进行查找，如果没有找到控制器(或者没有找到require的值所对应的指令)，就会抛出一个错误。
+	```
 
 ### 指令的scope属性(独立scope,相同指令间的属性不共用)
 注意事项：因为html不区分大小写,因此在html中的指令,用属性进行绑定时,必须全部转化为小写形式,否则指令不会执行,没有值显示出来
