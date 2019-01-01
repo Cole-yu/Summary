@@ -3,8 +3,7 @@
 ### 核心概念
 	JDK Java Development Kit（Java开发工具包）
 	JRE Java Runtime Environment（Java运行时环境)
-	JVM Java Virtual Machine（Java虚拟机,包含编译器、解释器）	
-
+	JVM Java Virtual Machine（Java虚拟机,包含编译器、解释器）
 
 ### java开发环境搭建
 1.	安装JDK
@@ -312,9 +311,253 @@
 		public static void main(String[] args) {        
 	        // 创建对象时会自动执行构造方法
 			HelloWorld hello = new HelloWorld();			
-		}	
+		}
 	}	
 	注：程序运行时静态初始化块最先被执行，然后执行普通初始化块，最后才执行构造方法。静态初始化块只在类加载时执行一次。
 
 ###  Java的封装
+1. 包的使用：包的命名规范是全小写字母拼写,例：com.imooc.music.MyMusic
 
+### 访问修饰符，修饰属性和方法
+private 本类（私有属性）
+默认 本类，同包
+protected 本类，同包，子类
+public  本类，同包，子类，其他
+
+### Java中的this关键字
+	在类中代表当前对象，this.属性，this.方法，getter/setter中经常使用
+###	什么是Java中的内部类
+	定义：内部类（ Inner Class ）就是定义在另外一个类里面的类。与之对应，包含内部类的类被称为外部类。
+	作用：	1. 内部类提供了更好的封装，可以把内部类隐藏在外部类之内，不允许同一个包中的其他类访问该类
+		  	2. 内部类的方法可以直接访问外部类的所有数据，包括私有的数据
+			3. 内部类所实现的功能使用外部类同样可以实现，只是有时使用内部类更方便
+	问：内部类有几种呢？
+	答：内部类可分为以下几种：
+		成员内部类
+		静态内部类
+		方法内部类
+		匿名内部类
+
+### Java 中的成员内部类		
+	注意事项：
+		1、 外部类是不能直接使用内部类的成员和方法滴。可先创建内部类的对象，然后通过内部类的对象来访问其成员变量和方法。
+			* 创建内部类对象的方法:定义了成员内部类后，必须使用外部类对象来创建内部类对象，而不能直接去 new 一个内部类对象，语法：内部类 对象名 = 外部类对象.new 内部类();。
+		2、 如果外部类和内部类具有相同的成员变量或方法，内部类默认访问自己的成员变量或方法，如果要访问外部类的成员变量，可以使用 this 关键字
+	例：
+	//外部类HelloWorld
+	public class HelloWorld{
+	    
+	    //外部类的私有属性name
+	    private String name = "imooc";
+	    
+	    //外部类的成员属性
+	    int age = 20;
+	    
+		//成员内部类Inner
+		public class Inner {
+			String name = "爱慕课";
+	        //内部类中的方法
+			public void show() { 
+				System.out.println("外部类中的name：" + HelloWorld.this.name );  // 防卫外部类中的成员属性
+				System.out.println("内部类中的name：" + name );
+				System.out.println("外部类中的age：" + age);
+			}
+		}
+	    
+		//测试成员内部类
+		public static void main(String[] args) {
+	        
+	        //创建外部类的对象
+			HelloWorld o = new HelloWorld ();
+	        
+	        //创建内部类的对象
+			Inner inner = o.new Inner() ;    // 语法：内部类 对象名 = 外部类对象.new 内部类();
+	        
+	        //调用内部类对象的show方法
+			inner.show();
+		}
+	}
+
+### Java 中的静态内部类，静态内部类是 static 修饰的内部类：
+	1、 静态内部类不能直接访问外部类的非静态成员，但可以通过 new 外部类().成员 的方式访问 
+	2、 如果外部类的静态成员与内部类的成员名称相同，可通过“类名.静态成员”访问外部类的静态成员；如果外部类的静态成员与内部类的成员名称不相同，则可通过“成员名”直接调用外部类的静态成员
+	3、 创建静态内部类的对象时，不需要外部类的对象，可以直接创建 内部类 对象名= new 内部类();
+	//外部类
+	public class HelloWorld {
+	    
+	    // 外部类中的静态变量score
+	    private static int score = 84;
+	    
+	    // 创建静态内部类
+		public static class SInner {
+	        // 内部类中的变量score
+	        int score = 91;
+	        
+			public void show() {
+				System.out.println("访问外部类中的score：" + HelloWorld.score );   //类名.静态成员访问外部类的静态成员
+				System.out.println("访问内部类中的score：" + score);
+			}
+		}
+		// 测试静态内部类
+		public static void main(String[] args) {
+			// 直接创建内部类的对象
+	        SInner si=new SInner();			//不需要创建外部类的对象，可以直接创建，语法：内部类 对象名= new 内部类();
+	        
+	        // 调用show方法
+			si.show();
+		}
+	}
+
+### Java 中的方法内部类
+	定义：方法内部类就是内部类定义在外部类的方法中，方法内部类只在该方法的内部可见，即只在该方法内可以使用。
+	注：由于方法内部类不能在外部类的方法以外的地方使用，因此方法内部类不能使用访问控制符和 static 修饰符。
+	//外部类
+	public class HelloWorld {
+	    
+	    private String name = "爱慕课";
+	    
+	    // 外部类中的show方法
+	    public void show() { 
+			// 定义方法内部类
+			class MInner {								// 方法内部类不能使用访问控制符和 static 修饰符
+				int score = 83;
+				public int getScore() {
+					return score + 10;
+				}
+			}
+	        
+			// 创建方法内部类的对象
+	        MInner inner=new MInner();
+	        
+	        // 调用内部类的方法
+			int newScore=inner.getScore();
+	        
+			System.out.println("姓名：" + name + "\n加分后的成绩：" + newScore);
+		}
+	    
+		// 测试方法内部类
+		public static void main(String[] args) {
+	        
+			// 创建外部类的对象
+	        HelloWorld mo=new HelloWorld();
+	        
+	        // 调用外部类的方法
+			mo.show();
+		}
+	}
+
+### Java中的语法继承
+	语法：class 子类 extends 父类 {}
+	继承的初始化顺序
+	1. 先初始化父类再初始化子类
+	2. 先执行初始化对象中的属性，再执行构造方法中的初始化
+	3. 初始化顺序：父类对象的属性初始化>父类的构造方法>子类的属性初始化>子类的构造方法
+
+### Java 中 final 的使用
+	可以用来修饰类，方法，属性
+	如果修饰父类，子类不能继承
+	如果修饰方法，子类不能重写，覆盖
+	如果修饰属性，属性不能修改，且必须初始化（直接声明时初始化，或者在构造函数中手动初始化；系统将不再自动初始化赋值，不声明会报错）
+	如果修饰局部变量，变量不能修改，成为常量
+
+### super关键字的使用	
+	在对象的内部使用，代表父类对象
+	访问父类的属性和方法，super.属性，super.方法名()
+	子类的构造过程当中必须调用其父类的构造方法。
+	super()的应用：
+	1. 如果子类的构造方法中没有显示调用父类的构造方法，则系统默认调用父类无参的构造方法。隐式执行super()。
+	2. 如果显示的调用构造方法，必须在子类的构造方法的第一行
+	3. 如果子类构造方法中既没有显式调用父类的构造方法，而父类又没有无参的构造方法（父类的构造方法中带参数），则编译会报错。
+
+### Object类	
+	Object类是所有类的祖先
+	类对象与类的对象
+	getClass()  //获取对象的类信息
+	没有重写 toString 方法的情况下,默认继承Object的toString()方法，输出对象地址
+
+### Java 中的多态
+	继承是多态的基础
+	对象的多种形态
+	1. 引用多态
+		父类的引用可以指向本类的对象
+		父类的引用可以指向子类的对象
+		Animal obj1=new Animal();
+		Animal obj2=new Dog();  // Dog类是Animal类的子类，父类的引用是可以指向子类对象的。
+		Dog obj3=new Animal();  // 错误
+	2. 方法多态
+		创建本类对象时，调用的方法为本类方法
+		创建子类对象时，调用的方法为子类重写的方法或者继承的方法
+	注：
+	Animal obj2 = new Dog();
+	* obj2可以引用子类从父类继承和重写的方法，但是不可以引用Dog类中所独有（父类中没有的）方法；
+	* 创建的是子类Dog的对象；
+	* 声明的是Animal类（数据结构类型），所以是父类的引用。
+	* 父类无法直接调用子类特有的方法，但是可以将Animal向下转型(Dog)obj2，然后再调用watchDoor方法。 // ((Dog)obj2).watchDoor();
+
+### 多态中的引用类型转换
+1. 向上类型转换（隐式/自动类型转换），是小类型到大类型的转换
+2. 向下类型转换（强制类型转换），是大类型到小类型，会发生溢出、丢失数据等风险问题
+```	
+	通过instanceof运算符避免类型转换的安全性问题
+	animal instanceof Dog  			// animal对象是否含有Dog类的元素
+	if(animal instanceof Dog) {
+		Dog dog=(Dog)animal;
+	}
+	else{
+		System.out.println("无法进行强制类型转换");
+	}
+```
+
+### Java 中的抽象类(abstract关键字)
+1. 应用场景：
+	* 在某些场景下，某个父类只是知道其子类应该包含怎样的方法，但无法准确知道这些子类如何实现这些方法。约束子类应该具有哪些方法，但不关心如何去实现。
+	* 从多个具有相同特征的类中抽象出一个抽象类，以这个抽象类作为子类的模板，从而避免了子类设计的随意性。
+2. 作用：
+	限制规定子类必须实现某些方法，但不关注实现细节。
+3. 使用规则：
+	* abstract定义抽象类
+	* abstract定义抽象方法，只有声明，不需要实现
+	* 包含抽象方法的类必须是抽象类
+	* 抽象类中可以包含普通的方法，也可以没有抽象方法
+	* 抽象类不能直接创建，可以定义引用变量
+```
+	抽象方法没有方法体以分号结束
+	// 定义一个抽象类
+	public abstract class Telphone{
+		public abstract void call();  //定义一个抽象方法
+	}
+
+```
+
+### Java 中的接口
+	语法： [修饰符] interface 接口名 [extends 父接口1,父接口2...]{ 
+		零个到多个常量定义   			// 接口中的属性是常量，即使定义时不添加public static final修饰符，系统也会自动加上
+		零个到多个抽象方法的定义 		//接口中的方法只能时抽象方法，即使定义时不添加public abstract 修饰符，系统也会自动加上 
+	}
+	接口就是用来被继承\实现的，修饰符一般建议public
+	注意：不能使用private和protected修饰接口
+	接口是多继承的，可以继承多个父接口
+	类是单继承的，只能继承一个父类；但可以实现继承多个接口，实现接口使用implements关键字
+	[修饰符] class 类名 extends 父类 implements 接口1, 接口2...{
+		//如果继承了抽象类，需要实现继承的抽象方法；同时也要实现接口中的抽象方法。
+	}
+	接口使用中可以与匿名内部类配合使用
+	Interface i=new Interface(){
+		public void method(){
+			System.out.println("匿名内部类实现接口的方式");
+		}
+	};
+
+### UML简介
+	Unified Modeling Language,又称统一建模语言或标准建模语言，是一个支持模型化和软件系统开发的图图形化语言
+
+### trt-catch-finally
+
+### Java 中的集合框架概述
+	Collection 父接口拥有三个子接口：List, Queue, Set	
+	List => ArrayList（数组序列）
+	Queue（队列） => LinkedList (链表)
+	Set => HashSet（哈希集）
+	Map 父接口拥有众多的子接口，一个重要的实现类 HashMap；<Key , Value> 
+
+### jdk API 文档	
