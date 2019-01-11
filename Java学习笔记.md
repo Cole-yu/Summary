@@ -319,10 +319,10 @@
 1. 包的使用：包的命名规范是全小写字母拼写,例：com.imooc.music.MyMusic
 
 ### 访问修饰符，修饰属性和方法
-private 本类（私有属性）
-默认 本类，同包
-protected 本类，同包，子类
-public  本类，同包，子类，其他
+	private 本类（私有属性）
+	默认 本类，同包
+	protected 本类，同包，子类
+	public  本类，同包，子类，其他
 
 ### Java中的this关键字
 	在类中代表当前对象，this.属性，this.方法，getter/setter中经常使用
@@ -554,10 +554,125 @@ public  本类，同包，子类，其他
 ### trt-catch-finally
 
 ### Java 中的集合框架概述
-	Collection 父接口拥有三个子接口：List, Queue, Set	
-	List => ArrayList（数组序列）
+	Collection家族 父接口拥有三个子接口：List, Queue, Set	
+	List => ArrayList（序列）
 	Queue（队列） => LinkedList (链表)
-	Set => HashSet（哈希集）
-	Map 父接口拥有众多的子接口，一个重要的实现类 HashMap；<Key , Value> 
+	Set（集，无序不重复） => HashSet（哈希集）
+	Map家族 父接口拥有众多的子接口，一个重要的实现类 HashMap：<Key , Value>
+
+### List
+```
+	List courseToSelect=new ArrayList();
+	courseToSelect.add(cr1);
+	courseToSelect.add(0,cr2);
+	Course course1 = (Course)courseToSelect.get(0);  // list取出来的统一都是Object对象，需要强制类型转化；
+	Course类包含一个id和name两个成员变量
+	Course[] course={ new Course("1","高等数学") , new Course("2","大学英语") };
+	List tempCourseList = Arrays.asList(course);   	// 把数组转化为list序列
+	courseToSelect.addAll( 0, tempCourseList );  // courseToSelect.addAll( tempCourseList );
+	
+	数组长度用length属性，序列list长度用size()方法
+	String[][] data=new String[2][5];
+	data.length    // 2
+	data[0].length // 5
+	//获取数组指定下标的元素
+	data[0][3]
+	序列长度用size()方法
+	List data=new ArrayList();
+	data.size();   // 0
+	//获取序列指定下标的元素
+	(Course)data.get(0); // 索引不能越界,如果不是基本类型，统一返回的是Object对象；需要自己强制转换成相应的类（如：Course类）；
+	
+	// 用迭代器（Iterator）实现序列的遍历
+	Iterator it=courseToSelect.Iterator();
+	while(it.hasNext()){
+		Course cr=(Course)it.next();
+		System.out( "课程id:"+ cr.id + "课程名称:"+cr.name );
+	}
+	// 用forEach方法遍历
+	for(Object obj:couseToSelect){
+		Course cr=(Course)obj;
+		System.out( "课程id:"+ cr.id + "课程名称:"+cr.name );
+	}
+	// 用for循环遍历
+	int len=courseToSelect.size();
+	for(int i=0;i<len;i++){
+		Course cr=(Course)courseToSelect.get(i);
+		System.out( "课程id:"+ cr.id + "课程名称:"+cr.name );	
+	}
+
+	courseToSelect.set(2,new Course("1","数据结构"));  //修改索引为2的元素的值
+
+	courseToSelect.remove(2);  //传入索引
+	Course tempCr=(Course)courseToSelect.get(2);
+	courseToSelect.remove(tempCr); //传入待删除元素对象
+
+	Course[] courseArray={ courseToSelect.get(4) , courseToSelect.get(5) };  // 获取一个待删除的数组
+	var tempList=Arrays.asList(courseArray); 			//使用数组方法asList将该数组转化为list序列
+	CouseArray.removeAll(tempList); 					//使用removeAll删除该指定序列集
+```
+### 泛型
+	public List<Course> courseToSelect; 	// 只能往序列里添加Course类
+	泛型不能使用基本类型（int,lang,char,boolean）；必须是引用类型,它们的包装类（Integer,Lang,Character,Boolean）
+
+### Set（无序）
+```
+	无序，不能用索引，因此不能用get()和set()方法；必须使用forEach方法和Interator方法来遍历Set类的对象
+	Set<Course> courses=new HashSet<Course>();  //创建一个带泛型的Set类的对象
+
+	Set<Course> courses=new HashSet<Course>();
+	Course cr=new Course(("2","高等数学"));
+	courses.add(cr)；
+	Courses.remove(cr);
+	Set类的对象拥有addAll与removeAll,contains,size等方法
+```
+
+### Map
+```
+	Map<String,Student> students=new HashMap<String,Student>(); // Student类包含name,age两个成员属性
+	
+	put()方法：如果不存在键名则增加映射，若存在则修改指定键名的键值；
+	students.put("147136",new Student("yfx","26"));  // 增加一条映射
+	students.put("147136",new Student("yfx","27"));  // 修改指定键名147136的键值
+
+	get()方法 //根据键名获取键值
+	students.get("147136");
+	remove()方法
+	students.remove("147136");
+
+	keySet()方法：返回此map对象的所有键名的Set视图
+		Set<String> keySet=students.keySet();
+		for(String name:keySet){  //遍历返回的键名的set视图，通过键名获取相对应的键值
+			Student st = students.get(name);
+			if(st!=null){
+				System.out.println("学生姓名：" + st.name + "学生年龄" + st.age);
+			} 
+		}
+
+	values()方法：返回此map对象的所有键值的Collection视图（注：因此键值是可以重复的，所以不是Set视图）
+		List<Student> values=studets.values();
+		fot(Student st:values){
+			System.out.println("学生姓名：" + st.name + "学生年龄" + st.age);
+		}
+
+	entrySet()方法：返回此地图中包含的映射的Set视图(因为键名不能重复)
+	// entrySet返回的Set视图中的元素都是内部定义的Entry类，且必须同时给Entry加上泛型Entry<String,Student>
+	Set<Entry<String,Student>> entrySet=students.entrySet();
+	for(Entry<String,Student> entry:entrySet){
+		String key = entry.getKey();   //通过getKey获取Entry类对象的键名
+		Student st = entry.getValue(); //通过getValue获取Entry类对象的键值
+		if(st!==null){
+			System.out.println("学生姓名：" + st.name + "学生年龄" + st.age);
+		}
+	}
+
+	size()方法  获取Map类的对象的长度
+
+	containsKey(value)方法/containsValue(value)方法：判断是否包含键名/键值为value的元素，返回true/false
+	
+	
+
+
+```	
 
 ### jdk API 文档	
