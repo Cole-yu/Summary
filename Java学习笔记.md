@@ -560,9 +560,13 @@
 	Set（集，无序不重复） => HashSet（哈希集）
 	Map家族 父接口拥有众多的子接口，一个重要的实现类 HashMap：<Key , Value>
 
+### 泛型
+	public List<Course> courseToSelect; 	// 只能往序列里添加Course类
+	泛型不能使用基本类型（int,lang,char,boolean）；必须是引用类型,它们的包装类（Integer,Lang,Character,Boolean）
+
 ### List
 ```
-	List courseToSelect=new ArrayList();
+	List<Course> courseToSelect=new ArrayList<Course>();
 	courseToSelect.add(cr1);
 	courseToSelect.add(0,cr2);
 	Course course1 = (Course)courseToSelect.get(0);  // list取出来的统一都是Object对象，需要强制类型转化；
@@ -610,10 +614,10 @@
 	Course[] courseArray={ courseToSelect.get(4) , courseToSelect.get(5) };  // 获取一个待删除的数组
 	var tempList=Arrays.asList(courseArray); 			//使用数组方法asList将该数组转化为list序列
 	CouseArray.removeAll(tempList); 					//使用removeAll删除该指定序列集
+
+	indexOf  获取元素第一次出现所在的索引   courseToSelect.indexOf(new Course("2","大学英语"));
+	lastIndexOf 获取元素最后一次出现所在的索引
 ```
-### 泛型
-	public List<Course> courseToSelect; 	// 只能往序列里添加Course类
-	泛型不能使用基本类型（int,lang,char,boolean）；必须是引用类型,它们的包装类（Integer,Lang,Character,Boolean）
 
 ### Set（无序）
 ```
