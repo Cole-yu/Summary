@@ -672,11 +672,142 @@
 
 	size()方法  获取Map类的对象的长度
 
-	containsKey(value)方法/containsValue(value)方法：判断是否包含键名/键值为value的元素，返回true/false
+	containsKey(value)方法 / containsValue(value)方法：判断是否包含"键名"/"键值"为value的元素，返回true/false
 	
-	
+```
 
+### contains()方法 //在List中判断元素是否存在
+	原理，获取序列中的每个元素，调用每个元素的equals()方法，如果存在某个元素的equals()返回true，则contains返回true，否则为false。
+	重写equals()方法，就可以实现Contains()判断元素是否存在的条件依据。
+	List<Course> courseToSelect=new ArrayList<Course>();
+	Course cr=new Course("2","大学英语");
+	courseToSelect.contains(cr);
+	courseToSelect序列中的每个元素都是Course类，调用contains()方法时，courseToSelct序列中的每个Course类的元素对象会调用equals()方法与cr进行比较，因此应该重写Course类中的equals()方法。
 
+### 重写equals方法的模板
+	public boolean equals(Object obj){
+		if(this == obj){
+			return true;
+		}
+		if(obj == null){
+			return false;
+		}
+		if(!(obj instanceof Course)){
+			return false;
+		}
+		Course course=(Course)obj;
+		if(this.name == null){
+			if(course.name == null ){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			// 如果需要多加几个条件判断，在这里添加即可
+			if(this.name.equals(course.name)){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+	}
+
+### Set中判断元素是否存在
+	hashSet类实现
+	Set<Student> students=new HashSet<Student>();
+	Student st = new Student("yfx","27");
+	Boolean bool = students.contains(st);
+	Set类的对象调用contains()方法时，元素先调用hashCode()方法，再hashCode()结果值相等的情况下，再执行判断equals()方法（因此需要先重写hashCode方法）；如此依次进行。
+	hashCode()方法：
+	 	@Override
+	 	public int hashCode(){
+	 		final int prime = 31;
+	 		int result = 1;
+	 		result = prime * result +((name == null) ? 0 : name.hashCode());
+	 		return result;
+	 	}
+	equals()方法：
+		@Override
+		public boolean equals(Object obj){
+			if(this == obj){
+				return true;
+			}
+			if(obj == null){
+				return false;
+			}
+			if(!(obj instanceof Course)){
+				return false;
+			}
+			Course other=(Course)obj;
+			if(this.name == null){
+				if(course.name != null ){
+					return false;
+				}				
+			}
+			else if(！this.name.equals(other.name)){
+				// 如果需要多加几个条件判断，在这里添加即可
+				return false;
+			}			
+			return true;
+		}
+
+### Map中判断 键名 / 键值 是否存在
+	Map中使用containsValue()方法与List中的contains()方法一样，需要调用每个元素的equals()方法与传入参数做比较。因此可以重写equals方法来改变判断依据。
+	Map中的containsKey()方法则直接进行比较（不重复）
+
+### 对List进行排序
+	对数字进行排序
+	List<integer> intList = new ArrayList<integer>();
+	intList.add(3);
+	intList.add(1);
+	intList.add(2);
+	Collections.sort(intList);   // 排序
+	对字符串进行排序
+	Collections.sort()对字符串的排列顺序(ASCII)  数字：0 - 9
+											大写字母：A - Z
+											小写字母：a - z
+	Comparable接口 默认比较规则
+	Comparable接口 临时比较规则
+	Comparable和Comparable接口都是Java集合框架的成员
+
+### comparable--默认比较工具接口
+```
+	实现该接口表示，这个类的实例可以比较大小，可以进行自然排序
+	定义默认的比较规则
+	其实现类需要实现compareTo()方法
+	compareTo()方法返回正数表示大，负数表示小，0表示相等
+	public class Student implements Comparable<Student>{
+		private int id;
+		private String name;
+		
+		//设置Student类对象的默认排序依据按照id排序
+		@Override
+		public int compareTo(Student obj){
+			return this.id.compareTo(obj.id);
+		}
+	}
+
+	List<Student> studentList=new ArrayList<Student>();
+	Collections.sort(studentList);  // 按id进行排序
+```
+
+### Comparator接口--临时比较工具接口
 ```	
+	定义临时比较规则，而不是默认比较规则
+	其实现类需要实现compare()方法
+	创建一个StudentComparator类
+	public class StudentComparator implements Comparator<Student>{		
+		@Override
+		public int compare(Student obj1,Student obj2){
+			return obj1.id.compareTo(obj2.id);
+		}
+	}
+
+	List<Student> studentList=new ArrayList<Student>();
+	Collections.sort(studentList,new StudentComparator());  // 按id进行排序
+```
 
 ### jdk API 文档	
