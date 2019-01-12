@@ -551,7 +551,208 @@
 ### UML简介
 	Unified Modeling Language,又称统一建模语言或标准建模语言，是一个支持模型化和软件系统开发的图图形化语言
 
-### trt-catch-finally
+### 异常处理简介
+```
+	Throwable类：Error类和Exception类
+	Error类（主要指系统错误，程序彻底崩溃，需要重启）：VirtualMachineError(虚拟机错误)、ThreadDeath(线程死锁)
+	Exception类：RuntimeException(非检查异常)、检查异常
+	非检查异常：NullPointerException(空指针异常)、ArrayIndexOutOfBoundsException(数组下标越界异常)、ClassCastException(类型转换异常)、ArithmeticException(算术异常)
+	检查异常：IOException(文件异常)、SQLException(SQL异常)
+	try{
+		// todo...
+	}
+	catch(Exception e){
+		e.printStackTrace();  // 打印输出异常信息
+		System.out.println("抛出异常了！")；
+	}
+	finally{
+		// todo...结束连接,释放系统资源
+	}	
+```
+
+### try 语句不可以独立存在,必须与catch或者finally 块共存
+
+### 异常抛出及自定义异常
+```
+	throw ———— 将产生的异常抛出（动作）
+	throws ———— 声明将要抛出何种类型的异常（声明）
+	public void 方法名（参数列表）throws 异常类型1,异常类型2... {
+		// 调用会抛出异常的方法或者：throw new Exception
+	}
+	自定义异常模板，继承Exception基类或及其子类
+	public class 自定义异常类 extends 异常类型{
+
+	}
+
+	public class DrunkException extends Exception{
+		public DrunkException(){
+
+		}
+
+		public DrunkException(String message){
+			super(message);
+		}
+	}
+```
+
+### Java中的异常链（捕获到的异常可以在当前方法的catch块中处理，也可以继续抛出，让下级调用者来处理）
+```
+	public void test1 throws DrunkException{
+		throw new DrunkException("开车别喝酒");
+	}
+
+	第一种异常的传递方式，使用initCause()方法
+	try{
+		test1();
+	}
+	catch(DrunkException e){
+		RuntimeException newExc=new RuntimeException("司机一滴酒，亲人两行泪");
+		newExc.initCause(e);	// public Throwable initCause(Throwable cause) ,将此throwable的原因初始化为指定值(cause)。
+		throw newExc;	// 新的异常中包含原始异常的信息，通过调用initCause()方法引用了原始异常
+	}
+
+	第二种异常的传递方式，再创建父类异常中传入参数
+	try{
+		test1();
+	}
+	catch(DrunkException e){
+		RuntimeException newExc=new RuntimeException(e);
+		throw newExc;
+	}
+```
+
+### String 
+	java中需要用equals来判断两个字符串值是否相等，Javascript则可以用==直接进行比较；
+	String类对象的方法
+	indexOf()   	// 传入的参数可以是一个字符或一个字符串
+	lastIndexOf()	// 传入的参数可以是一个字符或一个字符串
+	trim()          // 开始和结尾去除空格的字符串
+	split()         // 按传入的参数进行分隔,返回一个字符串数组
+	substring(int startIndex)  				// 获取指定索引开始到结束的字符串
+	substring(int startIndex,int endIndex)  // 获取指定开始位置到结束位置的字符串
+	length()     // Java中字符串长度用length()方法，数组用length属性，list,set,map长度用size()方法
+	equals()  	 // 与指定对象进行比较
+	toLowerCase()
+	toUpperCase()
+	charAt()     // 获取字符串中指定位置的字符
+	getBytes()   // 将该字符串转化为byte数组
+
+
+### 因为String类对象创建后，不可变，当需要频繁操作字符串时，会产生很多的临时变量，因此可以使用StringBuilder或StringBuffer来避免这个问题
+
+### StringBuilder类(没有实现线程安全，性能略高，优先考虑推荐)
+	存储效率: StringBulider对象 > StringBuffer对象 > String对象
+	StringBuilder str1=new StringBuilder();
+	StringBuilder str2=new StringBuilder("imooc");
+	方法：
+		append(参数)			// 在StringBuilder对象的末尾添加内容
+		insert(位置,参数)	// 将内容插入到StringBuilder对象的指定位置
+		toString() 			// 将StringBuilder对象转化为String对象
+		length()   			// 获取字符串的长度
+
+### StringBuffer类(实现线程安全，性能略低)
+	方法：
+		append(参数)			// 在StringBuilder对象的末尾添加内容
+		insert(位置,参数)	// 将内容插入到StringBuilder对象的指定位置
+		toString() 			// 将StringBuilder对象转化为String对象
+		length()   			// 获取字符串的长度
+
+### 包装类
+	包装类主要提供了两大类方法：
+	1. 将本类型和其他基本类型进行转换的方法
+	2. 将字符串和本类型及包装类互相转换的方法
+	如下：
+	int,	 	lang,	char,		boolean,  double,  float,	byte,	short
+	Integer,	Lang,	Character,	Boolean,  Double,  Float,	Byte,	Short
+
+###	Integer包装类方法
+	byteValue()		// 将该Integer转化为byte类型
+	doublieValue()	// 将该Integer转化为double类型
+	floatValue()	// 将该Integer转化为float类型
+	intValue()  	// 将该Integer转化为int类型
+	longVlaue()		// 将该Integer转化为long类型
+	parseInt(String str)	// 将字符串转化为int类型
+	toString()				// 将该Integer转化为字符串
+	valueOf(String str)		// 将字符串转化为integer类型
+
+
+### 装箱和拆箱的概念
+```
+	装箱：把基本类型转换成包装类，使其具有对象的性质，又可分为手动装箱和自动装箱
+	int i = 10;
+	Integer x = new Integer(i); 	// 手动装箱
+	Integer y = i;					// 自动装箱
+
+	拆箱：和装箱相反，把包装类对象转换成基本类型的值，又可分为手动拆箱和自动拆箱
+	integer i = new Integer(8);
+	int x = i.intValue();   // 手动拆箱
+	int y = i;				// 自动拆箱
+```
+
+### 将字符串转化为基本类型
+	将字符串转换成基本类型有两种方法：
+	1. 调用包装类的 parseXxx 静态方法
+	2. 调用包装类的 valueOf()方法转换为基本类型的包装类，会自动拆箱
+	String str = "8";
+	int x = Integer.parseInt(str);
+	int y = Integer.valueOf(str); // 转化为Integer包装类，再自动拆箱为int;
+
+### 将基本类型转化为字符串
+	其中，基本类型转换为字符串有三种方法：
+	1. 使用包装类的 toString() 方法
+	2. 使用String类的 valueOf() 方法
+	3. 用一个空字符串加上基本类型，得到的就是基本类型数据对应的字符串
+	int a = 10;
+	String str = new Integer(a).toString();
+	String str = String.valueOf(a);
+	String str = a + '';
+
+### 基本类型是不能调用方法的，而其包装类具有很多方法
+
+### Date和SimpleDateFormat
+```	
+	注意：
+	使用Date类需要导入java.util包；
+	使用SimpleDateFormat需要导入java.text包；
+	
+	使用SimpleDateFormat对象的 format() 方法将日期转换为指定格式的文本
+	Date date = new Date();
+	// 创建SimpleDateFormat对象，指定目标格式
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	String today = sdf.format(sdf);	// 使用 format() 方法将日期转换为指定格式的文本
+	System.out.println(today);
+
+	使用SimpleDateFormat对象的parse()方法将文本转换为日期
+	String day = "2019年01月12日 22:30:45";
+	// 创建SimpleDateFormat对象，指定目标格式
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+	Date date =sdf.parse();
+	System.out.println(date);
+```
+
+### Calendar类
+```
+	java.util.Calendar 类是一个抽象类，可以通过调用 getInstance() 静态方法获取一个 Calendar 对象，此对象已由当前日期时间初始化，即默认代表当前时间，如 Calendar c = Calendar.getInstance();
+	Calendar c = Calendar.getInstance();	// 创建Calendar对象
+	int year = c.get(Calendar.YEAR);
+	int month = c.get(Calendar.MONTH) + 1;  // 返回索引，月份需要加1
+	int day = c.get(Calendar.DAY_OF_MONTH);
+	int hour = c.get(Calendar.HOUR_OF_DAY);
+	int minute = c.get(Calendar.MINUTE);
+	int second = c.get(Calendar.SECOND);
+
+	Date date = c.getTime();    // 将Calendar对象转化为Date对象
+	System.out.println(date);	// Sat Jar 12 22:30:59 CST 2019
+```	
+
+### Math类
+	Math 类位于 java.lang 包中
+	Math.round(arg) 	// 返回四舍五入的整数
+	Math.floor(arg) 	// 返回小于参数的最大整数，向下取整
+	Math.ceil(arg)		// 返回大于参数的最小整数，向上取整
+	Math.random(arg)	// 返回[0，1）之间的随机浮点数
+	产生[0,100)之间的随机数
+	double random = Math.random() * 100 ;
 
 ### Java 中的集合框架概述
 	Collection家族 父接口拥有三个子接口：List, Queue, Set	
@@ -562,7 +763,7 @@
 
 ### 泛型
 	public List<Course> courseToSelect; 	// 只能往序列里添加Course类
-	泛型不能使用基本类型（int,lang,char,boolean）；必须是引用类型,它们的包装类（Integer,Lang,Character,Boolean）
+	泛型不能使用基本类型（int,lang,char,boolean,double,float,byte,short）;必须是引用类型,它们的包装类（Integer,Lang,Character,Boolean,Double,Float,Byte,Short）
 
 ### List
 ```
