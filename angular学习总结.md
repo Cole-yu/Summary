@@ -153,10 +153,36 @@ default值就是默认的端口:4200
 	]
 	```
 *	TSLint：should be quotemark
-	统一使用单引号或双引号
+```
+	"quotemark": false, 
+	取消检查单引号或双引号；不用统一使用单引号或双引号
+```	
 *	TSLint：comment must start with a space
+```
+	comment-format：false
 	注释时双反斜杠后面必须空一格再写文本   \\ comment
-
+```
+* "one-line": false
+```
+	"one-line":
+	  true,
+	  "check-open-brace",
+	  "check-catch",
+	  "check-else",
+	  "check-whitespace"
+	],
+	check-whitespace这项就会要求函数名，参数表和函数段开头的大括号之间要有空格。
+```
+*  "prefer-const": false
+```
+	false，取消提示；true:使用提示const
+	在程序段中重新赋值的时候提示使用const，这么做可以优化性能。
+```
+*  Typo: In word 'foldername'，提示参数命名使用驼峰命名法　
+```
+	取消命名检测的方法：
+	webstorm中	File->Settings->Inspections > Spelling > Typo 把勾选取消，取消参数名称检测
+```
 
 ### ngx-bootstrap的UI组件介绍
 1. npm install ngx-bootstrap –save

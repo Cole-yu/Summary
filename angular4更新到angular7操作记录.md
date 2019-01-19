@@ -42,3 +42,21 @@
 	npm install -g rxjs-tslint
 	rxjs-5-to-6-migrate -p src/tsconfig.app.json
 ```
+
+
+### 项目修复
+```
+	1. 报错 error TS2339: Property 'combineLatest' does not exist on type 'typeof Observable'
+	Observable.combineLatest() 改为 combineLatest()，并引入 import { combineLatest } from 'rxjs';
+
+	2. 安装最新的ng2-tree,ngx-bootstrap , cnpm install ngx-bootstrap --save
+
+	3. 报错 Error: rxjs/Subject"' has no exported member 'Subject'
+	把 import { Subject } from 'rxjs/Subject'; 改为 import {Subject} from 'rxjs';
+
+	4. 报错 Cannot find module 'rxjs-compat/Observable'，安装 npm install --save rxjs-compat
+
+	5. // import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+	   改为
+	   import { BsModalRef } from 'ngx-bootstrap';
+```
