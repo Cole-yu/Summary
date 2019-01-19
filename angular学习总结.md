@@ -2,6 +2,22 @@
 
 ### webstorm中可以使用alt+enter组合键快速引入需要声明的模块
 
+### 通过 WebStorm,chrome 调试Angular项目
+```
+	1. chrome中安装扩展插件 JetBrains IDE Support；
+	2. 利用ng-serve命令启动angular项目（webstorm启动angular项目），在浏览器中输入http://localhost：4200能打开页面	即可；
+	3. 创建类型为JavaScript Debug的调试配置：
+		<1> Run -> Edit Configurations，
+		<2> 选择 JavaScript Debug，
+		<3> URL : 输入 http://localhost:4200，  	// (对应的端口号)
+		<4> 按 Apply 与 OK 继续；
+	4. 按需求打断点；
+	5. 切换为步骤2中的Edit Configurations；
+	6. 点击虫子启动调试；
+	
+	总结：先设置一个启动项目配置和一个JavaScript Debug配置，点击启动（向右的箭头）后切换成JavaScript debug配置，最后点击虫子进行调试。
+```
+
 ### AngularJS与Angular的差异比较
 *	性能:双向绑定，脏值检测与单向绑定
 *	路由：
