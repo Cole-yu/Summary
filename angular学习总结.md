@@ -12,7 +12,7 @@
 		<3> URL : 输入 http://localhost:4200，  	// (对应的端口号)
 		<4> 按 Apply 与 OK 继续；
 	4. 按需求打断点；
-	5. 切换为步骤2中的Edit Configurations；
+	5. 切换为步骤3中的JavaScript Debug Configurations；
 	6. 点击虫子启动调试；
 	
 	总结：先设置一个启动项目配置和一个JavaScript Debug配置，点击启动（向右的箭头）后切换成JavaScript debug配置，最后点击虫子进行调试。
