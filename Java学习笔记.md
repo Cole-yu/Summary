@@ -467,7 +467,7 @@
 	子类的构造过程当中必须调用其父类的构造方法。
 	super()的应用：
 	1. 如果子类的构造方法中没有显示调用父类的构造方法，则系统默认调用父类无参的构造方法。隐式执行super()。
-	2. 如果显示的调用构造方法，必须在子类的构造方法的第一行
+	2. 如果显式的调用构造方法，必须在子类的构造方法的第一行
 	3. 如果子类构造方法中既没有显式调用父类的构造方法，而父类又没有无参的构造方法（父类的构造方法中带参数），则编译会报错。
 
 ### Object类	
@@ -598,6 +598,7 @@
 	public void 方法名（参数列表）throws 异常类型1,异常类型2... {
 		// 调用会抛出异常的方法或者：throw new Exception
 	}
+	
 	自定义异常模板，继承Exception基类或及其子类
 	public class 自定义异常类 extends 异常类型{
 
@@ -686,7 +687,7 @@
 
 ###	Integer包装类方法
 	byteValue()		// 将该Integer转化为byte类型
-	doublieValue()	// 将该Integer转化为double类型
+	doubleValue()	// 将该Integer转化为double类型
 	floatValue()	// 将该Integer转化为float类型
 	intValue()  	// 将该Integer转化为int类型
 	longVlaue()		// 将该Integer转化为long类型
@@ -745,7 +746,7 @@
 	String day = "2019年01月12日 22:30:45";
 	// 创建SimpleDateFormat对象，指定目标格式
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
-	Date date =sdf.parse();
+	Date date =sdf.parse(day);
 	System.out.println(date);
 ```
 
@@ -769,16 +770,19 @@
 	Math.round(arg) 	// 返回四舍五入的整数
 	Math.floor(arg) 	// 返回小于参数的最大整数，向下取整
 	Math.ceil(arg)		// 返回大于参数的最小整数，向上取整
-	Math.random(arg)	// 返回[0，1）之间的随机浮点数
+	Math.random(arg)	// 返回[0，1）之间的伪随机浮点数;在安全要求较高的场景，使用强随机生成器,java.util.Secure.SecureRandom
 	产生[0,100)之间的随机数
 	double random = Math.random() * 100 ;
 
 ### Java 中的集合框架概述
+```	
 	Collection家族 父接口拥有三个子接口：List, Queue, Set	
 	List => ArrayList（序列）
 	Queue（队列） => LinkedList (链表)
 	Set（集，无序不重复） => HashSet（哈希集）
+
 	Map家族 父接口拥有众多的子接口，一个重要的实现类 HashMap：<Key , Value>
+```
 
 ### 泛型
 	public List<Course> courseToSelect; 	// 只能往序列里添加Course类
@@ -892,8 +896,7 @@
 
 	size()方法  获取Map类的对象的长度
 
-	containsKey(value)方法 / containsValue(value)方法：判断是否包含"键名"/"键值"为value的元素，返回true/false
-	
+	containsKey(value)方法 / containsValue(value)方法：判断是否包含"键名"/"键值"为value的元素，返回true/false	
 ```
 
 ### contains()方法 //在List中判断元素是否存在
@@ -990,7 +993,7 @@
 											大写字母：A - Z
 											小写字母：a - z
 	Comparable接口 默认比较规则
-	Comparable接口 临时比较规则
+	Comparator接口 临时比较规则
 	Comparable和Comparable接口都是Java集合框架的成员
 
 ### comparable--默认比较工具接口
@@ -1081,7 +1084,7 @@
 	      	threadName = name;
 	      	System.out.println("Creating " +  threadName );
 	   	}
-	   
+	   	   
 	   	public void run() {
 		    System.out.println("Running " +  threadName );
 		    try {
@@ -1096,7 +1099,8 @@
 		    System.out.println("Thread " +  threadName + " exiting.");
 		}
 		   
-		// 调用它的 start() 方法它才会运行   
+		// 调用它的 start() 方法它才会运行
+		// 线程对象调用了start()方法之后，该线程就进入就绪状态，就绪状态的线程获取 CPU 资源，就可以执行 run()
 		public void start () {
 		    System.out.println("Starting " +  threadName );
 		    	if (t == null) {
