@@ -25,6 +25,7 @@
 	git branch -d <name> 删除分支
 
 ### 常用命令
+	git diff HEAD -- fileName 				// 比较工作区与版本库里面最新版本的区别
 	git add filename  						// 可以直接git add -a 提交所有
 	git reset Head fileName 				// 从暂存区退回到工作区
 	git checkout -- fileName 				// 把工作区修改的文档还原会初始状态
@@ -35,10 +36,3 @@
 	工作区   git add 将工作区的文件添加到暂存区
 	暂存区   git commit 将暂存区的内容添加到mater分支 
 	版本库(分支)
-
-
-
-
-
-
-
