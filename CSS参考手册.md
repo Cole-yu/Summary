@@ -323,3 +323,24 @@
   		background:repeating-radial-gradient(red, yellow 10%, green 15%);
   	}
   	```
+
+### float
+	设置了 float 的元素，会脱离文档流，然后向左或向右移动，直到碰到父容器的边界或者碰到另一个浮动元素。
+	块级元素会忽略 float 元素，文本和行内元素却会环绕它，所以 float 最开始是用来实现文字环绕效果的。
+
+### 什么是块级格式化上下文(Block Formatting Context, BFC),如何创建块级格式化上下文？
+```
+	https://www.cnblogs.com/dojo-lzz/p/3999013.html
+	
+	问：什么是块级格式化上下文？
+	答：Formatting Context：指页面中的一个渲染区域，并且拥有一套渲染规则，他决定了其子元素如何定位，以及与其他元素的相互关系和作用。
+		BFC：块级格式化上下文,它是指一个独立的块级渲染区域,只有Block-level BOX参与，
+		该区域拥有一套渲染规则来约束块级盒子的布局,且与区域外部无关。
+	
+	如何创建块格式化上下文？
+	答：	根元素
+		float的值不为none
+		overflow的值不为visible
+		display的值为inline-block、table-cell、table-caption
+		position的值为absolute或fixed
+```	

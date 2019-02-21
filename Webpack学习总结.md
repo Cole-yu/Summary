@@ -98,3 +98,51 @@
 
 	4. 打包器(bundler)帮助你取得准备用于部署的 JavaScript 和样式表，将它们转换为适合浏览器的可用格式。例如，JavaScript 可以压缩、拆分 chunk 和懒加载，以提高性能。打包是 web 开发中最重要的挑战之一，解决此问题可以消除开发过程中的大部分痛点。
 ```
+
+# 使用Webpack中搭建Vue开发环境 的学习笔记
+	https://www.imooc.com/video/16402
+
+	npm install -D vue-loader vue-template-compiler
+
+### 环境搭建中的坑
+```
+	vue-loader在15.*之后的版本
+	vue-loader的使用都需要伴随 VueLoaderPlugin的使用： https://vue-loader.vuejs.org/guide/#vue-cli
+	
+	const path = require("path");
+	const VueLoaderPlugin = require('vue-loader/lib/plugin'); 
+	module.exports={
+	    entry:path.join(__dirname,'src/index.js'),
+	    output:{
+	        filename:"bundle.js",
+	        path:path.join(__dirname,'dist')
+	    },
+	    module:{
+	        rules:[
+	            {
+	                test:/.vue$/,
+	                loader:'vue-loader'
+	            },
+	            {
+	                test: /.css$/,                
+	                loader: "css-loader"                
+	            }                             
+	        ],        
+	    },
+	    plugins: [                
+	       new VueLoaderPlugin()
+	    ],
+	    mode:"development"
+	}
+```	
+
+### vue中 render 拼错成了 reder 模板编译错误
+	vue.runtime.esm.js?2b0e:619 [Vue warn]: You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.(found in <Root>)
+
+
+### extract-text-webpack-plugin
+	原因：extract-text-webpack-plugin 最新版本为 3.0.2，这个版本还没有适应 webpack 4 的版本
+	解决办法：使用 4.0 beta 版，npm install --save-dev extract-text-webpack-plugin@next	
+
+### CommonsChunkPlugin
+	Error: webpack.optimize.CommonsChunkPlugin has been removed, please use config.optimization.splitChunks instead.	
