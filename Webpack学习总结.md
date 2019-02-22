@@ -139,10 +139,138 @@
 ### vue中 render 拼错成了 reder 模板编译错误
 	vue.runtime.esm.js?2b0e:619 [Vue warn]: You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.(found in <Root>)
 
-
 ### extract-text-webpack-plugin
 	原因：extract-text-webpack-plugin 最新版本为 3.0.2，这个版本还没有适应 webpack 4 的版本
 	解决办法：使用 4.0 beta 版，npm install --save-dev extract-text-webpack-plugin@next	
 
 ### CommonsChunkPlugin
 	Error: webpack.optimize.CommonsChunkPlugin has been removed, please use config.optimization.splitChunks instead.	
+
+
+### webpack-dev-server 的 proxy 用法
+```
+	参考API文档 https://github.com/nodejitsu/node-http-proxy#options
+
+	用法一 单个API
+		mmodule.exports = {
+		    //...
+		    devServer: {
+		        proxy: {
+		            '/api': 'http://localhost:3000'
+		        }
+		    }
+		};
+
+	用法二 多个API
+		module.exports = {
+		    //...
+		    devServer: {
+		        proxy: [{
+		            context: ['/auth', '/api'],
+		            target: 'http://localhost:3000',
+		        }]
+		    }
+		};
+	
+	用法三 如果不想始终传递 /api ，则需要重写路径：
+		module.exports = {
+		    //...
+		    devServer: {
+		        proxy: {
+		            '/api': {
+		                target: 'http://localhost:3000',
+		                pathRewrite: {'^/api' : ''}
+		            }
+		        }
+		    }
+		};
+	
+	用法四 默认情况下，不接受运行在 HTTPS 上，且使用了无效证书的后端服务器。如果你想要接受，只要设置 secure: false 就行。
+		修改配置如下：
+		module.exports = {
+		    //...
+		    devServer: {
+		        proxy: {
+		            '/api': {
+		                target: 'https://other-server.example.com',
+		                secure: false
+		            }
+		        }
+		    }
+		};
+	
+	用法五 有时你不想代理所有的请求。可以基于一个函数的返回值绕过代理。在函数中你可以访问请求体、响应体和代理选项。必须返回 false 或路径，来跳过代理请求。		
+		例如：对于浏览器请求，需要提供一个 HTML 页面，但是对于 API 请求则保持代理。可以这样做：
+		module.exports = {
+		  	//...
+		    devServer: {
+		        proxy: {
+		            '/api': {
+		                target: 'http://localhost:3000',
+		                bypass: function(req, res, proxyOptions) {
+		                    if (req.headers.accept.indexOf('html') !== -1) {
+		                        console.log('Skipping proxy for browser request.');
+		                        return '/index.html';
+		                    }
+		                }
+		            }
+		        }
+		    }   
+		};
+
+	用法六 解决跨域原理
+		参数列表中有一个changeOrigin参数, 是一个布尔值, 设置为true, 本地就会虚拟一个服务器接收你的请求并代你发送该请求
+		module.exports = {
+		    //...
+		    devServer: {
+		        proxy: {
+		            '/api': {
+		                target: 'http://localhost:3000',
+		                changeOrigin: true,
+		            }
+		        }
+		    }
+		};
+```
+
+### Webpack 中安装 polyfill
+```
+	npm install --save babel-polyfill   // 注意是babel-polyfill 不是babel/polyfill,也不是 @babel/polyfill
+	方法一：在webpack项目的js入口顶部引入
+		import "babel-polyfill";
+	方法二：在webpack.conf.js中添加入口
+		entry: ["babel-polyfill",'./src/app.js']
+	方法三：(浏览器环境)在html的<head>标签中引入babel-polyfill.js(CDN或本地文件均可)
+```	
+
+
+# webpack搭建项目环境时需要的依赖包
+```
+	npm install -g webapck   			// 全局安装
+
+	npm install webpack --save-dev   	// 安装开发依赖
+	npm install webpack-cli --save-dev
+
+	css-loader
+	vue
+	vue-template-compiler
+	vue-loader  (依赖css-loader)
+
+	style-loader
+
+	url-loader
+	file-loader
+
+	clean-webpack-plugin			
+	html-webpack-plugin				// 创建index.html
+	
+	extract-text-webpack-plugin  	// 分离css  npm install --save-dev extract-text-webpack-plugin@next	
+		原因：extract-text-webpack-plugin 最新版本为 3.0.2，这个版本还没有适应 webpack 4 的版本
+		解决方法: npm install --save-dev extract-text-webpack-plugin@next
+			"extract-text-webpack-plugin": "^4.0.0-beta.0",
+
+	babel-core						// ES6的代码
+	babel-loader
+
+	webpack-dev-server				// 开发页面
+```

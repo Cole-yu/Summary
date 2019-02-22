@@ -36,3 +36,14 @@
 	工作区   git add 将工作区的文件添加到暂存区
 	暂存区   git commit 将暂存区的内容添加到mater分支 
 	版本库(分支)
+
+### git中忽略 node_module 的方法
+	1. 文件夹内右键git bash，输 touch .gitignore，注意中间有空格；
+	2. 编辑器打开生成的 .gitignore 文件，加入:
+		node_modules
+		/*以及其他你想要忽略的文件或文件夹*/
+		dist/
+	3. 保存；
+	4. 以后再add到暂存区的时候就会忽略你配置的文件或文件夹了。
+	
+
