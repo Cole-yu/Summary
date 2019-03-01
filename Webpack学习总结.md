@@ -251,6 +251,12 @@
 	npm install webpack --save-dev   	// 安装开发依赖
 	npm install webpack-cli --save-dev
 
+	cross-env 	// 注意：在配置环境变量时需要
+		"script":{
+			"build": "cross-env NODE_ENV=production webpack --config webpack.conf.js",
+	    	"dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack.conf.js"
+	    }
+
 	css-loader
 	vue
 	vue-template-compiler
@@ -267,10 +273,62 @@
 	extract-text-webpack-plugin  	// 分离css  npm install --save-dev extract-text-webpack-plugin@next	
 		原因：extract-text-webpack-plugin 最新版本为 3.0.2，这个版本还没有适应 webpack 4 的版本
 		解决方法: npm install --save-dev extract-text-webpack-plugin@next
-			"extract-text-webpack-plugin": "^4.0.0-beta.0",
+			"extract-text-webpack-plugin": "^4.0.0-beta.0"
+	建议替代为
+	mini-css-extract-plugin   // webpack 4 以后用于替换 extract-text-webpack-plugin
+	用optimize-css-assets-webpack-plugin 为生产环境压缩css文件
+
+	uglifyjs-webpack-plugin   // 压缩js,设置环境变量为production后 webapck会自动进行压缩文件，可以不需要
 
 	babel-core						// ES6的代码
 	babel-loader
 
 	webpack-dev-server				// 开发页面
+
+	要在vue项目中使用jsx语法
+	需要在.babelrc中添加 transform-vue-jsx 插件，同时安装 npm install babel-plugin-transform-vue-jsx
+	
+```
+
+### .babelrc的配置语法用于在vue项目中写 JSX
+```
+	{
+	    "presets": [
+	        "env"					// npm install babel-preset-env
+	    ],
+	    "plugins":[					
+	        "transform-vue-jsx"
+			// 需要安装 babel-plugin-syntax-jsx  babel-helper-vue-jsx-merge-props  babel-plugin-transform-vue-jsx
+	    ]
+	}
+```
+
+### postcss.config.js
+```
+	自动补全浏览器私有属性前缀
+	   	-webkit-transform : rotate(0deg);
+		   -moz-transform : rotate(0deg);
+		     -o-transform : rotate(0deg);
+		        transform : rotate(0deg);
+
+	// npm install autoprefixer postcss-loader
+
+	const autoprefixer = require("autoprefixer");   
+	module.exports={
+	    plugins:[
+	        autoprefixer()
+	    ]
+	}	
+```
+
+### 使用scss 
+	npm install sass-loader node-sass    	// sass-loader 也能解析scss语法
+
+
+### chunkHash 与 hash 的区别	
+```
+	chunkHash 基于模块，一次改动就计算一次，用于一堆动态载入的模块的区分计算，输出出口的计算
+	 	config.output.filename='[name].[chunkHash:8].js';
+
+	hash 基于compilation，在项目编译时改变一次，用于静态资源 第三方库，图片
 ```

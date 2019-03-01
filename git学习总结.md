@@ -38,7 +38,7 @@
 	版本库(分支)
 
 ### git中忽略 node_module 的方法
-	1. 文件夹内右键git bash，输 touch .gitignore，注意中间有空格；
+	1. 文件夹内右键git bash，输 touch .gitignore，注意中间有空格,空格后面有小数点(.)
 	2. 编辑器打开生成的 .gitignore 文件，加入:
 		node_modules
 		/*以及其他你想要忽略的文件或文件夹*/
