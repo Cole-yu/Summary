@@ -264,7 +264,19 @@
 
 	style-loader
 
-	url-loader
+	url-loader	(注：可以处理font-awesome 的字体文件，但是file-load 处理不了)
+		{
+            test:/\.(gif|jpg|jpeg|png|svg|ttf|eot|woff|woff2)$/,        // url-loader可以处理 font-awesome 的字体文件
+            use:[
+                {
+                    loader:"url-loader",
+                    options:{
+                        limit:1024,
+                        name:"[name].[hash:8].[ext]"
+                    }
+                }
+            ]
+        }
 	file-loader
 
 	clean-webpack-plugin			
@@ -332,3 +344,16 @@
 
 	hash 基于compilation，在项目编译时改变一次，用于静态资源 第三方库，图片
 ```
+
+### webapck 添加网页标题
+	使用 html-webpack-plugin 
+	new HTMLPlugin({
+	        title: '个人简历',               // 不会替换指定模板文件中的title元素的内容
+	        favicon: './src/assets/images/title.png',       // 设置网页标题的favicon.icon路径
+	        template:"./src/index.html",
+	        minify:{                        // 压缩HTML文件
+	            removeComments:true,        // 移除HTML中的注释
+	            collapseWhitespace:true     // 删除空白符与换行符
+	        }
+	    }       
+	)

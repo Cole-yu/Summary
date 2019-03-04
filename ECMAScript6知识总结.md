@@ -2,6 +2,7 @@
 	参考链接:http://es6.ruanyifeng.com
 
 ###	Babel转码器,将ES6代码转为ES5代码
+```
 	Babel的配置文件是.babelrc,存放在项目的根目录下,该文件用来设置转码规则和插件，基本格式如下。
 	{
 		"presets": [						//presets字段设定转码规则
@@ -12,22 +13,25 @@
 		],
 		"plugins": []
 	}
+```	
 *  	babel-cli工具,用于命令行转码
-	```
+```
 	可以将babel-cli安装在项目之中。
 	npm install --save-dev babel-cli       //安装依赖包
-	```
+```
 *	babel-node命令
-	```
+```
 	babel-cli工具自带一个babel-node命令,可以在控制台中进入支持ES6语法的REPL环境,可以直接运行ES6代码
-	```
+```
 * 	babel-core
+```	
 	如果某些代码需要调用Babel的API进行转码,就要使用babel-core模块
 	npm install babel-core --save
 	.transform('babelify', {
         presets: ['es2015'],   //生成ES2015语法规则的代码
         extensions: ['.ts']
     })
+```
 
 ### ESLint:用于静态检查代码的语法和风格
 
@@ -47,7 +51,7 @@
 *	注意事项：
 1.	注意，Symbol函数前不能使用new命令,否则会报错
 2.	Symbol函数的参数只是表示对当前Symbol值的描述,因此相同参数的Symbol函数的返回值是不相等的。
-	```
+```
 	// 没有参数的情况
 	let s1 = Symbol();
 	let s2 = Symbol();
@@ -56,24 +60,24 @@
 	let s1 = Symbol('foo');
 	let s2 = Symbol('foo');
 	s1 === s2 												// false
-	```
+```
 
 ###	Object.defineProperty(obj, property, descriptor)
 *	作用:该方法会直接在一个对象上定义一个新属性,或者修改一个对象的现有属性,并返回这个对象。
 *	该方法接受三个参数,而且都是必填的:
-	```	
+```	
 	第一个参数:目标对象;
 	第二个参数:需要定义的属性或方法的名字;
 	第三个参数:目标属性所拥有的特性(descriptor:configurable,enumerable,value,writable)
-	```
+```
 *   使用示例:
-	```  
+```  
 	var a= {};
     Object.defineProperty(a,"b",{
       value:123
     });
     console.log(a.b); 				//123
-	```
+```
 
 ### 属性描述符:
 	学习链接:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
@@ -93,24 +97,24 @@
 
 ### 新增let和const,块级作用域
 1.	var
-	```
+```
 	var命令会发生"变量提升"现象,即变量可以在声明之前使用,值为undefined
-	```
+```
 2.	let	
 	* 不存在变量提升
 	* 不允许重复声明
 	* 暂时性死区
-	```
+```
 	只要一进入当前作用域,所要使用的变量就已经存在了,但是不可获取,只有等到声明变量的那一行代码出现,才可以获取和使用该变量。	
 	只要块级作用域内存在let命令,它所声明的变量就"绑定"(binding)这个区域,不再受外部的影响
 	块级作用域的出现使得广泛应用的立即执行函数表达式(IIFE)不再必要了
-	```
+```
 3.  const
 	* 原理:并不是变量的值不得改动,而是变量指向的那个内存地址所保存的数据不得改动	
-	```
+```
 	对于简单类型的数据(数值、字符串、布尔值),值就保存在变量指向的那个内存地址。
 	对于复合类型的数据(主要是对象和数组),变量指向的内存地址,保存的只是一个指向实际数据的指针,const只能保证这个指针是固定的(即总是指向另一个固定的地址),至于它指向的数据结构是不是可变的,就完全不能控制了。
-	```
+```
 
 ### 顶层对象(window,global)
 	浏览器里面,顶层对象是window,但Node和Web Worker没有window;
@@ -135,22 +139,22 @@
 	    throw new Error('unable to locate global object');
 	};
 
-### 结构赋值
+### 解构赋值
 
 ###  ...展开剩余运算符
 *	将数组展开,分别获取数组的每个元素
-	```
+```
 	var a=[1,2];
 	var b=[3,4];
 	var c=[5,6];
 	var d=[...a,...b,...c];
 	console.log(d);   //[1,2,3,4,5,6]
-	```
+```
 *	将字符串展开
-	```
+```
 	var d=[...'hello'];
 	console.log(d);    //['h','e','l','l','o']
-	```
+```
 
 ### find方法:找出第一个符合条件的数组成员
 	arr.find(function(value,index,arr){			//vlaue为每个元素,idnex为当前索引,arr为整个数组
@@ -173,6 +177,7 @@
 	[1,2,3].includes(2)    //true
 
 ### Set数据结构
+```
 	set类似于数组,但是成员的值都是唯一的,不能重复	
 	add方法可以向Set结构添加成员,且不会添加重复的值
 	const s = new Set();   //实例化一个Set对象
@@ -184,7 +189,7 @@
 	const set = new Set([1,2,3,4,4]);
 	[...set]   //1,2,3,4
 	set.size;  //4
-
+```
 *	set对象的方法:
 	```
 	add(value) 		//添加某个值,返回Set结构本身
@@ -299,7 +304,7 @@
 	proxy.foo      //35
 	```
 
-####	常见的拦截行为
+#### 常见的拦截行为
 *	get(target, propKey, receiver)          	//拦截对象属性的读取,当被代理对象的属性被读取时,执行get后面的函数(以下同理)
 *	set(target, propKey, value, receiver)		//拦截对象属性的设置
 *	has(target, propKey)                    	//拦截propKey in proxy的遍历操作,返回一个布尔值
@@ -482,7 +487,6 @@
 	```
 
 ### async函数的实现原理,就是将Generator函数和自动执行器,包装在一个函数里
-
 	异步遍历器的最大的语法特点,就是调用遍历器的next方法,返回的是一个Promise对象。	
 
 ### await
@@ -521,6 +525,7 @@
 	```	
 
 ### Decorator(装饰器)
+```
 	修饰器是一个对类进行处理的函数,用来修改类的行为	
 	@bar(true)    					//用bar装饰器装饰foo类,并传入一个参数
 	class foo {
@@ -532,9 +537,9 @@
 	   }
 	}
 	console.log(foo.readOnly);               // true
-
+```
 *	修饰器不仅可以修饰类,还可以修饰类的属性和方法
-	```
+```
 	class Person {
 	  @readonly
 	  name() { return `${this.first} ${this.last}` }
@@ -551,24 +556,24 @@
 	  return descriptor;
 	}
 	readonly(Person.prototype, 'name', descriptor);//意思是修改Person类的原型的name属性的属性描述符
-	```
+```
 
 ### Class
 	static		//只能被类所使用,不能被实例所继承
 	public      //公开所有属性和方法	
 	protected	//只能被类和子类使用
 *	特别注意：javascript中不存在privarte私有属性修饰符,但是typescript中有
-	```
+```
 	private 	//只能被当前类所使用,子类和对象均不可使用
-	```
+```
 *	Class静态方法：
-	```
+```
 	如果在一个方法前,加上static关键字,就表示该方法不会被实例继承,而是直接通过类来调用。
-	```
+```
 *	constructor方法是类的默认方法,通过new命令生成对象实例时,自动调用该方法。一个类必须有constructor方法,如果没有显式定义,一个空的constructor方法会被默认添加。
 * 	类中不存在变量提升
 *	Class内部调用new.target,返回当前Class。需要注意的是,子类继承父类时,new.target会返回子类。
-	```
+```
 	利用这个特点,可以写出不能独立使用、必须继承后才能使用的类。
 	class Shape {
 	  constructor() {
@@ -577,7 +582,7 @@
 	    }
 	  }
 	}
-	```
+```
 
 ### ECMAScript Modules
 
@@ -586,9 +591,3 @@
 
 ### async
 	下载完成后,立即异步执行js代码
-
-
-	
-
-
-

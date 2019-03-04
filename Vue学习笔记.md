@@ -1,21 +1,39 @@
 # Vue学习笔记
 
+### 学习一个框架需要搞清楚的疑问
+	数据绑定 组件间通讯 生命周期 Vuex(状态管理) 路由 
+
+### 生命周期
+	beforeCreate
+	created
+	beforeMount
+	mounted
+	beforeUpdate
+	updated
+	beforeDestroy	
+	destroyed
+
 ### 基础知识
 ```	
-	挂载点
+	挂载点		
 		<div id="app"></div>
 		var app=new Vue({
 			el:"#app"
 		})
+	也可以是
+		const app = new Vue({
+		  	router,
+		  	render:(h)=>h(Main)  	// 将 h 作为 createElement 的别名是 Vue 生态系统中的一个通用惯例，createElement(标签,特性,子节点)
+		}).$mount('#app')
 			
-		模板
+	模板
 		<div id="app"></div>里面的内容是模板
-		也可以是
-			var app=new Vue({
-				template:'这里写模板内容'
-			})
+	也可以是
+		var app=new Vue({
+			template:'这里写模板内容'
+		})
 		
-		实例
+	实例
 		var app=new Vue()
 ```
 
@@ -1008,3 +1026,380 @@
 
 ### 全局样式与局部样式,添加scoped修饰符
 	scoped修饰符可以确保样式保持在组件范围内，不会影响其它组件。
+
+
+# vue-router
+
+### 安装
+```
+	npm install vue-router -g
+	npm install vue-router -save-dev
+
+	import Vue from 'vue'
+	import VueRouter from 'vue-router'
+
+	Vue.use(VueRouter)
+```	
+
+### vue-router 遇到的问题	
+```	
+	[Vue warn]: You are using the runtime-only build of Vue where the template compiler is not available. 
+	Either pre-compile the templates into render functions, or use the compiler-included build.
+
+	webpack.cong.js 文件中设置为编译版本
+	resolve: {
+	    alias: {
+	        'vue$': 'vue/dist/vue.esm.js' 		//内部为正则表达式  vue结尾的
+	    }
+	}
+```
+
+### this.$router 和 router 使用起来完全一样。 使用 this.$router 的原因是可以避免在每个独立需要封装路由的组件中都导入路由。
+```	
+	类似与 this.$store.state , this.$rootState 获取根节点的 store , state
+
+	方式一
+	const app = new Vue({
+	  	router
+	}).$mount('#app')
+
+	.vue 单文件
+	export default {
+	    data(){
+	        return {
+
+	        }
+	    },
+	    router,
+	    store,
+	    components:{
+
+	    },
+	    methods:{
+
+	    }    
+	}
+```
+
+###	路由中传递参数的方式
+```	
+	在一个路由中设置多段“路径参数”，对应的值都会设置到 this.$route.params 中
+	{ path: '/user/:username', component: User } 	通过 this.$route.params.username 获取
+```
+
+### 捕获所有路由或 404 Not found 路由
+```
+	{  		
+  		path : '/user-*' , component: App					// 会匹配以 `/user-` 开头的任意路径
+  		path : '*' , redirect : "/user"
+	}
+
+	当使用一个通配符 * 时，$route.params 内会自动添加一个名为 pathMatch 参数。它包含了 URL 通过通配符被匹配的部分：
+
+	// 给出一个路由 { path: '/user-*' }
+	this.$router.push('/user-admin')
+	this.$route.params.pathMatch // 'admin'
+
+	// 给出一个路由 { path: '*' }
+	this.$router.push('/non-existing')
+	this.$route.params.pathMatch // '/non-existing'
+```
+
+###	嵌套路由
+```
+	注意： 以 / 开头的嵌套路径会被当作根路径。 这让你充分的使用嵌套组件而无须设置嵌套的路径。	
+
+	routes: [
+	    { 	
+	    	path: '/user/:id', component: User,
+	      	children: [
+	    		{
+	          		// 当 /user/:id/profile 匹配成功，
+	          		// UserProfile 会被渲染在 User 的 <router-view> 中
+	          		path: 'profile',
+	          		component: UserProfile
+	        	},
+	        	{
+	          		// 当 /user/:id/posts 匹配成功
+	          		// UserPosts 会被渲染在 User 的 <router-view> 中
+	          		path: 'posts',
+	          		component: UserPosts
+	        	}
+	      	]
+	    }
+	]
+```
+
+### 编程式的导航
+```
+	除了使用 <router-link> 创建 a 标签来定义导航链接，还可以借助 router 的实例方法，通过编写代码来实现。
+	
+	点击 <router-link :to="/app"> 等同于调用 router.push("/app")
+	
+	声明式 <router-link :to="/app">
+	编程式 router.push("/app")
+	
+	#router.push(location, onComplete?, onAbort?)
+
+	router该方法的参数可以是一个字符串路径，或者一个描述地址的对象。
+	例如：
+		// 字符串
+		router.push('home')
+
+		// 对象, params 会被忽略，详见下面的 【注意】
+		router.push({ path: 'home' })
+
+		// 命名的路由，可以带属性 "params"
+		router.push({ name: 'user', params: { userId: '123' }})
+
+		// 带查询参数，变成 /register?plan=private
+		router.push({ path: 'register', query: { plan: 'private' }})
+
+		const userId = '123'
+		router.push({ name: 'user', params: { userId }}) 			// -> /user/123		
+	
+	注意：如果提供了 path，params 会被忽略，需要提供路由的 name 或手写完整的带有参数的 path
+		// 这里的 params 不生效
+		router.push({ path: '/user', params: { userId }}) 			// -> /user
+	应该改写为：
+		提供路由的 name 或手写完整的带有参数的 path
+		router.push({ name: 'user', params: { userId }}) 			// -> /user/123
+		router.push({ path: `/user/${userId}` }) 					// -> /user/123
+```
+
+### router.replace 
+```
+	router.replace(location, onComplete?, onAbort?)
+	跟 router.push 很像，唯一的不同就是，它不会向 history 添加新记录，而是跟它的方法名一样 —— 替换掉当前的 history 记录。
+
+	声明式	<router-link :to="/life" replace>	
+	编程式 	router.replace("/life");		// 替换当前的url localhost:8080/#/app => localhost:8080/#/life
+```	
+
+### router.go(n)
+```
+	// 在浏览器记录中前进一步，等同于 history.forward()
+	router.go(1)
+
+	// 后退一步记录，等同于 history.back()
+	router.go(-1)
+
+	// 前进 3 步记录
+	router.go(3)
+
+	// 如果 history 记录不够用，那就默默地失败呗
+	router.go(-100)
+	router.go(100)
+```
+
+### 操作history
+```
+	router.push 	window.history.pushState
+	router.replace 	window.history.replaceState
+	router.go 		window.history.go
+```
+
+### 命名路由
+```
+	const router = new VueRouter({
+	  routes: [
+	    {
+	      path: '/user/:userId',
+	      name: 'user',
+	      component: User
+	    }
+	  ]
+	})
+	要链接到一个命名路由，可以给 router-link 的 to 属性传一个对象：
+
+	<router-link :to="{ name: 'user', params: { userId: 123 }}">User</router-link>
+	
+	这跟代码调用 router.push() 是一回事：
+	router.push({ name: 'user', params: { userId: 123 }});
+```	
+
+### 命名视图
+```
+	<router-view class="view one"></router-view>
+	<router-view class="view two" name="a"></router-view>
+	<router-view class="view three" name="b"></router-view>
+
+	const router = new VueRouter({
+	  	routes: [
+	    	{
+	      		path: '/',			// 不同的视图中显示不同的组件
+	      		components: {
+	        		default: Foo,
+	        		a: Bar,
+	        		b: Baz
+	      		}
+	    	}
+	  	]
+	})
+```	
+
+###	重定向路由 和 别名
+```
+	const router = new VueRouter({
+	  	routes: [
+	    	{ path: '/a', redirect: '/b' }
+	    	{ path: '/c', redirect: { name: 'foo' }},
+	    	{ path: '/d', redirect: to => {
+		      	// 方法接收 目标路由 作为参数
+		      	// return 重定向的 字符串路径/路径对象
+		    }},
+
+		    // alias: e 的别名是 /f，意味着当用户访问 /f 时，URL 会保持为 /f，但是路由匹配则为 /e，就像用户访问 /e 一样。
+		    { path: '/e', component: A, alias: '/f' }
+	  	]
+	})
+```
+
+### 路由组件传参
+```
+	通过 props 解耦
+	const User = {
+	  	props: ['id'],
+	  	template: '<div>User {{ id }}</div>'
+	}
+	const router = new VueRouter({
+	  	routes: [
+	    	{ path: '/user/:id', component: User, props: true },
+
+	    	// 对于包含命名视图的路由，必须分别为每个命名视图添加 `props` 选项：
+	    	{
+	      		path: '/user/:id',
+	      		components: { default: User, sidebar: Sidebar },
+	      		props: { default: true, sidebar: false }		// 对于多个视图的props , 用对象来表示
+	    	}
+	  	]
+	})
+	布尔模式:
+		如果 props 被设置为 true，route.params 将会被设置为组件属性。
+		const User={
+			props:["id"],
+			template: '<div>User {{ id }}</div>'
+		}
+
+	对象模式:
+		如果 props 是一个对象，它会被按原样设置为组件属性。当 props 是静态的时候有用。		
+		const router = new VueRouter({
+		  	routes: [
+		    	{ path: '/promotion/from-newsletter', component: Promotion, props: { newsletterPopup: false } }
+		  ]
+		})
+
+		const User={
+			props:[{
+				newsletterPopup: false
+			}],
+			template: '<div>User {{ newsletterPopup }}</div>'	
+		}
+
+	函数模式:
+		创建一个函数返回 props
+		props:function(route){
+			return {
+				query : route.query.q
+			}
+		}
+
+		const router = new VueRouter({
+		  	routes: [
+		    	{ path: '/search', component: SearchUser, props: (route) => ({ query: route.query.q }) }
+		  	]
+		});
+
+		// route.query.q = "vue"
+		props:{
+			query : "vue"
+		}
+		URL /search?q=vue 会将 {query: 'vue'} 作为属性传递给 SearchUser 组件。
+```	
+
+### vue-router 默认 hash 模式(/#) —— 使用 URL 的 hash 来模拟一个完整的 URL，于是当 URL 改变时，页面不会重新加载。
+
+##	路由守卫
+
+### 全局前置守卫
+```
+	const router = new VueRouter({ ... })
+
+	router.beforeEach((to, from, next) => {
+	  	// ...
+	})
+
+	每个守卫方法接收三个参数：
+		to: Route: 即将要进入的目标 路由对象
+		from: Route: 当前导航正要离开的路由
+		next: Function: 一定要调用该方法来 resolve 这个钩子。执行效果依赖 next 方法的调用参数。
+			next(): 进行管道中的下一个钩子。如果全部钩子执行完了，则导航的状态就是 confirmed (确认的)。
+			
+			next(false): 中断当前的导航。如果浏览器的 URL 改变了 (可能是用户手动或者浏览器后退按钮)，那么 URL 地址会重置到 from 路由对应的地址。
+
+			next('/') 或者 next({ path: '/' }): 跳转到一个不同的地址。当前的导航被中断，然后进行一个新的导航。你可以向 next 传递任意位置对象，且允许设置诸如 replace: true、name: 'home' 之类的选项以及任何用在 router-link 的 to prop 或 router.push 中的选项。
+
+			next(error): 如果传入 next 的参数是一个 Error 实例，则导航会被终止且该错误会被传递给 router.onError() 注册过的回调。
+```
+
+###	路由 API
+```
+	router.beforeEach 	全局前置守卫
+	router.afterEach  	全局后置钩子
+	
+	beforeEnter 		在路由配置上直接定义 beforeEnter 守卫
+		const router = new VueRouter({
+		  	routes: [
+		    	{
+		      		path: '/foo',
+		      		component: Foo,
+		      		beforeEnter: (to, from, next) => {
+		        		// ...
+		      		}
+		    	}
+		  	]
+		})
+	
+	组件内的守卫
+		beforeRouteEnter 	在渲染该组件的对应路由被 confirm 前调用不！能！获取组件实例 `this`,因为当守卫执行前，组件实例还没被创建
+		beforeRouteUpdate	当前路由改变，但是该组件被复用时调用
+		beforeRouteLeave	导航离开该组件的对应路由时调用
+```		
+
+### 完整的导航解析流程
+```
+	导航被触发。
+	在失活的组件里调用离开守卫。
+	调用全局的 beforeEach 守卫。
+	在重用的组件里调用 beforeRouteUpdate 守卫 (2.2+)。
+	在路由配置里调用 beforeEnter。
+	解析异步路由组件。
+	在被激活的组件里调用 beforeRouteEnter。
+	调用全局的 beforeResolve 守卫 (2.5+)。
+	导航被确认。
+	调用全局的 afterEach 钩子。
+	触发 DOM 更新。
+	用创建好的实例调用 beforeRouteEnter 守卫中传给 next 的回调函数。
+```
+
+### 过渡动效
+
+### 路由懒加载
+```	
+	首先，可以将异步组件定义为返回一个 Promise 的工厂函数 (该函数返回的 Promise 应该 resolve 组件本身)：
+	const Foo = () => Promise.resolve({ /* 组件定义对象 */ })
+
+	第二，在 Webpack 2 中，我们可以使用动态 import语法来定义代码分块点 (split point)：
+	import('./Foo.vue') 				// 返回 Promise
+
+	把组件按组分块
+	有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。
+	只需要使用 命名 chunk，一个特殊的注释语法来提供 chunk name (需要 Webpack > 2.4)。
+
+	// webpack 设置chunk name 的方式：/* webpackChunkName: " 自定义的名称 " */
+	const Foo = () => import(/* webpackChunkName: "group-foo" */ './Foo.vue')
+	const Bar = () => import(/* webpackChunkName: "group-foo" */ './Bar.vue')
+	const Baz = () => import(/* webpackChunkName: "group-foo" */ './Baz.vue')
+	
+	Webpack 会将任何一个异步模块与相同的块名称组合到相同的异步块中。
+```	
