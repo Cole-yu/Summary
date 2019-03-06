@@ -552,3 +552,65 @@
 	  document.getElementById('example')
 	);
 ```
+
+
+### React 中的 JSX 详解
+```
+1. JSX 写法
+	import React, { Component } from 'react';
+	import ReactDOM from 'react-dom';
+
+	class App extends Component {
+	  render() {
+	    return (
+	      <div className="App">
+	        <span>Hello, World.</span>
+	      </div>
+	    );
+	  }
+	}
+
+	ReactDOM.render(<App />, document.getElementById('root'));
+
+//------------------------------------------------------------------
+
+2. 用 JavaScript 对象来描述上例子中的 JSX。
+	{
+	    tag: 'div',
+	    arrts: {
+	        className: 'App',
+	    },
+	    children: [
+	        {
+	            tag: 'span',
+	            text: 'Hello, World.'
+	        }
+	    ]
+	}
+	  
+//---------------------------------------------------------------------
+
+2. 在编译后就会变成这样一段“合法”的 JavaScript 代码
+	import React, { Component } from 'react';
+	import ReactDOM from 'react-dom';
+
+	class App extends Component {
+	  render() {
+	    return (
+	      React.createElement(
+	            'div',
+	            { className: 'App' },
+	            React.createElement(
+	                'span',
+	                null,
+	                'Hello, World.'
+	            )
+	      )
+	    );
+	  }
+	}
+
+	ReactDOM.render(React.createElement(App), document.getElementById('root'))
+
+	结论：我们所写的 JSX，其实最终都会被编译成为 JavaScript 对象
+```	

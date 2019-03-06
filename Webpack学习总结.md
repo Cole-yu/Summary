@@ -346,6 +346,7 @@
 ```
 
 ### webapck 添加网页标题
+```
 	使用 html-webpack-plugin 
 	new HTMLPlugin({
 	        title: '个人简历',               // 不会替换指定模板文件中的title元素的内容
@@ -357,3 +358,26 @@
 	        }
 	    }       
 	)
+```
+
+### uglify.js 未成功压缩代码；原因：虽然加了babel-loader,但忘了添加处理 js的规则，
+```
+	错误提示  ERROR in static/js/app.d906119eedb53628d1bf.js from UglifyJs
+	         Unexpected token: punc (() [static/js/app.d906119eedb53628d1bf.js:121,6]
+
+	原因:  webpack 不能识别处理 ES6 的语法 或者  未成功将 es6 语法转化未 es5
+	根本原因 uglifyjs-webpack-plugin 的核心处理器 UglifyJs 一般是无法解析ES6的问题 ，只能处理es5
+
+
+	解决方法：我当初是成功安装了 .babelrc 的语法转化功能，但未在webpack.conf.js 写入js的处理
+	添加对js的处理规则，用 babel 进行语法转化即可
+		{
+	        test: /\.js$/,
+	        exclude: /(node_modules)/, // 排除文件
+	        loader: 'babel-loader'
+	    }
+	
+	https://www.cnblogs.com/wonyun/p/9108502.html
+
+	https://www.cnblogs.com/tugenhua0707/p/9452471.html
+```	
