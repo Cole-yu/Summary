@@ -24,7 +24,8 @@
 	    </servlet-mapping>
 	</web-app>
 
-### tomcat	
+### tomcat
+```
 	1. 修改默认端口
 		Tomcat 根目录下的conf文件夹下的server.xml,设置了默认的端口号为8080,修改port属性来更改默认端口	
 		<Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />	
@@ -34,6 +35,10 @@
 	 	path="/j2ee" 表示进行url拼接，需要通过http://127.0.0.1/j2ee/hello才可以访问
 	3.  Tomcat服务器的命令控制台 
 		点击bin文件夹下的startup.bat,启动了Tomcat服务器，并可以查看控制台输出内容
+	4.  把前端文件夹放在 Tomcat/webapps/ROOTS 
+		假设整个前端文件放在 Test 文件夹内，首页为index.html，在不改变端口的情况下（8080）
+		启动startup.bat后，默认地址为 http：//localhost:8080/Test/index.html
+```
 
 ### Servlet请求过程
 	Tomcat 服务器接受客户请求并做出响应的过程如下（以上面搭建的项目为例）：
