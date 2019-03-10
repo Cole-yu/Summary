@@ -101,7 +101,6 @@
 
 # 使用Webpack中搭建Vue开发环境 的学习笔记
 	https://www.imooc.com/video/16402
-
 	npm install -D vue-loader vue-template-compiler
 
 ### 环境搭建中的坑
@@ -139,13 +138,47 @@
 ### vue中 render 拼错成了 reder 模板编译错误
 	vue.runtime.esm.js?2b0e:619 [Vue warn]: You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.(found in <Root>)
 
-### extract-text-webpack-plugin
+### extract-text-webpack-plugin 不建议使用
+```
 	原因：extract-text-webpack-plugin 最新版本为 3.0.2，这个版本还没有适应 webpack 4 的版本
 	解决办法：使用 4.0 beta 版，npm install --save-dev extract-text-webpack-plugin@next	
+	webpack 4 以后建议使用 mini-css-extract-plugin
+	同时 style-loader 用 MiniCssExtractPlugin.loader代替
 
-### CommonsChunkPlugin
-	Error: webpack.optimize.CommonsChunkPlugin has been removed, please use config.optimization.splitChunks instead.	
+	const MiniCssExtractPlugin = require("mini-css-extract-plugin");                // 处理css文件
+	const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");  // 压缩css文件
 
+	rules:[
+		{
+	        test:/\.(c|sc|sa)ss$/,
+	        use:[
+	            MiniCssExtractPlugin.loader,		// 处理CSS语言
+	            'css-loader',
+	            {
+	                loader:'postcss-loader',
+	                options:{
+	                    sourceMap:true                            
+	                }
+	            },
+	            "sass-loader"                
+	        ]
+	    }
+    ],
+    plugins:[       
+        new MiniCssExtractPlugin({
+            filename: "styles.[hash:8].css",   // 分离生成的css文件
+            chunkFilename: "[id].css"
+        })
+    ],
+    optimization={
+        minimizer: [            
+            new OptimizeCSSAssetsPlugin({}), 	// 压缩 CSS
+        ]     
+    };
+```
+
+### CommonsChunkPlugin 已经不建议使用
+	Error: webpack.optimize.CommonsChunkPlugin has been removed, please use config.optimization.splitChunks instead.
 
 ### webpack-dev-server 的 proxy 用法
 ```
@@ -298,8 +331,7 @@
 	webpack-dev-server				// 开发页面
 
 	要在vue项目中使用jsx语法
-	需要在.babelrc中添加 transform-vue-jsx 插件，同时安装 npm install babel-plugin-transform-vue-jsx
-	
+	需要在.babelrc中添加 transform-vue-jsx 插件，同时安装 npm install babel-plugin-transform-vue-jsx	
 ```
 
 ### .babelrc的配置语法用于在vue项目中写 JSX
