@@ -1,3 +1,5 @@
+# Javascript 学习笔记
+
 ### Javascript基本数据类型
 	```
 	五种基本数据类型
@@ -583,7 +585,7 @@
 
 ### Cookie
 *	创建cookie
-	```
+```
 	document.cookie="username=John Doe";
 	function setCookie(cname,cvalue,exdays){
 		var d=new Date();
@@ -591,9 +593,9 @@
 		var expires="expires"+d.toGMTString();
 		document.cookie="username=John Doe;"+expires;
 	}	
-	```
+```
 *	读取cookie
-	```
+```
 	document.cookie   //以字符串的方式返回所有的cookie,类型格式:cookie1=value1,cookie2=value2,cookie3=value3;
 	一个函数用户返回指定cookie特定的值:
 	function getCookie(cname){
@@ -605,14 +607,14 @@
 	  	}
 	  	return "";
 	}
-	```
+```
 *	修改cookie
-	```
+```
 	类似于创建cookie,旧的cookie将被覆盖
 	document.cookie="username=John Smith;expires=Thu,18,Dec,2013 12:00:00 GMT;path=/";
-	```
+```
 *	检测cookie
-	```
+```
 	function checkCookie()
 	{
 	  var username=getCookie("username");
@@ -628,4 +630,18 @@
 	    }
 	  }
 	}
-	```	
+```
+
+### 宏任务与微任务
+```
+	异步任务有更深一层的划分，它们是宏任务（macro task）和微任务（micro task），二者的执行顺序也有差别。
+	异步任务的结果会进入任务队列中，对于不同的事件类型，宏任务会加入宏任务队列，微任务会加入微任务队列。
+
+	在执行栈中的同步任务执行完成后，主线程会先查看任务队列中的微任务，如果没有，则去宏任务队列中取出最前面的一个事件加入执行栈中执行；
+	如果有，则将所有在微任务队列中的事件依次加入执行栈中执行，直到所有事件执行完成后，再去宏任务中取出最前面的一个事件加入执行栈，如此循环往复。
+
+	因此可以得出结论，主线程总是会先查看微任务队列，等到微任务队列中的事件都处理完成后，再去宏任务队列中添加一个事件到任务栈中执行。
+	
+	常见的宏任务有 setTimeout，setInterval；常见的微任务有 new Promise。
+	Promise 构造函数是同步执行的，promise.then 中的函数是异步执行的。
+```
