@@ -1139,7 +1139,7 @@
 	声明式 <router-link :to="/app">
 	编程式 router.push("/app")
 	
-	#router.push(location, onComplete?, onAbort?)
+	router.push(location, onComplete?, onAbort?)
 
 	router该方法的参数可以是一个字符串路径，或者一个描述地址的对象。
 	例如：
@@ -1403,3 +1403,21 @@
 	
 	Webpack 会将任何一个异步模块与相同的块名称组合到相同的异步块中。
 ```	
+
+### 非父子组件传参
+```
+	第一步 创建一个公共实例
+	bus.js
+	import Vue from "vue";
+	export default new Vue();
+
+	第二步 组件A中
+	import Bus from 'bus.js';
+	Bus.$emit('eventName', data);				// 发射事件
+
+	第三步 组件B中
+	import Bus from 'bus.js';
+	Bus.$on('eventName', function(data){		// 接收事件
+		console.log(data);
+	});
+```
