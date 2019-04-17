@@ -1404,6 +1404,28 @@
 	Webpack 会将任何一个异步模块与相同的块名称组合到相同的异步块中。
 ```	
 
+### 路由懒加载的三种方式
+```
+	方法一：最原始的异步组件
+	Vue.component('async-webpack-example', function (resolve, reject) {
+	  	// 这个特殊的 `require` 语法将会告诉 webpack 自动将你的构建代码切割成多个包，这些包会通过 Ajax 请求加载
+		require(['./my-async-component'], resolve)
+	})
+	Vue.component('async-example', function (resolve, reject) {	  
+	    // 向 `resolve` 回调传递组件定义
+	    resolve({
+	      template: '<div>I am async!</div>'
+	    })	  
+	})
+
+	方法二
+	component: resolve => require(['./my-async-component'], resolve)
+
+	方法三 webpack2 和 ES2015 语法组合 
+	// import` 函数会返回一个 `Promise` 对象。
+	component: () => import('./my-async-component')
+```
+
 ### 非父子组件传参
 ```
 	第一步 创建一个公共实例
