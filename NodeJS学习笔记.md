@@ -88,3 +88,45 @@
 	 
 	connection.end();
 ```	
+
+### git bash 控制台命令语句
+```	
+	touch .gitignore 生成文件名为.gitignore文件
+	ls 显示当前目录的文件列表 = window下的 dir
+	mkdir 文件夹 生成文件夹
+	rm -rf 文件夹 删除文件夹
+	code 文件夹 使用vs-code 打开文件
+```
+
+### Node.js调试
+```
+	慕课网学习链接 https://www.imooc.com/video/18621
+
+	Inspector的构成以及原理
+	WebSockets服务（监听命令）
+	Inspector协议
+	HTTP服务(获取元数据)
+
+	Debugger listening on ws://127.0.0.1:10215/8926bd56-1c06-4e19-98b3-63c177c279c2 For help, see:https://nodejs.org/en/docs/inspector
+
+	浏览器打开的websocket地址		127.0.0.1:10215
+	元数据【地址/json】				127.0.0.1:10215/json
+
+	node --inspect app.js 使用inspect调试 app.js文件
+
+	三种调试方式
+	方式一	chrome://inspect 配置启动的端口（打印信息中有） 127.0.0.1:9229
+
+
+	方式二 127.0.0.1:9229/json 
+	"devtoolsFrontendUrl": "chrome-devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=127.0.0.1:9229/d96a593a-5720-4d17-b7a8-679ec770b1f7"
+	
+	在浏览器中粘贴devtoolsFrontendUrl字段的值（chrome-devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=127.0.0.1:9229/d96a593a-5720-4d17-b7a8-679ec770b1f7），回车即可
+
+
+	方式三
+	浏览器F12 点击Element标签前面的Node.js 图标即可 		// 在Node 版本10.0以后无效
+
+	node --inspect-brk app.js 一直等待直到客户端附加上断点
+
+```
