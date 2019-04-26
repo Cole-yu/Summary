@@ -63,3 +63,12 @@
 		Notification： SW 将更新的信息推送给用户，在浏览器屏幕上提示通知消息
 ```
 
+### 清空Service Worker的方法
+```
+	方法一
+		第一步：在浏览器中输入 chrome://serviceworker-internals/
+		第二步：unregister 相应的地址
+
+	方法二
+		进入chrome://inspect里terminate掉了service-worker。
+```

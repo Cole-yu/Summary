@@ -1443,3 +1443,44 @@
 		console.log(data);
 	});
 ```
+
+### Vue处理后台返回的文件流？
+```
+	前台需要设置相应类型为‘Blob’
+
+	axios.post("/file/download", qs.stringify({appId: 1,}), {responseType:'blob'})
+		.then(res => {
+	   		// 实现下载文件的代码，接收并下载成为本地文件
+	   		var link = document.createElement('a');
+			var blob=new Blob(res.data);
+			link.href = window.URL.createObjectURL(blob); //用URL表示一个指定的file对象或Blob对象
+			let fileName = res.headers["content-disposition"].split(";")[1].split("=")[1];
+			link.setAttribute('download', fileName);
+			link.style.display = 'none';
+			link.click(); // 模拟a标签点击事件下载文件
+		});
+```
+
+### 在vue.js中 防止页面未初始化完成前出现 {{}}
+```
+	使用 v-cloak 这个指令，该指令保持在元素上直到关联实例结束编译。
+
+	HTML
+	<div v-cloak>
+	  {{ message }}
+	</div>
+
+	CSS
+	[v-cloak] {
+	  display: none;
+	}
+	不会显示，直到编译结束。
+
+	但有时添加完毕后仍有部分变量会显示，这是怎么回事呢？
+	通过控制台查看，原来是 v-cloak 的display属性被优先级别高的样式覆盖所导致，处理方案是添加!important，简单粗暴。
+	新css样式如下：
+
+	[v-cloak] {
+	  display:none !important;
+	}
+```
