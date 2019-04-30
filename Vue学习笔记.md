@@ -42,7 +42,7 @@
 	var app = new Vue({
 		el:"#app",
 		data:{
-			content:"<h1>hell world</h1>"
+			content:"<h1>hello world</h1>"
 		}
 	})
 	<div>
@@ -1446,18 +1446,29 @@
 
 ### Vue处理后台返回的文件流？
 ```
-	前台需要设置相应类型为‘Blob’
+	重要：【前台一定要设置响应类型为'Blob'】
 
 	axios.post("/file/download", qs.stringify({appId: 1,}), {responseType:'blob'})
 		.then(res => {
 	   		// 实现下载文件的代码，接收并下载成为本地文件
 	   		var link = document.createElement('a');
 			var blob=new Blob(res.data);
-			link.href = window.URL.createObjectURL(blob); //用URL表示一个指定的file对象或Blob对象
+			
+			// 方法一：使用URL
+			// link.href = window.URL.createObjectURL(blob); 	// 用URL表示一个指定的file对象或Blob对象
+
+			// 方法二：使用FileReader读取Blob对象
+			var fd = new FileReader();
+			fd.on('load', function(){
+				link.href = fd.result;
+			});
+			fd.readAsDataURL(blob);			// Blob对象的内容只能通过FileReader对象来读取
+			// 开始读取指定的Blob中的内容。一旦完成，result属性中将包含一个data: URL格式的字符串以表示所读取文件的内容。
+
 			let fileName = res.headers["content-disposition"].split(";")[1].split("=")[1];
 			link.setAttribute('download', fileName);
 			link.style.display = 'none';
-			link.click(); // 模拟a标签点击事件下载文件
+			link.click(); 					// 模拟a标签点击事件下载文件
 		});
 ```
 
@@ -1482,5 +1493,34 @@
 
 	[v-cloak] {
 	  display:none !important;
+	}
+```
+
+### vue-cli2 实现生成的打包文件index.html可以直接访问的修改方法（资源无法正确加载）
+```
+	将config/index.js中的assetsPublicPath中的assetsPublicPath修改为'./'，默认为'/'
+
+	原因：发布到线上以后 html 引用的路径是 /static/img/xxx.png 这样的。
+	这时它会直接去请求服务器根目录下的文件，我们需要做的就是将 '/'' 改为 './'' ，它指的是当前目录，
+	在修改之后才会正确的去请求打包文件下的内容。
+```
+
+### vue/cli3 实现生成的打包文件index.html可以直接访问的修改方法（资源无法正确加载）
+```
+	在 package.json 文件的同级目录下添加 vue.config.js 
+	module.export = {
+		publicPath : './', 				// 使用相对路径而不是绝对路径（相对于outputDir）
+		assetsDir : './asset' 			// 放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录
+		indexPath : './home/home.html'	// 指定生成的 index.html 的输出路径 (相对于 outputDir)
+	}
+```
+
+### vue/cli3 语法格式不规范，eslint提示报错的问题解决方法
+```
+	修改.eslintrc.js文件
+	module.exports = {
+		'extends'： [
+			'eslint:recommended'		// 使用推荐的语法规范格式
+		]
 	}
 ```
