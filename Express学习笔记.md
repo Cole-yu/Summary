@@ -1,5 +1,13 @@
 # Express 框架学习笔记
 
+### 创建项目
+```
+	npm install express -g   			// 安装全局express
+	npm install express-generator -g   	// 安装命令行工具
+	express --version  					// 查看express版本
+	express 项目名称						// 初始化一个项目
+```
+
 ### 原生 Node.js 实现后台 HTTP 服务
 ```
 	var http = require("http");

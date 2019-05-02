@@ -130,3 +130,12 @@
 	node --inspect-brk app.js 一直等待直到客户端附加上断点
 
 ```
+
+### 监听js代码,自动重启服务(nodemon与supervisor)
+```
+	注意：每次我们更新代码后,都需要手动停止并重启应用,用supervisor模块可以解决这个问题,每当我们保存修改的文件时,supervisor都会自动帮我们重启应用
+	1.  安装supervisor   
+		$ npm install -g supervisor
+	2.  使用supervisor命令启动app.js
+		$ supervisor app.js
+```
