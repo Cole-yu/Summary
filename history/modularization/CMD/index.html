@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script type="text/javascript" src="js/sea.js"></script>
+	<script type="text/javascript" src="js/foo.js"></script>
+</head>
+<body>
+
+	<div id="content"></div>
+	<div id="cccc"></div>
+	<script type="text/javascript">
+
+		seajs.config({
+			// base:'./js/',						//base写和不写效果一样,因为不写的时候是以sea.js所在文件夹为默认路径
+			alias: {
+				'jquery':'jquery-3.3.1'             //使用顶级标识进行设置
+				//'jquery':'./jquery.js',在foo.js中打印jquery为undefined	使用的是相对路径的模块标识
+			}
+		});
+
+		seajs.use('foo',function(foo){			//回调模式
+			var b=foo.tt();
+
+			var c=foo.a;
+			// console.log(c);
+			$("#content").html(c);
+
+			foo.wt("#cccc");
+
+			$('#btn').click(function(){
+				alert(b);
+			});
+		})
+	</script>
+</body>
+</html>

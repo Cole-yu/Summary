@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>	
+</head>
+<body>
+	
+
+	<script type="text/javascript" src="js/require.js"></script>
+	<script type="text/javascript" >
+		// baseUrl：这里的 baseUrl  发现浏览器会给你报错找到不某某 .js 文件。
+		require.config({
+			baseUrl:'./js/'     //引入js下的所有文件,定义一个基准路径
+		});
+
+		require(['foo','bar'],function(foo,bar){
+			console.log('ok');
+			document.write(foo.getAge());
+		})
+	</script>
+</body>
+</html>
