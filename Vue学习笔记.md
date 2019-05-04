@@ -1508,7 +1508,7 @@
 ### vue/cli3 实现生成的打包文件index.html可以直接访问的修改方法（资源无法正确加载）
 ```
 	在 package.json 文件的同级目录下添加 vue.config.js 
-	module.export = {
+	module.exports = {
 		publicPath : './', 				// 使用相对路径而不是绝对路径（相对于outputDir）
 		assetsDir : './asset' 			// 放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录
 		indexPath : './home/home.html'	// 指定生成的 index.html 的输出路径 (相对于 outputDir)

@@ -413,3 +413,29 @@
 
 	https://www.cnblogs.com/tugenhua0707/p/9452471.html
 ```	
+
+### Webpack 打包出来的页面空白
+```	
+	原因：文件加载路径错误。发布到线上以后 html 引用的路径是 /static/img/xxx.png 。
+	这时它会直接去请求服务器根目录下的文件，我们需要做的就是将 '/'' 改为 './'' ，它指的是当前目录，
+	修改完成后会去请求当前打包文件下的路径。
+
+	1. 在自己搭建的webpack项目中
+	module.exports = {
+		output: {
+			publicPath: './'   		// 默认为'/'，把绝对路径改为相对路径	
+		}
+	}
+
+	2. 在vue-cli2 中，将config/index.js中的 assetsPublicPath 修改为'./'（默认为'/'）
+	   例: assetsPublicPath: './public/'
+		   assetsPublicPath: 代表生成的index.html文件里面引入资源时，路径前面要加上 ./public/
+
+	3. 在 vue/cli3中，在 package.json 文件的同级目录下添加 vue.config.js文件，把publicPath 改为'./'（默认为'/'）
+	module.exports = {
+		publicPath : './', 				// 使用相对路径而不是绝对路径（相对于outputDir）
+		assetsDir : './asset' 			// 设置打包后的静态资源 (js、css、img、fonts) 的存放地址 (相对于 outputDir 的) 
+		indexPath : './home/home.html'	// 指定生成的 index.html 的输出路径 (相对于 outputDir)
+	}
+```
+```

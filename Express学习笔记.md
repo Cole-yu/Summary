@@ -119,9 +119,9 @@
 		res.send('/a/');
 	});
 
-	能匹配路由为 /butterfly 和 /dragonfly，但不会 /butterflyman，/dragonflyman 等
+	能匹配路由为 /butterfly 和 /dragonfly，但不会匹配 /butterflyman，/dragonflyman 等
 	app.get(/.*fly$/, function (req, res) {
-	  res.send('/.*fly$/'); 
+	  res.send('/.*fly$/');
 	})
 
 	// 带参数的路由
