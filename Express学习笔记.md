@@ -8,32 +8,6 @@
 	express 项目名称						// 初始化一个项目
 ```
 
-### 原生 Node.js 实现后台 HTTP 服务
-```
-	var http = require("http");
-	var app = http.createServer(function(req,res){
-		
-		// 接收前台传递的数据
-		req.on("data",function(data){
-
-		});
-
-		req.on("end",function(){
-			// 设置状态码和响应头
-			res.writeHead(200,{
-
-			});
-
-			// 返回内容
-			res.write("ok");
-
-			res.end();
-		});
-	});
-	app.listen(3000);
-	console.log("server is listening at port 3000!");
-```
-
 ### 使用 express-generator 快速生成的 Express 应用的骨架
 ```
 	npm install -g express-generator
@@ -51,6 +25,7 @@
 	使用 Express 中的 express.static 内置中间件函数
 	可以将 public 目录下的图片、CSS 文件、JavaScript 文件对外开放访问了
 ```
+
 ### 处理请求
 ```	
 	app.get('/', function (req, res) {
@@ -128,4 +103,79 @@
 	app.post('/users/:userId/books/:bookId',function(req,res){
 		res.send(req.params);
 	});
-```	
+```
+
+### 中间件的定义和使用
+```
+	中间件加载的顺序很重要：首先加载的中间件函数也会先执行
+
+	定义一个普通的中间件
+	var myLogger = function(req, res, next) {
+		console.log('LOGGED')
+	  	next()
+	}
+
+	app.use(myLogger)    // 调用app.use()加载中间件功能，并且会执行中间件功能
+```
+
+### 可配置的中间件
+```
+	如果需要配置中间件，应该导出一个接受选项对象或其他参数的函数，然后根据输入参数返回中间件实现。
+	
+	定义一个中间件：my-middleware.js文件	
+	module.exports = function(options) {
+	  return function(req, res, next) {	    
+	    // 基于options配置实现的自定义中间件
+	    next()
+	  }
+	}
+
+	使用中间件的方式：
+	var mw = require('./my-middleware.js')
+	app.use(mw({ option1: '1', option2: '2' }))		// mw函数返回一个中间件function(req, res, next){}
+```
+
+### 中间件分类
+```
+	应用程序级中间件
+	var app = express()
+	app.use(function (req, res, next) {
+	  console.log('Time:', Date.now())
+	  next()
+	})
+
+	路由器级中间件
+	var app = express()
+	// 路由器级中间件的工作方式与应用程序级中间件的工作方式相同，只不过它被绑定到一个实例express.Router()
+	var router = express.Router()
+	
+	// 使用router.use()和router.METHOD()函数加载路由器级中间件。
+	router.use('/user/:id', function (req, res, next) {
+		console.log('Request URL:', req.originalUrl)
+	  	next()
+	}, function (req, res, next) {
+	  	console.log('Request Type:', req.method)
+	  	next()
+	})
+	app.use('/', router)		// 把路由安装到应用中
+
+
+	要跳过该路由中的其他中间件，只需调用next('router') 将控制权交还给路由器实例
+	router.get('/user/:id', function (req, res, next) {
+		if (req.params.id === '0'){
+	  		next('route')								// 跳到下一个路由，忽略下面的中间件	  
+	  	}
+	  	else{
+ 			next()
+	  	}
+	}, function (req, res, next) {					// 该路由下的下一个中间件	  
+		res.render('regular')
+	})
+```
+
+### 内置中间件
+```
+	express.static提供静态资产，如HTML文件，图像等。
+	express.json使用JSON有效负载解析传入的请求（Express 4.16.0+）
+	express.urlencoded使用URL编码的有效负载解析传入的请求（Express 4.16.0+）
+```

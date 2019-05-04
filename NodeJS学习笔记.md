@@ -3,23 +3,24 @@
 ### 原生 Node.js 实现后台 HTTP 服务
 ```
 	var http = require("http");
-	http.createServer(function(req,res){
-		
+	http.createServer(function(req, res){
+		var result = '';
 		// 接收前台传递的数据
-		req.on("data",function(data){
-
+		req.on("data", function(data){
+			result = result + data;
 		});
 
 		req.on("end",function(){
+			res.statusCode = 1000;
+			res.setHeader("Content-Type", "application/json");
 			// 设置状态码和响应头
-			res.writeHead(200,{
-
-			});
-
-			// 返回内容
-			res.write("ok");
-
-			res.end();
+			res.writeHead(200, {
+				"Access-Control-Allow-Origin": '*',
+				"Access-Control-Allow-Headers": "Content-Type",
+				"Content-Type": "text/html"			// 当响应头重复时，以writeHead为最终结果
+			});			
+			res.write("ok" + res.statusCode);		// 返回内容
+			res.end();								// 关闭响应
 		});
 	}).listen(3000);
 	console.log("server is listening at port 3000!");
