@@ -8,8 +8,8 @@
 ### java开发环境搭建
 1.	安装JDK
 2.	配置环境变量
-	* JAVA_HOME 配置JDK安装路径
-	* PATH	配置JDK命令文件的位置(bin)
+	* JAVA_HOME 配置JDK安装路径 
+	* PATH	配置JDK命令文件的位置(bin) 	%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin;
 	* CLASSPATH	配置类库文件的位置(lib)  .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar;
 
 ### 使用记事本编写java
