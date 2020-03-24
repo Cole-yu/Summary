@@ -1,5 +1,5 @@
 ﻿# git学习总结
-	参考链接欸：https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000
+	参考链接：https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000
 	git是一款免费开源的分布式版本控制系统---工具，就是一个软件
 	Github是用git做版本控制的代码托管平台---平台，就是一个网站
 
