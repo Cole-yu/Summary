@@ -84,3 +84,18 @@
 	git clone --branch [tags标签] [git地址]
 	
 
+### git 设置区分大小写
+```
+	git config --global core.ignorecase false // 忽略大小写 false === 区分大小写
+	git config core.ignorecase false // 设置值
+	git config core.ignorecase // 查看值
+	git config --list
+```
+
+### 查看当前文件所在的代码库地址
+```
+	git remote show origin
+
+	重新设置文件代码库地址
+	git remote set-url origin git@github.com:Cole-yu/how-webpack-works.git
+```
