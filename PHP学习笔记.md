@@ -41,3 +41,27 @@ php artisan serve --host=10.15.45.132 --port=8080 启动laravel项目，地址lo
 Homestead
 Valet
 ```
+
+### vscode + xdebug + xampp + php_debug 进行php调试
+```
+VSCode+Xdebug 断点调试 PHP
+https://www.cnblogs.com/phonecom/p/10340038.html
+xdebug.dll 下载
+https://windows.php.net/downloads/pecl/releases/xdebug/2.9.8/
+【php_xdebug.dll 使用2.8，2.9版本； 使用3.0以上的xdebug.dll会报错：The setting ‘xdebug.remote_autostart‘ has been renamed】
+
+php.ini 文件
+[XDebug]
+zend_extension=php_xdebug.dll
+xdebug.remote_enable = 1
+xdebug.remote_autostart = 1
+xdebug.remote_handler = "dbgp"
+xdebug.remote_port = "9001"
+xdebug.remote_host = "127.0.0.1"
+
+调试步骤：
+启动 xampp
+vscode F9打上断点，f5启动调试 
+浏览器输入地址访问，将进入打断点
+```
+
