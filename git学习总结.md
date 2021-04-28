@@ -99,3 +99,33 @@
 	重新设置文件代码库地址
 	git remote set-url origin git@github.com:Cole-yu/how-webpack-works.git
 ```
+
+### git 版本回退
+
+
+### Git 全局设置
+git config --global user.name "yfx"
+git config --global user.email "email.com"
+
+### 创建一个新仓库
+git clone git@xxxxxx/codebase.git
+cd rzrq.market
+touch README.md
+git add README.md
+git commit -m "add README"
+git push -u origin master
+
+### 推送现有文件夹到线上新建空代码库
+cd existing_folder
+git init
+git remote add origin git@xxxxxx/codebase.git
+git add .
+git commit -m "Initial commit"
+git push -u origin master
+
+### 推送现有的 Git 仓库
+cd existing_repo
+git remote rename origin old-origin
+git remote add origin git@xxxxxx/codebase.git
+git push -u origin --all
+git push -u origin --tags

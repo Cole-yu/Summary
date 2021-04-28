@@ -24,6 +24,20 @@ composer config -g repo.packagist composer https://packagist.phpcomposer.com
 composer config -g repo.packagist composer https://packagist.org
 ```
 
+
+### composer.json 项目
+```
+安装composer  
+安装 Composer，你只需要下载 composer.phar 可执行文件。
+curl -sS https://getcomposer.org/installer | php
+
+安装依赖包
+php composer.phar install
+
+更新依赖
+php composer.phar update
+```
+
 ### composer 安装 laravel
 ```
 composer global require "laravel/installer"
@@ -33,7 +47,7 @@ cd blog
 php artisan --version // 查看项目的laravel 版本
 
 通过使用 --host 参数与 --port 参数来更换监听的接口地址或端口号
-php artisan serve --host=10.15.45.132 --port=8080 启动laravel项目，地址localhost:8000
+php artisan serve --host=10.15.45.249 --port=8080 启动laravel项目，地址localhost:8000
 ```
 
 ### Laravel 虚拟开发环境
@@ -70,7 +84,7 @@ xdebug.remote_host = "127.0.0.1"
       "name": "Listen for XDebug",
       "type": "php",
       "request": "launch",
-      "port": 9001
+      "port": 9000
     },
     {
       "name": "Launch currently open script",
@@ -78,14 +92,14 @@ xdebug.remote_host = "127.0.0.1"
       "request": "launch",
       "program": "${file}",
       "cwd": "${fileDirname}",
-      "port": 9001
+      "port": 9000
     }
   ]
 }
 
 调试步骤：
 启动 xampp
-vscode F9打上断点，f5启动调试 
+vscode F9打上断点，f5启动调试
 浏览器输入地址访问，将进入打断点
 ```
 
@@ -229,12 +243,13 @@ echo strpos("Hello world!","world");
 若变量存在且其值为NULL，也返回 FALSE;
 若变量存在且值不为NULL，则返回 TURE;
 
-### $\_GET 全局数组变量，包含url上的所有query的数组
+### $_GET 全局数组变量，包含url上的所有query的数组
 ```
 $_GET 通过 URL 参数（又叫 query string）传递给当前脚本的变量的数组
 http://example.com/?name=yfx
 $name = $_GET["name"];
 ```
+-
 
 ### 三元运算符
 
@@ -248,7 +263,7 @@ for($x = 0; $x < $arrlength; $x++){
 }
 ```
 
-### php关联数组
+### php 关联数组
 关联数组是使用您分配给数组的指定的键的数组
 ```
 $age = array("Peter"=>"35", "Ben"=>"37", "Joe"=>"43");
@@ -292,7 +307,7 @@ print_r($a);
 1. $GLOBALS
 2. $_SERVER
 ```
-  $_SERVER['QUERY_STRING'] 获取url上的queryparams 
+  $_SERVER['QUERY_STRING'] 获取url上的queryparams
   示例：http://www.learn.com/home.php?name=yfx&mode=1&type=2
   值： name=yfx&mode=1&type=2
   $_SERVER['HTTP_HOST']
@@ -418,3 +433,78 @@ print_r($a);
 4. 静态属性不可以由对象通过 -> 操作符来访问。
 ``` 
 9. Final 关键字
+```
+1. 若父类中的方法被声明为 final，则子类无法重写该方法；
+2. 若一个类被声明为 final，则不能被继承。
+```
+10. 调用父类构造方法
+子类中若定义了__construct方法，表明重写子类的构造方法，此时不会执行父类的构造方法，通过手动调用parent::__construct()执行父类构造方法
+```
+class BaseClass {
+   function __construct() {
+       print "BaseClass 类中构造方法".PHP_EOL;
+   }
+}
+class SubClass extends BaseClass {  
+   function __construct() {
+       parent::__construct();  // 子类构造方法不会自动调用父类的构造方法，需要手动调用执行parent::__construct();，类似于JS中的 super()
+       print "SubClass 类中构造方法" . PHP_EOL;
+   }
+}
+```
+-
+
+### Yii框架
+1. 安装 composer.phar
+```
+Windows 系统
+curl -sS https://getcomposer.org/installer | php
+检查 php composer.phar
+php composer.phar install
+php composer.phar update
+
+
+更新已安装的 Composer
+Composer composer self-update
+```
+
+2. 安装Yii
+```
+composer create-project --prefer-dist yiisoft/yii2-app-basic basic
+```
+
+3. 启动项目
+```
+php yii serve(默认8080端口)
+访问地址：http://localhost/index.php
+
+
+更改端口
+php yii serve --port=8888
+访问地址：http://localhost:8888/index.php
+```
+
+4. 检测
+```
+cd 项目根目录
+php requirement.php
+```
+
+
+### 已有composer.josn项目安装依赖
+```
+
+要检查 Composer 是否正常工作，只需要通过 php 来执行 PHAR：
+php composer.phar
+
+方法一： 项目内安装有 composer.phar
+php composer.phar install
+php composer.phar update
+
+方法二：已全局安装 Composer
+composer install
+composer update
+```
+
+
+### DOO框架
