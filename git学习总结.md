@@ -129,3 +129,17 @@ git remote rename origin old-origin
 git remote add origin git@xxxxxx/codebase.git
 git push -u origin --all
 git push -u origin --tags
+
+### 多版本BUG修复后的合并
+```
+首先在master分支上修复bug并提交后
+1. 查看现有分支
+git branch
+2. 切换到需要修复的分支
+git checkout 需要修复的分支
+3. 进入到修复分支后,合并master分支
+git merge master
+4. 提交代码
+git commit -m "merge master";
+git push
+```

@@ -583,6 +583,24 @@
 	arr=[];
 	console.log(arr.constructor == Array);	
 
+### 原型链
+```
+function Foo(){
+	
+}
+function Fo(){
+	
+}
+Fo 是 Foo 的子类
+instance 是 Fo 类的实例
+let instance = new Fo()
+
+Fo.prototype.constructor  = Fo
+
+instance的隐藏原型(__proto__) === Fo类的原型 === Foo构造函数的实例
+instance.__proto__ = Fo.prototype = new Foo() // 原型链
+```
+
 ### Cookie
 *	创建cookie
 ```
