@@ -28,8 +28,7 @@ touch 创建文件
 rmdir 删除一个文件夹
 
 shift+a = A
-
-shift+Caps Lock 切换英文和中文输入法
+Caps Lock 切换英文和中文输入法
 ```
 
 ### Mac os、Linux 及 Unix 之间的关系

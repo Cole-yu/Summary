@@ -10,7 +10,7 @@ xampp-control.exe 控制面板启动
 
 ### 开启虚拟目录
 ```
-xampp\apache\conf\extra\httpd.conf 文件
+xampp\apache\conf\httpd.conf 文件
 <Directory />
 #   AllowOverride none
 
