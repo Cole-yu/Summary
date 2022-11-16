@@ -143,3 +143,19 @@ git merge master
 git commit -m "merge master";
 git push
 ```
+
+### tag标签
+```
+1. 创建标签
+git tag <tagName>
+2. 推送到远程仓库
+git push origin <tagName>
+3. 指定版本为标签
+git tag -a <tagName> <commitId>
+4. 查看所有标签
+git tag  // 本地tag
+git ls-remote --tags origin // 远程仓库
+5. 删除标签
+git tag -d <tagName>
+git push origin :refs/tags/<tagName> // 推送到远程仓库
+```
