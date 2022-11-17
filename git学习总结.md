@@ -144,7 +144,7 @@ git commit -m "merge master";
 git push
 ```
 
-### tag标签
+### Tag 标签
 ```
 1. 创建标签
 git tag <tagName>
@@ -153,9 +153,25 @@ git push origin <tagName>
 3. 指定版本为标签
 git tag -a <tagName> <commitId>
 4. 查看所有标签
-git tag  // 本地tag
-git ls-remote --tags origin // 远程仓库
+git tag  // 查看本地标签
+git ls-remote --tags origin // 查看远程仓库标签
 5. 删除标签
 git tag -d <tagName>
 git push origin :refs/tags/<tagName> // 推送到远程仓库
+6. 查看某个标签详情
+git show <tagName> 
+```
+
+# Vim 的进入和退出
+```
+i 键 小写的 i 键在光标之前插入文本
+I 键 大写的 I 即 shift + i 键在光标所在行行首插入文本
+a 键 小写的 a 键在光标之后插入文本
+A 键 大写的 A 即 shift + a 键在光标所在行行尾插入文本
+o 键 小写的 o 键在光标下面新开一行并进入插入模式
+O 键 大写的 O 即 shift + o 键在光标上面新开一行并进入插入模式
+<ESC>键 退出编辑，返回正常模式，按下<ESC>键后，退出编辑回到正常模式
+:q! 键 点击回车后，不会保存之前所做的修改，强制退出。
+:wq 键 点击回车后，保存更改并退出
+语法相关链接： https://blog.csdn.net/qq_27127385/article/details/103627332
 ```
