@@ -70,7 +70,7 @@ zend_extension=php_xdebug.dll
 xdebug.remote_enable = 1
 xdebug.remote_autostart = 1
 xdebug.remote_handler = "dbgp"
-xdebug.remote_port = "9001"
+xdebug.remote_port = "9000"
 xdebug.remote_host = "127.0.0.1"
 
 .vscode 下会创建 launch.json 文件
