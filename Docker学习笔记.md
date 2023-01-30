@@ -132,8 +132,10 @@ RUN npm install --registry=https://registry.npm.taobao.org
 # 将容器 8080 端口暴露出来， 允许外部连接这个端口
 EXPOSE 8080
 
-# 容器启动后自动执行 npm run serve
+# 容器启动后自动执行 npm run serve，
 CMD npm run serve
+
+# 注：指定了CMD命令以后，docker container run 命令就不能附加命令了（比如/bin/bash），否则它会覆盖CMD命令
 ```
 
 ### 实例
@@ -142,8 +144,8 @@ CMD npm run serve
 docker image build -t dockertestimage D:\\myProjects\\demodockeruse (注：镜像名必须全部小写)
 
 创建容器并启动
-docker container run --rm -itd -p 3000:8080 dockertestimage /bin/bash
-docker container run --rm -itd -p 3000:8080 --name dockertestContainer dockertestimage /bin/bash
+docker container run --rm -itd -p 3000:8080 dockertestimage
+docker container run --rm -itd -p 3000:8080 --name dockertestContainer dockertestimage
 --rm参数，在容器终止运行后自动删除容器文件
 
 启动容器
@@ -151,6 +153,7 @@ docker container start dockertestContainer
 
 进入容器
 docker container exec -it dockertestContainer /bin/bash
+注： 带 /bin/bash 命令，使用户可以立即使用 bash 命令
 
 npm run serve
 
@@ -175,4 +178,19 @@ docker rmi dockertestimage
 问题：上文将 docker 容器的 8080 端口映射到了宿主机的 3000 端口，但是当访问 localhost:3000 时却无法访问。
 原因：docker 是运行在 linux 上的，windows 运行 docker 实质上是先开启了 linux 的虚拟机，然后再到上面运行的，所以映射到"本机"，实际上是映射到了 linux 的虚拟机 ip；
 解决方法： 通过命令行 docker-machine ip default 可以查看 Linux 的本机ip，一般默认为 192.168.99.100；
+在浏览器上输入 192.168.99.100:3000 进行访问；
+```
+
+### 外网如何访问宿主 Linux 虚拟机，获取 Docker 容器中 Web 服务
+```
+方法一： 使用 nginx 代理：
+server {
+    listen       8888;
+    server_name  localhost;
+    index index.html;
+    location / {
+        proxy_pass http://192.168.99.100:3000;
+    }
+}
+在局域网内任一主机浏览器中输入 http://10.15.45.249:8888 进行访问；
 ```

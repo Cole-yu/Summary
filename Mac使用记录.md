@@ -1,5 +1,11 @@
 # Mac 使用记录
 
+### sudo 超级用户权限执行命令
+```
+sudo 代表 superuser do（超级用户执行）
+sudo npm install -g @vue/cli
+```
+
 ### 使用 windows 外接键盘 操作
 ```
 windows / mac
