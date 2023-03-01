@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+	<title>测试a标签链接伪类</title>
+	<style type="text/css">
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+		}
+
+		/* a{
+			color: blue;
+		} */
+
+		a:link {
+			color: rgb(200, 255, 0);
+		}
+
+		/* 只要点击过链接，浏览器会因为缓存的原因，导致a:visited的属性在网页载入之后就会生效 */
+		a:visited {
+			color: red;
+		}
+
+		a:hover {
+			color: yellow;
+		}
+
+		/* 已经按下，但是还没有松开的状态 */
+		a:active {
+			color: red;
+		}
+	</style>
+	<script>
+		var whenReady = (function () {
+			var funcs = [];
+			var ready = false;
+
+			function handler (e) {
+				if (ready) {
+					return
+				}
+				if (e.type === "onreadystatechange" && document.readyState !== "complete") {
+					return
+				}
+				for (var i = 0; i < funcs.length; i++) {
+					funcs[ i ].call(document)
+				}
+				ready = true;
+				funcs = null
+			}
+			if (document.addEventListener) {
+				document.addEventListener("DOMContentLoaded", handler, false);
+				document.addEventListener("readystatechange", handler, false);
+				window.addEventListener("load", handler, false)
+			} else {
+				if (document.attachEvent) {
+					document.attachEvent("onreadystatechange", handler);
+					window.attachEvent("onload", handler)
+				}
+			}
+			return function whenReady (fn) {
+				if (ready) {
+					fn.call(document)
+				} else {
+					funcs.push(fn)
+				}
+			}
+		})();
+
+		function setResize () {
+			var doc = document,
+				win = window;
+			var docEl = doc.documentElement,
+				con = doc.getElementById("container"),
+				resizeEvt = "orientationchange" in window ? "orientationchange" : "resize",
+				recalc = function () {
+					var clientWidth = con.clientWidth;
+					if (!clientWidth) {
+						return
+					}
+					console.log('clientWidth', clientWidth)
+					var value = 100 * (clientWidth / 750);
+					docEl.style.fontSize = value + "px";
+
+					document.body.style.visibility = "visible"
+				};
+			if (!doc.addEventListener) {
+				return
+			}
+			win.addEventListener(resizeEvt, recalc, false);
+			doc.addEventListener("DOMContentLoaded", recalc, false)
+		}
+		whenReady(setResize);
+	</script>
+</head>
+
+<body id='container'>
+	<!-- 伪类要生效，a标签必须要有href属性，可以写成 href="#" -->
+	<a href="https://www.baidu.com" target="_blank">a标签伪类测试</a>
+</body>
+
+</html>

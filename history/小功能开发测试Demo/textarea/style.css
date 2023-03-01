@@ -1,0 +1,57 @@
+.flex-text-wrap {
+    position: relative;
+    *zoom: 1;
+}
+.wrap {
+    width: 300px;
+    height: 300px;
+}
+textarea,
+.flex-text-wrap {
+    outline: 0;
+    margin: 0;
+    border: none;
+    padding: 0;
+    *padding-bottom: 0 !important;
+}
+textarea {
+    overflow: auto;
+    vertical-align: top;
+    resize: vertical;
+}
+
+.flex-text-wrap textarea,
+.flex-text-wrap pre {
+    white-space: pre-wrap;
+    width: 100%;
+    box-sizing: border-box;
+    *white-space: pre;
+    *word-wrap: break-word;
+     word-wrap: break-word;
+}
+
+.flex-text-wrap textarea {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    resize: none;
+    *height: 94%;
+    *width: 94%;
+}
+
+.flex-text-wrap pre {
+    display: block;
+    visibility: hidden;
+}
+
+textarea,
+.flex-text-wrap pre {
+    background-clip: padding-box;
+    transition-duration: 300ms;
+    transition-easing: ease-in-out;
+    transition-property: border-color, box-shadow;
+    padding: 10px;
+}

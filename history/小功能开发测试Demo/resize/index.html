@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resize</title>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <script src="./EleResize.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #resizeDiv {
+            width: 10%;
+            height: 60%;
+            border: 1px solid red;
+            margin: 20px;
+        }
+
+        button {
+            margin: 20px 20px 0;
+        }
+    </style>
+</head>
+<body>
+<!-- <button onclick="addListener()">addListener</button> -->
+<!-- <button onclick="removeListener()">removeListener</button> -->
+<button onclick="resize()">resize</button>
+<div id="resizeDiv"></div>
+<script>
+    var resizeDiv = document.getElementById('resizeDiv');
+    function resize() {
+    	var wid = resizeDiv.offsetWidth;
+        resizeDiv.style.width = (wid + 20) +'px';
+    }
+    var listener = function () {
+		var el = document.createElement('span');
+        var wid = resizeDiv.offsetWidth;
+		el.innerHTML = "【resize:" + wid + "】  ";
+		document.getElementById("resizeDiv").append(el);
+        console.log("resize");
+    };
+
+    EleResize.on(resizeDiv, listener);
+    function addListener() {    	
+        EleResize.on(resizeDiv, listener);
+        console.log(EleResize);
+        console.log(resizeDiv);
+    }
+    function removeListener() {
+        EleResize.off(resizeDiv, listener)
+    }
+</script>
+</body>
+</html>

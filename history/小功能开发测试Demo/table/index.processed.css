@@ -1,0 +1,33 @@
+$background: #fff;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: $background;
+}
+
+table {
+  table-layout: fixed;
+}
+table td {border-bottom: 1px solid #999;}
+.tdHidden {
+  visibility: hidden;
+} 
+.table-fixed-left {
+  border-right: 0;
+  box-shadow: none;
+  transition: box-shadow .3s ease;
+}
+.table-fixed-right {
+  border-left: 0;
+  box-shadow: none;
+  transition: box-shadow .3s ease;
+}
+.table-fixed-left-scroll {
+  box-shadow: 6px 0 6px -4px rgba(0,0,0,.2);
+}
+.table-fixed-right-scroll {
+  box-shadow: -6px 0 6px -4px rgba(0,0,0,.2);
+}

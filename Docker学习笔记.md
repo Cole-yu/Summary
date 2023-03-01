@@ -194,3 +194,33 @@ server {
 }
 在局域网内任一主机浏览器中输入 http://10.15.45.249:8888 进行访问；
 ```
+
+### 镜像发布
+```
+1. 为本地的 image 标注用户名和版本
+语法： docker image tag [imageName] [username]/[repository]:[tag]
+示例： docker image tag dockertestimage username/dockertestimage:0.0.1
+
+2. 发布 image 文件
+语法： docker image push [username]/[repository]:[tag]
+示例： docker image push username/dockertestimage:0.0.1
+
+3. 在官网 https://hub.docker.com 查看镜像
+
+4. 拉取镜像
+docker search username/dockertestimage:0.0.1  // 查找镜像
+docker pull username/dockertestimage:0.0.1
+```
+
+### 查看镜像里的文件内容
+```
+1. 进入 docker 容器中
+docker container exec -it dockertestContainer /bin/bash
+
+2.  安装 vim 工具
+apt-get update 					// 升级 apt-get
+apt-get install vim  			// 安装vim
+
+3. 通过 vim 查看文件内容
+vim main.js
+```

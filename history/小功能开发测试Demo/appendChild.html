@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<button id='btn'>测试</button>
+
+<script type="text/javascript">
+	var createElements = function(count) {
+	  var start = new Date();
+	  
+	  for (var i = 0; i < count; i++) {
+	    var element = document.createElement('div');
+	    element.appendChild(document.createTextNode('' + i));
+	    document.body.appendChild(element);
+	  }
+	  
+	  setTimeout(function() {
+	    alert(new Date() - start);
+	  }, 0);
+	};
+	let btn = document.getElementById('btn')
+	console.log(btn);
+	btn.addEventListener('click', function(){
+		createElements(1000)
+	})
+</script>
+</body>
+</html>

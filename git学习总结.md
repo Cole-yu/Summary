@@ -40,7 +40,7 @@
 
 ### stash的使用
 ```
-	git stash sava 'name'
+	git stash save 'name'
 	git stash pop
 	git stash list
 ```
