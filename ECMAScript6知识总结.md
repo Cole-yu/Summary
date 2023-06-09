@@ -41,17 +41,19 @@
 	  "test": "mocha --ui qunit --compilers js:babel-core/register"   //--compilers参数指定脚本的转码器,规定后缀名为js的文件,都需要使用babel-core/register先转码
 	}
 
-###	\_proto_属性	
+###	\_proto_ 属性
 	一个实例对象的属性,指向创建这个实例的构造函数的原型;
-	obj.constructor.prototype === obj._proto_ ;	
+	obj.constructor.prototype === obj._proto_ ;
 
-### 原始数据类型Symbol(第七种数据类型)
+### 数据类型
 	ES6 引入了一种新的原始数据类型Symbol,表示独一无二的值;
-	原有的六种数据类型基础：undefined、null、布尔值(Boolean)、字符串(String)、数值(Number)、对象(Object);
+	原有的六种数据类型基础：undefined、null、Boolean、String、Number、Object、Symbol、BigInt(大整数);
 *	注意事项：
-1.	注意，Symbol函数前不能使用new命令,否则会报错
-2.	Symbol函数的参数只是表示对当前Symbol值的描述,因此相同参数的Symbol函数的返回值是不相等的。
+1.	Symbol
 ```
+	注意，Symbol函数前不能使用new命令，否则会报错；
+ 	Symbol函数的参数只是表示对当前Symbol值的描述，因此相同参数的Symbol函数的返回值是不相等的。
+
 	// 没有参数的情况
 	let s1 = Symbol();
 	let s2 = Symbol();
@@ -60,7 +62,77 @@
 	let s1 = Symbol('foo');
 	let s2 = Symbol('foo');
 	s1 === s2 												// false
+
+	// 在对象的内部，使用 Symbol 值定义属性时，Symbol 值必须放在方括号之中
+	let s = Symbol();
+	let obj = {
+	  [s]: function (arg) { ... }
+	};
+	obj[s](123);
 ```
+3.  BigInt(大整数 ES2020) 第8种数据类型
+```
+	2n ** 1024n = 17976931348…6329624224137216n
+```
+
+### ES6 声明变量的六种方法
+```
+	var 命令和 function 命令。ES6 除了添加 let 和 const 命令，后面章节还会提到，另外两种声明变量的方法： import 命令和 class 命令。
+```
+
+### 字符
+```
+'\u0061' // 'a'
+`\u{61}` // 'a
+```
+
+### 标签模板
+```
+tagFunc`Hello ${ a + b } world ${ a * b}`;
+tagFunc(['Hello ', ' world ', ''], 15, 50);
+等价于
+function tagFunc(s, v1, v2) {
+  console.log(s[0]);
+  console.log(s[1]);
+  console.log(s[2]);
+  console.log(v1);
+  console.log(v2);
+
+  return "OK";
+}
+// "Hello "
+// " world "
+// ""
+// 15
+// 50
+// "OK"
+
+tagFunc 函数的第一个参数是一个数组，该数组的成员是模板字符串中那些没有变量替换的部分；
+tagFunc 函数的其他参数，都是模板字符串各个变量被替换后的值；
+
+用途： 
+（1） 过滤 HTML 字符串，防止用户恶意内容
+let message = SaferHTML`<p>${sender} has sent you a message.</p>`;
+
+function SaferHTML(templateData) {
+  let s = templateData[0];
+  for (let i = 1; i < arguments.length; i++) {
+    let arg = String(arguments[i]);
+
+    // Escape special characters in the substitution.
+    s += arg.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+    // Don't escape special characters in the template.
+    s += templateData[i];
+  }
+  return s;
+}
+
+（2） 多语言转换（国际化处理）
+```
+
 
 ###	Object.defineProperty(obj, property, descriptor)
 *	作用:该方法会直接在一个对象上定义一个新属性,或者修改一个对象的现有属性,并返回这个对象。
@@ -68,7 +140,7 @@
 ```	
 	第一个参数:目标对象;
 	第二个参数:需要定义的属性或方法的名字;
-	第三个参数:目标属性所拥有的特性(descriptor:configurable,enumerable,value,writable)
+	第三个参数:目标属性所拥有的特性(descriptor:configurable, enumerable, value, writable)
 ```
 *   使用示例:
 ```  
@@ -79,46 +151,84 @@
     console.log(a.b); 				//123
 ```
 
-### 属性描述符:
-	学习链接:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+### 属性描述符
+学习链接: https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
 
 || configurable | enumerable | value | writable | get | set |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |数据描述符|Yes|Yes|Yes|Yes|No|No|
 |存取描述符|Yes|Yes|No|No|Yes|Yes|
 
-*	如果一个描述符不具有value,writable,get和set任意一个关键字,那么它将被认为是一个数据描述符。如果一个描述符同时有(value或writable)和(get或set)关键字,将会产生一个异常。
+*	如果一个描述符不具有value,writable,get和set任意一个关键字,那么它将被认为是一个数据描述符。如果一个描述符同时有【value或writable】和【get或set】键,将会产生一个异常。
 
-### 数据描述符
-	configurable,enumerable,value,writable
+* Object.defineProperty 添加的属性值： 默认为不可写、不可枚举和不可配置的。
 
-### 存取描述符
-	configurable,enumerable,get,set
+1. 数据描述符
+	configurable, enumerable, value, writable
+
+2. 访问器描述符（存取）
+	configurable, enumerable, getter, setter
+
+#### 描述符详解
+1. 数据描述符和访问器描述符都是对象。它们共享以下可选键：configurable 和 enumerable
+```
+configurable
+表示可配置性，默认值 false
+* 该属性的类型不能在数据属性和访问器属性之间更改；
+* 该属性不可被删除；
+* 其描述符的其他属性也不能被更改（writable 特性仍然更改；如果【writable:true】，则 value 可以被更改）；
+
+enumerable
+表示可枚举性，默认值 false
+决定了属性是否可以会在 for-in, Object.keys() 中显示
+```
+
+2. 数据描述符
+```
+value
+表示属性的数据值
+
+writable
+可写性，默认值 false
+表示是否可以修改数据值
+writable 特性设置为 false 时，该属性被称为“不可写的”。它不能被重新赋值。
+```
+
+3. 访问器描述符
+```
+get
+返回值将被用作该属性的值，默认值为 undefined。
+当访问该属性时，将不带参地调用此函数，并将 this 设置为通过该属性访问的对象,
+
+set
+当该属性被赋值时，将调用此函数，并带有一个参数（要赋给该属性的值），并将 this 设置为通过该属性分配的对象。默认值为 undefined。
+```	
 
 ### 新增let和const,块级作用域
 1.	var
 ```
-	var命令会发生"变量提升"现象,即变量可以在声明之前使用,值为undefined
+	var命令会发生"变量提升"现象，即变量可以在声明之前使用，值为undefined
 ```
-2.	let	
+2.	let
 	* 不存在变量提升
 	* 不允许重复声明
 	* 暂时性死区
 ```
-	只要一进入当前作用域,所要使用的变量就已经存在了,但是不可获取,只有等到声明变量的那一行代码出现,才可以获取和使用该变量。	
-	只要块级作用域内存在let命令,它所声明的变量就"绑定"(binding)这个区域,不再受外部的影响
+	只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。	
+	只要块级作用域内存在let命令，它所声明的变量就"绑定"(binding)这个区域，不再受外部的影响
 	块级作用域的出现使得广泛应用的立即执行函数表达式(IIFE)不再必要了
 ```
 3.  const
-	* 原理:并不是变量的值不得改动,而是变量指向的那个内存地址所保存的数据不得改动	
+	* 原理:并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动	
 ```
-	对于简单类型的数据(数值、字符串、布尔值),值就保存在变量指向的那个内存地址。
-	对于复合类型的数据(主要是对象和数组),变量指向的内存地址,保存的只是一个指向实际数据的指针,const只能保证这个指针是固定的(即总是指向另一个固定的地址),至于它指向的数据结构是不是可变的,就完全不能控制了。
+	对于简单类型的数据(数值、字符串、布尔值)，值就保存在变量指向的那个内存地址。
+	对于复合类型的数据(主要是对象和数组)，变量指向的内存地址，保存的只是一个指向实际数据的指针，const只能保证这个指针是固定的(即总是指向另一个固定的地址)，至于它指向的数据结构是不是可变的，就完全不能控制了。
 ```
 
-### 顶层对象(window,global)
-	浏览器里面,顶层对象是window,但Node和Web Worker没有window;
-	浏览器和Web Worker里面,self也指向顶层对象,但是Node没有self;
+### globalThis 顶层对象(ES2020)
+```
+	浏览器里面，顶层对象是window
+	Node 里面，顶层对象是global
 	Node里面,顶层对象是global,但其他环境都不支持;
 		
 	判断当前环境运行时:
@@ -138,10 +248,93 @@
 	    if (typeof global !== 'undefined') { return global; }
 	    throw new Error('unable to locate global object');
 	};
+```	
 
 ### 解构赋值
+1. 数组的解构赋值
+```
+let [a, b, c] = [1, 2, 3];
 
-###  ...展开剩余运算符
+默认值（数组成员严格等于undefined，默认值才会生效）
+let [x = 1, y = x] = [];     // x=1; y=1
+let [x = 1, y = x] = [2];    // x=2; y=2
+let [x = 1, y = x] = [1, 2]; // x=1; y=2
+```
+2. 对象的解构赋值
+```
+let { log, sin, cos } = Math;
+
+const { log } = console;
+log('hello')
+
+
+let { foo, bar } = { foo: 'aaa', bar: 'bbb' };
+foo // "aaa"
+bar // "bbb"
+
+如果变量名与属性名不一致，必须写成下面这样
+let { foo: baz } = { foo: 'aaa', bar: 'bbb' };
+baz // "aaa"
+
+默认值：生效的条件是，对象的属性值严格等于undefined
+var {x: y = 3} = {x: 5};
+y // 5
+```
+3. 字符串的解构赋值
+```
+let {length : len} = 'hello';
+len // 5
+
+let {toString: s} = 123;
+s === Number.prototype.toString // true
+```
+4. 数值和布尔值的解构赋值
+5. 函数参数的解构赋值
+```
+function move({x, y} = { x: 0, y: 0 }) {
+  return [x, y];
+}
+
+move({x: 3, y: 8}); // [3, 8]
+```
+6. 解构赋值的用途
+```
+(1) 交换变量的值
+	let [a, b] = [b, a]; // a，b值互换
+
+(2) 从函数返回多个值
+(3) 函数参数的定义
+(4) 提取 JSON 数据
+(5) 函数参数的默认值
+(6) 遍历 Map 结构
+	Object.entries(obj).map(([key, value])=>{
+		return ["_"+key, value];
+	});
+
+(7) 输入模块的指定方法
+	const { SourceMapConsumer, SourceNode } = require("source-map");
+```
+
+
+### rest 参数
+```
+rest 参数（形式为...变量名）
+
+function add(...values) {
+  let sum = 0;
+
+  for (var val of values) {
+    sum += val;
+  }
+
+  return sum;
+}
+
+add(2, 5, 3) // 10
+```
+
+###  扩展运算符
+1. 数组的扩展运算符
 *	将数组展开,分别获取数组的每个元素
 ```
 	var a=[1,2];
@@ -154,6 +347,55 @@
 ```
 	var d=[...'hello'];
 	console.log(d);    //['h','e','l','l','o']
+```
+
+2. 对象的扩展运算符
+```
+let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
+x // 1
+y // 2
+z // { a: 3, b: 4 }
+```
+
+### 运算符的扩展
+1. 链判断运算符 ?. 
+```
+const firstName = message && message.body && message.body.user && message.body.user.firstName || 'default';
+const firstName = message?.body?.user?.firstName || 'default';
+```
+
+2. Null 判断运算符(ES2020)
+```
+以前开发者的原意是，只要属性的值为null或undefined，默认值就会生效，但是属性的值如果为空字符串或false或0，默认值也会生效
+
+运算符左侧的值为null或undefined时，才会返回右侧的值
+const headerText = response?.settings?.headerText ?? "Null 判断运算符";
+```
+
+3. 逻辑赋值运算符
+```
+// 或赋值运算符
+x ||= y
+// 等同于
+x || (x = y)
+chartType.type ||= 'min';
+
+// 与赋值运算符
+x &&= y
+// 等同于
+x && (x = y)
+
+// Null 赋值运算符
+x ??= y
+// 等同于
+x ?? (x = y)
+```
+
+# 数组的 at() 方法(ES2022)
+```
+数组实例接受一个整数作为参数，返回对应位置的成员，并支持负索引
+let arr = ['a', 'b', 'c'];
+arr.at(-1) === arr[arr.length-1] === 'c'
 ```
 
 ### find方法:找出第一个符合条件的数组成员
@@ -176,10 +418,191 @@
 ### includes()  返回一个布尔值,表示某个数组是否包含给定的值
 	[1,2,3].includes(2)    //true
 
-### Set数据结构
+### 字符串的扩展
 ```
-	set类似于数组,但是成员的值都是唯一的,不能重复	
-	add方法可以向Set结构添加成员,且不会添加重复的值
+'x'.repeat(3) // xxx
+
+'x'.padStart(5, 'ab') 	// 'ababx'
+'x'.padEnd(4, 'ab') 	// 'xaba'
+
+'xxx'.padEnd(2, 'ab') // 'xxx'
+
+replaceAll()
+
+matchAll()
+
+const foo = '  abc';
+foo.trimStart(); // 清除头部空格
+
+const bar = 'abc  ';
+bar.trimEnd() // 清除尾部空格
+
+at()
+```
+
+### 正则的扩展
+```
+var regex = new RegExp('xyz', 'i');
+// 等价于
+var regex = /xyz/i;
+
+组匹配：正则表达式使用圆括号进行组匹配
+const RE_DATE = /(\d{4})-(\d{2})-(\d{2})/;
+const matchObj = RE_DATE.exec('1999-12-31');
+const year = matchObj[1]; // 1999
+const month = matchObj[2]; // 12
+const day = matchObj[3]; // 31
+
+d 修饰符：正则匹配索引 
+const RE_DATE = /(\d{4})-(\d{2})-(\d{2})/d;
+const matchObj = RE_DATE.exec('1999-12-31'); // 返回对象中添加indices属性
+matchObj.indices // [[0, 10], [0, 4], [5, 7], [8, 10]];
+
+具名组匹配 ?<自定义名称>  ?<Z>   名称为Z的具名组匹配
+const RE_DATE = /(\d{4})-(?<Z>\d{2})-(\d{2})/d;
+const matchObj = RE_DATE.exec('1999-12-31'); // 返回对象中添加indices属性
+matchObj.indices.groups // {Z: [5, 7]};
+
+matchAll()
+
+exec()
+exec() 是正则表达式的原始方法。许多其他的正则表达式方法会在内部调用 exec()
+regex.exec() 执行后，上次成功匹配后的位置记录在 lastIndex 属性中。使用此特性，exec() 可用来对单个字符串中的多次匹配结果进行逐条的遍历
+var regex = /t(e)(st(\d?))/g;
+var string = 'test1test2test3';
+
+var matches = [];
+var match;
+while (match = regex.exec(string)) {
+  matches.push(match);
+}
+matches;
+// [
+//   ["test1", "e", "st1", "1", index: 0, input: "test1test2test3"],
+//   ["test2", "e", "st2", "2", index: 5, input: "test1test2test3"],
+//   ["test3", "e", "st3", "3", index: 10, input: "test1test2test3"]
+// ]
+```
+
+### 数值的扩展(ES2021)
+1. 数值分隔符
+```
+	不能放在数值的最前面或最后面；						// _1464301
+	不能两个或两个以上的分隔符连在一起；				// 123__456
+	小数点的前后不能有分隔符； 						// 3_.141
+	科学计数法里面，表示指数的e或E前后不能有分隔符；		// 1e_12
+
+	1000_000 === 10000_00 // ture
+	0.000_0001 === 0.0000_001 // true
+	// 科学计数法
+	1e10_000
+```
+2. Number 对象的方法和属性
+```
+Number.isFinite() 	// 检查一个数值是否为有限的
+Number.isNaN()  	// 检查一个值是否为NaN
+Number.isInteger()	// 用来判断一个数值是否为整数
+Number.parseInt() 	// 转整数
+Number.parseFloat()	// 转浮点数
+属性
+Number.EPSILON      // 一个极小的常量，表示 1 与大于 1 的最小浮点数之间的差
+Number.EPSILON === Math.pow(2, -52)
+```
+3. Math 对象的扩展
+```
+Math.trunc()
+Math.trunc方法用于去除一个数的小数部分，返回整数部分
+Math.trunc(4.1) // 4
+Math.trunc(-4.9) // -4
+
+Math.sign()
+Math.sign方法用来判断一个数到底是正数、负数、还是零
+参数为正数，返回+1；
+参数为负数，返回-1；
+参数为 0，返回0；
+参数为-0，返回-0;
+其他值，返回NaN
+
+Math.cbrt()方法用于计算一个数的立方根
+```
+4. BigInt(大整数 ES2020) 第8种数据类型
+```
+	2n ** 1024n = 17976931348…6329624224137216n
+
+	Number(4n) === 4
+	
+	数学运算
+	9n / 5n === 1n
+
+	BigInt 不能与普通数值进行混合运算
+	1n + 1.3 // 报错
+
+	如果一个标准库函数的参数预期是 Number 类型，但是得到的是一个 BigInt，就会报错
+	Math.sqrt(4n) 				// 报错
+	Math.sqrt(Number(4n)) 		// 报错
+
+	BigInt 与字符串混合运算时，会先转为字符串，再进行运算
+	'abc' + 123n // "abc123"
+```
+
+### 函数的扩展
+1. 默认值
+```
+	应用：利用参数默认值，可以指定某一个参数不得省略，如果省略就抛出一个错误
+	function throwIfMissing() {
+	  throw new Error('Missing parameter');
+	}
+
+	function foo(mustBeProvided = throwIfMissing()) {
+	  return mustBeProvided;
+	}
+
+	foo()
+	// Error: Missing parameter
+```
+2. 函数的length属性，将返回没有指定默认值的参数个数
+3. 箭头函数
+```
+var f = v => v;
+
+// 等同于
+var f = function (v) {
+  return v;
+};
+
+箭头函数中的 this 指向：函数执行时，箭头函数所在作用域链中，离它最近的外层函数的 this
+function foo() {
+  return () => {
+    return () => {
+      return () => {
+        console.log('id:', this.id);
+      };
+    };
+  };
+}
+var f = foo.call({id: 1});
+var t1 = f.call({id: 2})()(); // id: 1
+var t2 = f().call({id: 3})(); // id: 1
+var t3 = f()().call({id: 4}); // id: 1
+
+所有的内层函数都是箭头函数，都没有自己的this，它们的this其实都是最外层foo函数的this
+```
+
+### 数组的扩展
+```
+与解构赋值结合
+let [first, ...rest] = list;
+等价于
+let rest = list.slice(1);
+
+实现了 Iterator 接口的对象
+
+```
+
+### Set 数据结构
+```
+	set类似于数组，但是成员的值都是唯一的，不能重复
+	add方法可以向Set结构添加成员，且不会添加重复的值
 	const s = new Set();   //实例化一个Set对象
 	[2,3,5,4,5,2,2].forEach(x => s.add(x));
 	for (let i of s) {
@@ -192,13 +615,22 @@
 ```
 *	set对象的方法:
 	```
-	add(value) 		//添加某个值,返回Set结构本身
-	delete(value) 	//删除某个值,返回一个布尔值,表示删除是否成功
-	has(value)      //返回一个布尔值,表示该值是否为Set的成员
-	clear()         //清除所有成员,没有返回值
+	add(value) 		// 添加某个值,返回Set结构本身
+	delete(value) 	// 删除某个值,返回一个布尔值,表示删除是否成功
+	has(value)      // 返回一个布尔值,表示该值是否为Set的成员
+	clear()         // 清除所有成员,没有返回值
 	```
+*	Set	结构与数组之间的相互转化
+```
+	// 数组转 Set
+	let set = new Set(array);
+
+	// Set 转数组
+	let array = Array.from(set);
+	let array = [...set];
+```
 *	遍历成员
-	```	
+```	
 	set对象可以通过keys(),values(),entries(),forEach()方法遍历每个成员
 	由于Set结构没有键名,只有键值(或者说键名和键值是同一个值),所以keys方法和values方法返回的结果完全一样。	
 	let set = new Set(['red','green','blue']);
@@ -208,9 +640,9 @@
 	// ["red", "red"]
 	// ["green", "green"]
 	// ["blue", "blue"]
-	```
+```
 *	使用set可以很容易实现并集(Union),交集(Intersect)和差集(Difference)
-	```
+```
 	let a = new Set([1, 2, 3]);
 	let b = new Set([4, 3, 2]);
 	// 并集
@@ -222,18 +654,16 @@
 	// 差集
 	let difference = new Set([...a].filter(x => !b.has(x)));
 	// Set {1}
-	```
+```
 
 ###	WeakSet与Set类似,但是成员必须是对象
 	WeakSet对象同样具有add(),delete(),has()方法
 	试图获取WeakSet对象的size属性和forEach方法会报错
 
-### Map数据结构,与JSON类似的键值对出现的数据结构,可以通过set,get修改或读取数据
-	JavaScript的对象(Object),本质上是键值对的集合(Hash结构),传统上只能用字符串当作键,为了解决这个问题,ES6提供了Map数据结构。
-	它类似于对象,也是键值对的集合,但是"键"的范围不限于字符串,各种类型的值(包括对象)都可以当作键。
-	也就是说,Object结构提供了"字符串—值"的对应,Map结构提供了"值—值"的对应,是一种更完善的Hash结构实现。如果你需要"键值对"的数据结构,Map比Object更合适。	
-*	Map可以接受一个数组作为参数。该数组的成员是一个个表示键值对的数组;
-	```
+### Map数据结构，与JSON类似的键值对出现的数据结构，可以通过set,get修改或读取数据
+	Object结构提供了"字符串—值"的对应，Map结构提供了"值—值"的对应，是一种更完善的Hash结构实现。
+*	Map 可以接受一个数组作为参数。该数组的成员是一个个表示键值对的数组;
+```
 	同样具有get(key),set(key,value),has(key),delete(key),clear()
 	const map = new Map([
 	  ['name', '张三'],
@@ -244,13 +674,22 @@
 	map.get('name') 	// "张三"
 	map.has('title') 	// true
 	map.get('title') 	// "Author"
-	```
-*	size属性:返回Map结构的成员总数
-	```	
-	set方法设置键名key对应的键值为value,然后返回整个Map结构。如果key已经有值,则键值会被更新,否则生成新键
-	```
-*	Map结构转为数组结构,比较快速的方法是使用扩展运算符(...)
-	```
+```
+
+*  map 实例对象的属性和方法
+1. size属性:返回Map结构的成员总数
+2. Map.prototype.set(key, value)
+```
+	set方法设置键名key对应的键值为value，然后返回整个Map结构。如果key已经有值,则键值会被更新，否则生成新键
+
+	set方法返回的是当前的Map对象，因此可以采用链式写法：
+	let map = new Map()
+	  .set(1, 'a')
+	  .set(2, 'b')
+	  .set(3, 'c');
+```
+*	Map结构转为数组结构，比较快速的方法是使用扩展运算符(...)
+```
 	const map = new Map([
 	  [1, 'one'],
 	  [2, 'two'],
@@ -260,63 +699,209 @@
 	[...map.values()] 							// ['one', 'two', 'three']
 	[...map.entries()] 							// [[1,'one'], [2, 'two'], [3, 'three']]
 	[...map] 									// [[1,'one'], [2, 'two'], [3, 'three']]
-	```
+```
 
-* 	Map与数组,对象,JSON之间的相互转化
+* 	Map 与数组、对象、JSON之间的相互转化
 1.  Map转数组
-	```
+```
 	const myMap = new Map([[name,'yfx'],['age':25]]);
 	[...myMap];
-	```
+```
 2.  数组转Map
-	```
+```
 	new Map([[name,'yfx'],['age':25]]);
-	```
+```
 3.  Map转对象
-	```
-	通过遍历Map对象成员的键值对,obj[key] = value实现
-	```
-4.  对象转Map
-	```
-	通过遍历对象的key,map.set(key,obj[k])实现
-	```
+```
+	方法一： 通过遍历Map对象成员的键值对，obj[key] = value实现
+
+	方法二： let obj = Object.fromEntries([...map.entries()]);
+```
+4.  对象转 Map
+```
+	方法一： new Map(Object.entries(obj));
+	方法二： 通过遍历对象的 key，map.set(key, obj[k]) 实现
+```
 5.  Map转JSON
-	```
+```
 	strMapToObj(Map对象);  //把Map对象转化为JSON对象
 	JSON.stringify()       //再把JSON对象转化为JSON字符串
-	```
+```
 6.  jSON转Map
-	```	
+```
 	new Map(JSON对象);  通过JSON.parse将json字符串转化为JSON对象后在作为Map参数传入	
-	```
+```
 
-### Proxy可以理解为在目标对象之前架设一层"拦截",外界对该对象的访问,都必须先通过这层拦截,因此提供了一种机制,可以对外界的访问进行过滤和改写	
-	new Proxy(targer,handler)  				//target参数表示所要拦截的目标对象,handler参数也是一个对象，用来定制拦截行为。
+### WeakMap 与 Map 类似，但是键名必须为对象
+```
+1. WeakMap 的键名所引用的对象都是弱引用，即垃圾回收机制不将该引用考虑在内；
+2. 只要所引用的对象的其他引用都被清除，垃圾回收机制就会释放该对象所占用的内存；
+3. 一旦所引用的对象被回收，WeakMap 里面的键名对象和所对应的键值对会自动消失，不用手动删除引用。
+```
+* 	应用场景： 需要往对象上添加数据，又不想干扰垃圾回收机制，就可以使用 WeakMap。
+```
+	【应用的典型场合就是 DOM 节点作为键名】
+	示例：
+		在网页的 DOM 元素上添加数据，就可以使用WeakMap结构。当该 DOM 元素被清除，其所对应的WeakMap记录就会自动被移除。
+		const wm = new WeakMap();
+		const element = document.getElementById('example');
+		wm.set(element, 'some information');
+		wm.get(element) // "some information"
+```
+* API 方法
+```
+1. 没有遍历操作（即没有keys()、values()和entries()方法），也没有size属性。因为没有办法列出所有键名，某个键名是否存在完全不可预测，
+跟垃圾回收机制是否运行相关。这一刻可以取到键名，下一刻垃圾回收机制突然运行了，这个键名就没了，为了防止出现不确定性，就统一规定不能取到键名。
+2. 无法清空，即不支持clear方法。
+3. 只有四个方法可用 get()、set()、has()、delete()
+```
 
-*	代码示例:
-	```
-	var proxy = new Proxy({}, {				//被代理的目标对象{},第二个参数为配置对象,提供一个对应的处理函数,该函数将拦截对应的操作
-	  get: function(target, property) {     //配置对象有一个get方法,用来拦截对目标对象属性的访问请求
+### WeakRef 对象
+作用： WeakRef 对象，用于直接创建对象的弱引用。
+```
+let target = {};
+let wr = new WeakRef(target);
+
+wr 就是一个 WeakRef 的实例，属于对target的弱引用，垃圾回收机制不会计入这个引用；
+wr 的引用不会妨碍原始对象target被垃圾回收机制清除；
+
+WeakRef 实例对象有一个deref()方法
+如果原始对象存在，该方法返回原始对象；如果原始对象已经被垃圾回收机制清除，该方法返回undefined
+
+示例：
+function makeWeakCached(f) {
+  const cache = new Map();
+  return key => {
+    const ref = cache.get(key);
+    if (ref) {
+      const cached = ref.deref();
+      if (cached !== undefined) return cached;
+    }
+
+    const fresh = f(key);
+    cache.set(key, new WeakRef(fresh));
+    return fresh;
+  };
+}
+
+const getImageCached = makeWeakCached(getImage); // getImage 方法
+getImageCached('RMB');
+```
+
+### 强引用与弱引用
+```
+	强引用： 垃圾回收机制会计入这个引用，会影响到该对象被垃圾回收机制清除
+	弱引用： 垃圾回收机制不会计入这个引用， 不会影响到该对象被垃圾回收机制清除；
+```
+
+# 元编程(meta programming)
+
+### Proxy
+1. 作用： 在目标对象之前架设一层"拦截"，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。
+```
+	new Proxy(targer,handler)  				// target参数表示所要拦截的目标对象,handler参数也是一个对象，用来定制拦截行为
+
+	代码示例:
+	var target = {};
+	var proxy = new Proxy(target, {			// 被代理的目标对象{},第二个参数为配置对象,提供一个对应的处理函数,该函数将拦截对应的操作
+	  get: function(target, prop, receiver) {     // 配置对象有一个get方法,用来拦截对目标对象属性的访问请求
 	    return 35;
-	  }
+	  },
+	  set ...
+	  delete ...
 	});
-	proxy.name     //35
-	proxy.foo      //35
-	```
-
-#### 常见的拦截行为
+	proxy.name     	// 35
+	target.name 	// undefined
+```
+1. 常见的拦截行为
 *	get(target, propKey, receiver)          	//拦截对象属性的读取,当被代理对象的属性被读取时,执行get后面的函数(以下同理)
 *	set(target, propKey, value, receiver)		//拦截对象属性的设置
 *	has(target, propKey)                    	//拦截propKey in proxy的遍历操作,返回一个布尔值
 *   deleteProperty(target, propKey)         	//拦截delete proxy[propKey]的操作,返回一个布尔值
 *	apply(target, object, args)             	//拦截Proxy实例作为函数调用的操作
 *	defineProperty(target, propKey, propDesc)	//拦截属性描述符定义
+* 	construct(target, args, newTarget)
+* 	......
+
+2.  Proxy 实例也可以作为其他对象的原型对象
+```
+	var proxy = new Proxy({}, {
+	  get: function(target, propKey) {
+	    return 35;
+	  }
+	});
+
+	let obj = Object.create(proxy);
+	obj.time // 35
+```
+
+### Reflect
+
+```
+	Object.defineProperty(obj, name, desc)
+	Reflect.defineProperty(obj, name, desc)
+
+	Reflect.has(target, prop);
+
+	Reflect对象的方法与Proxy对象的方法一一对应，只要是Proxy对象的方法，就能在Reflect对象上找到对应的方法。
+	这就让Proxy对象可以方便地调用对应的Reflect方法，完成默认行为，作为修改行为的基础
+	let proxy = Proxy(target, {
+		set: function(target, prop, value, receiver){
+			Reflect.set(target, prop, value, receiver);
+		}
+	});
+
+	Reflect.construct(target, args);
+
+	let dog = new Animal('dog');
+	Reflect.construct(Animal, 'dog');
+
+	语法：
+	Reflect.defineProperty(target, propKey, attributes);
+
+	Object.defineProperty(dog, 'name', {
+		get: function(target, propKey){
+			return target[propKey];
+		}
+	});
+	等价于
+	Reflect.defineProperty(dog, 'name', {
+		get: function(target, propKey){
+			return 
+		}
+	})
 
 
-### WeakMap与Map类似,但是键名必须为对象
+	实现一个观察者模式：
+	const queuedObservers = new Set();
 
-### forEach,for...in与for...of遍历可迭代对象
-	forEach(function(value,index,arr){   //arr:当前元素所属的数组对象
+	// 实现 observable 和 observe 这两个函数
+	const observe = fn => queuedObservers.add(fn);
+	const observable = obj => new Proxy(obj, {
+		set: function(target, key, value, receiver) {
+			const result = Reflect.set(target, key, value, receiver);
+		    queuedObservers.forEach(observer => observer());
+		    return result;
+		}
+	});
+	
+	// 数据对象 person 是【被观察目标】
+	const person = observable({
+		name: '张三',
+	  	age: 20
+	});
+
+	// 函数 print 是【观察者】
+	function print() {
+	  	console.log(`${person.name}, ${person.age}`);
+	}
+	observe(print);
+
+	person.name = '李四'; // 触发事件源
+```
+
+### forEach，for...in与for...of遍历可迭代对象
+	forEach(function(value, index, arr){   //arr:当前元素所属的数组对象
 		//doSomething()
 	})
 	for...of... //遍历成员==获取键值
@@ -449,6 +1034,14 @@
 	console.log('next');
 	// now
 	// next
+	```
+* Promise.allSettled() 方法 ES2020
+	```
+	只有等到参数数组的所有 Promise 对象都发生状态变更（不管是fulfilled还是rejected），返回的 Promise 对象才会发生状态变更。状态总是fulfilled。
+	```
+* Promise.any() 方法 ES2021
+	```
+	只要参数实例有一个变成fulfilled状态，包装实例就会变成fulfilled状态；如果所有参数实例都变成rejected状态，包装实例就会变成rejected状态。
 	```
 
 ### fetch API:获取资源的接口
