@@ -836,7 +836,6 @@ getImageCached('RMB');
 ```
 
 ### Reflect
-
 ```
 	Object.defineProperty(obj, name, desc)
 	Reflect.defineProperty(obj, name, desc)
@@ -908,9 +907,24 @@ getImageCached('RMB');
 	for...in... //遍历索引==获取键名
 
 ### Iterator(遍历器)
-	next()方法返回包含value和done两个属性的对象{value:'foo'，done:boolean}    	//false表示没有结束,true表示结束
-*	Symbol.iterator属性:
-	```
+	ES6 规定，默认的 Iterator 接口部署在数据结构的 Symbol.iterator 属性，或者说，一个数据结构只要具有 Symbol.iterator 属性，就可以认为是“可遍历的”（iterable）；
+	next()方法返回包含value和done两个属性的对象{value:'foo'，done:boolean} // false表示没有结束，true表示结束
+```
+	interface Iterable {
+	  [Symbol.iterator]() : Iterator,
+	}
+
+	interface Iterator {
+	  next(value?: any) : IterationResult,
+	}
+
+	interface IterationResult {
+	  value: any,
+	  done: boolean,
+	}
+```
+*	Symbol.iterator属性
+```
 	返回遍历器对象iterator,调用该对象的next方法,在返回一个值的同时,自动将内部指针移到下一个实例
 	let arr = ['a', 'b', 'c'];
 	let iter = arr[Symbol.iterator]();
@@ -918,7 +932,7 @@ getImageCached('RMB');
 	iter.next() // { value: 'b', done: false }
 	iter.next() // { value: 'c', done: false }
 	iter.next() // { value: undefined, done: true }
-	```
+```
 
 ### Generator
 	Generator 函数是一个普通函数,但是有两个特征:
@@ -936,14 +950,230 @@ getImageCached('RMB');
 	hw.next() 	// { value: 'ending', done: true }
 	hw.next() 	// { value: undefined, done: true }	
 *	yield表达式
-	```
-	Generator函数返回的遍历器对象,只有调用next方法才会遍历下一个内部状态,所以其实提供了一种可以暂停执行的函数。yield表达式就是暂停标志。
+```
+	Generator函数返回的遍历器对象，只有调用next方法才会遍历下一个内部状态，所以其实提供了一种可以暂停执行的函数。yield表达式就是暂停标志。
 	遍历器对象的next方法的运行逻辑如下:
 	（1）遇到yield表达式，就暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回的对象的value属性值。
 	（2）下一次调用next方法时，再继续往下执行，直到遇到下一个yield表达式。
 	（3）如果没有再遇到新的yield表达式，就一直运行到函数结束，直到return语句为止，并将return语句后面的表达式的值，作为返回的对象的value属性值。
 	（4）如果该函数没有return语句，则返回的对象的value属性值为undefined。
-	```
+	
+	注意事项：
+		1. yield表达式如果用在另一个表达式之中，必须放在圆括号里面
+			示例：
+			function* demo() {
+			  console.log('Hello' + yield); // SyntaxError
+			  console.log('Hello' + yield 123); // SyntaxError
+
+			  console.log('Hello' + (yield)); // OK
+			  console.log('Hello' + (yield 123)); // OK
+			}
+
+		2. yield表达式用作函数参数或放在赋值表达式的右边，可以不加括号。
+```
+* 	与 Iterator 接口的关系
+```
+	var myIterable = {};
+	myIterable[Symbol.iterator] = function* () {
+	  yield 1;
+	  yield 2;
+	  yield 3;
+	};
+
+	[...myIterable] // [1, 2, 3]
+
+	Generator 函数执行后，返回一个遍历器对象。该对象本身也具有Symbol.iterator属性，执行后返回自身。
+
+	function* gen(){
+	  // some code
+	}
+	var g = gen();
+	g[Symbol.iterator]() === g
+	// true
+```
+* next 方法的参数
+```
+	yield表达式本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield表达式的返回值。
+	示例：
+		function* foo(x) {
+		  var y = 2 * (yield (x + 1));
+		  var z = yield (y / 3);
+		  return (x + y + z);
+		}
+
+		var b = foo(5);
+		b.next() // { value:6, done:false }
+		b.next(12) // { value:8, done:false }
+		b.next(13) // { value:42, done:true }  x=5, y=12*2=24, z=13, 5+24+13=42
+```
+
+* for...of 循环
+```
+	for...of循环可以自动遍历 Generator 函数运行时生成的Iterator对象，且此时不再需要调用next方法。
+	示例：
+		function* numbers() {
+		  yield 1;
+		  yield 2;
+		}
+
+		for (let v of numbers()) {
+		  console.log(v);
+		}
+		// 1 2
+
+	除了for...of循环以外，扩展运算符（...）、解构赋值和Array.from方法内部调用的，都是遍历器接口。这意味着，它们都可以将 Generator 函数返回的 Iterator 对象，作为参数。
+	// 扩展运算符
+	[...numbers()] // [1, 2]
+
+	// Array.from 方法
+	Array.from(numbers()) // [1, 2]
+
+	// 解构赋值
+	let [x, y] = numbers();
+	x // 1
+	y // 2
+```
+
+* Generator.prototype.throw()
+```
+	Generator 函数返回的遍历器对象，都有一个throw方法，可以在函数体外抛出错误，然后在 Generator 函数体内捕获
+	function* gen() {
+		try {
+	    	yield;
+	  	} catch (e) {
+	    	console.log(e);
+	  	}
+	};
+
+	var g = gen(); // g 是遍历器对象
+	g.next();
+	g.throw(new Error('出错了！'));
+
+ 	// 注意，不要混淆遍历器对象的throw方法和全局的throw命令
+	g.throw(new Error('error')); // 遍历器对象的throw方法
+	throw new Error('error'); // 全局 throw 命令
+
+	g.throw 方法抛出的错误要被内部捕获，前提是必须至少执行过一次next方法：
+	这种行为其实很好理解，因为第一次执行next方法，等同于启动执行 Generator 函数的内部代码，否则 Generator 函数还没有开始执行，这时throw方法抛错只可能抛出在函数外部。
+```
+* Generator.prototype.return()
+```
+	1. 返回给定的值，并且终结遍历 Generator 函数
+	2. 如果return()方法调用时，不提供参数，则返回值的value属性为undefined
+		g.return('foo') // { value: "foo", done: true }
+		g.return() 		// { value: "undefined", done: true }
+	3. 如果 Generator 函数内部有try...finally代码块，且正在执行try代码块，那么return()方法会导致立刻进入finally代码块，执行完以后，整个函数才会结束。
+		function* numbers () {
+		  yield 1;
+		  try {
+		    yield 2;
+		    yield 3;
+		  } finally {
+		    yield 4;
+		    yield 5;
+		  }
+		  yield 6;
+		}
+		var g = numbers();
+		g.next() // { value: 1, done: false }
+		g.next() // { value: 2, done: false }
+		g.return(7) // { value: 4, done: false }
+		g.next() // { value: 5, done: false }
+		g.next() // { value: 7, done: true }
+```
+* yield* 表达式
+```
+	如果yield表达式后面跟的是一个遍历器对象，需要在yield表达式后面加上星号，表明它返回的是一个遍历器对象。这被称为yield*表达式。
+
+	yield*后面跟着一个数组，由于数组原生支持遍历器，因此就会遍历数组成员。
+	示例：
+		function* gen(){
+		  yield* ["a", "b", "c"];
+		}
+		gen().next() // { value:"a", done:false }
+
+	示例：		
+		function* foo() {
+		  yield 2;
+		  return "foo";
+		}
+
+		function* bar() {
+		  yield 1;
+		  var v = yield* foo();
+		  console.log("v: " + v);
+		  yield 3;
+		}
+
+		var it = bar();
+
+		it.next()
+		// {value: 1, done: false}
+		it.next()
+		// {value: 2, done: false}
+		it.next();
+		// "v: foo"
+		// {value: 3, done: false}
+		it.next()
+		// {value: undefined, done: true}
+	
+	示例：使用yield*语句遍历完全二叉树。	
+		// 下面是二叉树的构造函数，
+		// 三个参数分别是左树、当前节点和右树
+		function Tree(left, label, right) {
+		  this.left = left;
+		  this.label = label;
+		  this.right = right;
+		}
+
+		// 下面是中序（inorder）遍历函数。
+		// 由于返回的是一个遍历器，所以要用generator函数。
+		// 函数体内采用递归算法，所以左树和右树要用yield*遍历
+		function* inorder(t) {
+		  if (t) {
+		    yield* inorder(t.left);
+		    yield t.label;
+		    yield* inorder(t.right);
+		  }
+		}
+
+		// 下面生成二叉树
+		function make(array) {
+		  // 判断是否为叶节点
+		  if (array.length == 1) return new Tree(null, array[0], null);
+		  return new Tree(make(array[0]), array[1], make(array[2]));
+		}
+		let tree = make([[['a'], 'b', ['c']], 'd', [['e'], 'f', ['g']]]);
+
+		// 遍历二叉树
+		var result = [];
+		for (let node of inorder(tree)) {
+		  result.push(node);
+		}
+
+		result
+		// ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+```
+* 作为对象属性的 Generator 函数
+```
+	let obj = {
+	  * myGeneratorMethod() {
+	    ···
+	  }
+	};
+	等价于
+	let obj = {
+	  myGeneratorMethod: function* () {
+	    // ···
+	  }
+	};
+```
+* Generator 函数的this
+```
+
+```
+
+
 
 ### Promise对象
 	相当于一个容器,里面保存着某个未来才会结束的事件(通常是一个异步操作)的结果
@@ -977,7 +1207,7 @@ getImageCached('RMB');
 	then方法可以接受两个回调函数作为参数。第一个回调函数是Promise对象的状态变为resolved时调用,第二个回调函数是Promise对象的状态变为rejected时调用。其中,第二个函数是可选的,不一定要提供。这两个函数都接受Promise对象传出的值作为参数。
 	```
 
-### Promise对象的方法:
+### Promise对象的方法
 *	Promise.all()方法
 	```
 	Promise.all方法用于将多个Promise实例,包装成一个新的Promise实例
@@ -1184,3 +1414,22 @@ getImageCached('RMB');
 
 ### async
 	下载完成后,立即异步执行js代码
+
+
+### vue2 项目中使用 ES6 实验特性
+```
+	cnpm i '@babel/plugin-proposal-optional-chaining' --save-dev
+
+	babel.config.js 文件中
+	module.exports = {
+	  presets: [
+	    '@vue/app'
+	  ],
+	  plugins: [
+	    '@babel/plugin-proposal-function-bind',						// 用"::"符号来代替"bind", "call"语法.
+	    '@babel/plugin-proposal-logical-assignment-operators',		// result.name ||= 1;
+	    '@babel/plugin-proposal-nullish-coalescing-operator',		// let name = result.name ?? 'yfx';
+	    '@babel/plugin-proposal-optional-chaining'					// res?.data?.img
+	  ]
+	}
+```

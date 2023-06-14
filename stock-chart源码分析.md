@@ -32,6 +32,32 @@ initData() -> reCalculate() -> loadMoreData() -> this.dataProvider.getKline(para
 											  -> this.redraw() -> this.drawChart() 绘制K线蜡烛图和主副图指标逻辑
 		   -> initSubscribe()
 
+### klineChart对象的 initChart()
+initChart 方法会计算主、副图属性：最大、最小值，每单位刻度的像素
+ 1. 主图相关属性
+	this.mainChartWidth
+	this.mainChartHeight
+	this.candleChartHeight = this.mainChartHeight
+	this.max
+	this.min
+
+2. 副图相关属性
+	this.indicsChartHeight 
+	this.maxIndics
+	this.minIndics
+	this.indicsYPixelRadio
+
+### Chart.js
+drawYAxisGridLine() 会将 y轴刻度及高度坐标将入到yAxisTicks数组中，将来一起绘制Y轴坐标
+
+yAxisTicks.push({
+        text: formatText,
+        x: x,
+        y: yAxis,
+        tickColor,
+        withBackground
+      })
+
 
 ### 主副指标参数
 1. 主图指标
