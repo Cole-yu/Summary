@@ -574,7 +574,7 @@ import { AccordionModule,AlertModule,ButtonsModule } from 'ngx-bootstrap';
 三个html模板指令:NgForm,NgModel,NgModelGroup
 1.	ngForm
 	```
-	angulr会接管任何带有NgForm标记的html元素，若不需要angualr接管form,可以在表单中加ngNoForm	
+	angular会接管任何带有NgForm标记的html元素，若不需要angualr接管form,可以在表单中加ngNoForm	
 	<form #myForm="ngForm" (ngSubmit)="onSubmit(myForm.value)">		
 	</form>	
 	ngForm会拦截标准的html表单提交事件,<button type="submit"></button>	

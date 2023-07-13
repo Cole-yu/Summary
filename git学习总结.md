@@ -22,7 +22,8 @@
 	git checkout bar 切换到分支bar
 	git checkout -b <name> 创建+切换到分支
 	git merge <name>   合并某分支到当前分支
-	git branch -d <name> 删除分支
+	git branch -d <name> 删除本地分支		git branch --delete <name>
+	git branch -d <name> 删除远程分支		git push origin --delete <name>
 
 ### 常用命令
 	git log 								// 查看提交的版本历史记录

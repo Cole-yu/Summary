@@ -36,7 +36,7 @@
 ### ESLint:用于静态检查代码的语法和风格
 
 ### Mocha:是一个测试框架,用于单元测试
-	如果需要执行使用ES6语法的测试脚本,可以修改package.json的scripts.test。
+	如果需要执行使用ES6语法的测试脚本,可以修改package.json的scripts.test
 	"scripts": {
 	  "test": "mocha --ui qunit --compilers js:babel-core/register"   //--compilers参数指定脚本的转码器,规定后缀名为js的文件,都需要使用babel-core/register先转码
 	}
@@ -358,37 +358,83 @@ z // { a: 3, b: 4 }
 ```
 
 ### 运算符的扩展
-1. 链判断运算符 ?. 
+1. 指数运算符
 ```
-const firstName = message && message.body && message.body.user && message.body.user.firstName || 'default';
-const firstName = message?.body?.user?.firstName || 'default';
+	2 ** 2 // 4
+	2 ** 3 // 8
+		
+	// 相当于 2 ** (3 ** 2)
+	2 ** 3 ** 2 	// 512
+
+	a **= 2;
+	// 等同于 a = a * a;
+
+	b **= 3;
+	// 等同于 b = b * b * b;
 ```
 
-2. Null 判断运算符(ES2020)
+2. 链判断运算符 ?. 
 ```
-以前开发者的原意是，只要属性的值为null或undefined，默认值就会生效，但是属性的值如果为空字符串或false或0，默认值也会生效
+	const firstName = message && message.body && message.body.user && message.body.user.firstName || 'default';
+	const firstName = message?.body?.user?.firstName || 'default';
 
-运算符左侧的值为null或undefined时，才会返回右侧的值
-const headerText = response?.settings?.headerText ?? "Null 判断运算符";
+	// 判断对象方法是否存在，如果存在就立即执行
+	iterator.return?.()
+
+	报错场合：
+		// 构造函数
+		new a?.()
+
+		// 链判断运算符的右侧有模板字符串
+		a?.`{b}`
+
+		// 链判断运算符的左侧是 super
+		super?.()
+
+		// 链运算符用于赋值运算符左侧
+		a?.b = c
+
+	右侧不得为十进制数值
+		规定如果 ?. 后面紧跟一个十进制数字，那么 ?. 不再被看成是一个完整的运算符，而会按照三元运算符进行处理
+		foo?.3:0
+		等价于
+		foo ? .3 : 0
+		foo ? 0.3 : 0
 ```
 
-3. 逻辑赋值运算符
+3. Null 判断运算符(ES2020)
 ```
-// 或赋值运算符
-x ||= y
-// 等同于
-x || (x = y)
-chartType.type ||= 'min';
+	以前开发者的原意是，只要属性的值为null或undefined，默认值就会生效，但是属性的值如果为空字符串或false或0，默认值也会生效
 
-// 与赋值运算符
-x &&= y
-// 等同于
-x && (x = y)
+	运算符左侧的值为 null 或 undefined 时，才会返回右侧的值
+	【注】：跟链判断运算符?.配合使用，为null或undefined的值设置默认值
+	const headerText = response?.settings?.headerText ?? "Hello world!";
+```
 
-// Null 赋值运算符
-x ??= y
-// 等同于
-x ?? (x = y)
+4. 逻辑赋值运算符
+```
+	// 或赋值运算符
+	x ||= y
+	// 等同于
+	x || (x = y)
+	chartType.type ||= 'min'; // 为变量或属性设置默认值
+	等价于
+	chartType.type || chartType.type='min';
+
+
+	// 与赋值运算符
+	x &&= y
+	// 等同于
+	x && (x = y)
+
+
+	// Null 赋值运算符
+	x ??= y
+	// 等同于
+	x ?? (x = y)
+	chartType.type ??= 'min';  // 为变量或属性设置默认值
+	等价于
+	chartType.type ?? (chartType.type='min');
 ```
 
 # 数组的 at() 方法(ES2022)
@@ -420,6 +466,9 @@ arr.at(-1) === arr[arr.length-1] === 'c'
 
 ### 字符串的扩展
 ```
+String.fromCharCode() 方法：从 Unicode 码点返回对应字符
+String.fromCodePoint()
+
 'x'.repeat(3) // xxx
 
 'x'.padStart(5, 'ab') 	// 'ababx'
@@ -437,7 +486,7 @@ foo.trimStart(); // 清除头部空格
 const bar = 'abc  ';
 bar.trimEnd() // 清除尾部空格
 
-at()
+str.at()
 ```
 
 ### 正则的扩展
@@ -485,7 +534,15 @@ matches;
 ```
 
 ### 数值的扩展(ES2021)
-1. 数值分隔符
+1. 二进制和八进制表示法
+```
+	ES6 提供了二进制和八进制数值的新的写法，分别用前缀0b（或0B）和0o（或0O）表示
+	0 是数字 零
+	o 是字母 [opq OPQ]
+	0o10 == 8
+	0b11 == 3
+```
+2. 数值分隔符
 ```
 	不能放在数值的最前面或最后面；						// _1464301
 	不能两个或两个以上的分隔符连在一起；				// 123__456
@@ -497,35 +554,36 @@ matches;
 	// 科学计数法
 	1e10_000
 ```
-2. Number 对象的方法和属性
+3. Number 对象的方法和属性
 ```
-Number.isFinite() 	// 检查一个数值是否为有限的
-Number.isNaN()  	// 检查一个值是否为NaN
-Number.isInteger()	// 用来判断一个数值是否为整数
-Number.parseInt() 	// 转整数
-Number.parseFloat()	// 转浮点数
-属性
-Number.EPSILON      // 一个极小的常量，表示 1 与大于 1 的最小浮点数之间的差
-Number.EPSILON === Math.pow(2, -52)
+	Number.isFinite() 	// 检查一个数值是否为有限的
+	Number.isNaN()  	// 检查一个值是否为NaN
+	Number.isInteger()	// 用来判断一个数值是否为整数
+	Number.parseInt() 	// 转整数
+	Number.parseFloat()	// 转浮点数
+	Number.isInteger()  // 判断一个数值是否为整数
+	属性
+	Number.EPSILON      // 一个极小的常量，表示 1 与大于 1 的最小浮点数之间的差
+	Number.EPSILON === Math.pow(2, -52)
 ```
-3. Math 对象的扩展
+4. Math 对象的扩展
 ```
-Math.trunc()
-Math.trunc方法用于去除一个数的小数部分，返回整数部分
-Math.trunc(4.1) // 4
-Math.trunc(-4.9) // -4
+	Math.trunc()
+	Math.trunc 方法用于去除一个数的小数部分，返回整数部分
+	Math.trunc(4.1) // 4
+	Math.trunc(-4.9) // -4
 
-Math.sign()
-Math.sign方法用来判断一个数到底是正数、负数、还是零
-参数为正数，返回+1；
-参数为负数，返回-1；
-参数为 0，返回0；
-参数为-0，返回-0;
-其他值，返回NaN
+	Math.sign()
+	Math.sign 方法用来判断一个数到底是正数、负数、还是零
+	参数为正数，返回+1；
+	参数为负数，返回-1；
+	参数为 0，返回0；
+	参数为-0，返回-0;
+	其他值，返回NaN
 
-Math.cbrt()方法用于计算一个数的立方根
+	Math.cbrt()方法用于计算一个数的立方根
 ```
-4. BigInt(大整数 ES2020) 第8种数据类型
+5. BigInt(大整数 ES2020) 第8种数据类型
 ```
 	2n ** 1024n = 17976931348…6329624224137216n
 
@@ -543,6 +601,10 @@ Math.cbrt()方法用于计算一个数的立方根
 
 	BigInt 与字符串混合运算时，会先转为字符串，再进行运算
 	'abc' + 123n // "abc123"
+
+	BigInt 函数
+	BigInt(123) 123n
+	new BigInt(123)  TypeError
 ```
 
 ### 函数的扩展
@@ -590,14 +652,70 @@ var t3 = f()().call({id: 4}); // id: 1
 
 ### 数组的扩展
 ```
-与解构赋值结合
-let [first, ...rest] = list;
-等价于
-let rest = list.slice(1);
+	与解构赋值结合
+	let [first, ...rest] = list;
+	等价于
+	let rest = list.slice(1);
 
-实现了 Iterator 接口的对象
+	实现了 Iterator 接口的对象
+```
+
+### 对象的扩展
+1. 对象的每个属性都有一个描述对象（Descriptor），用来控制该属性的行为
+```		
+	Object.getOwnPropertyDescriptor
+	reflect.getOwnPropertyDescriptor(obj, name);
+
+	有四个操作会忽略enumerable为false的属性：
+		for...in循环：只遍历对象自身的和继承的可枚举的属性。
+		Object.keys()：返回对象自身的所有可枚举的属性的键名。
+		JSON.stringify()：只串行化对象自身的可枚举的属性。
+		Object.assign()： 忽略enumerable为false的属性，只拷贝对象自身的可枚举的属性。
+```
+2. 解构赋值
+```
+	let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
+	x // 1
+	y // 2
+	z // { a: 3, b: 4 }
+
+* 由于解构赋值要求等号右边是一个对象，所以如果等号右边是undefined或null，就会报错，因为它们无法转为对象
+
+* 解构赋值必须是最后一个参数，否则会报错
+	let { ...x, y, z } = someObject; // 句法错误
+
+* 注意，解构赋值的拷贝是浅拷贝，即如果一个键的值是复合类型的值
+	let obj = { a: { b: 1 } };
+	let { ...x } = obj;
+	obj.a.b = 2;
+	x.a.b // 2
 
 ```
+3. 扩展运算符
+```
+	let foo = { ...['a', 'b', 'c'] };
+	foo
+	// {0: "a", 1: "b", 2: "c"}
+
+	{...'hello'}
+	// {0: "h", 1: "e", 2: "l", 3: "l", 4: "o"}
+```
+
+### 对象的新增方法
+1. Object.is()
+```
+	NaN === NaN； 			// false
+	Object.is(NaN, NaN);	// true
+
+	+0 === -0; 				// true
+	Object.is(+0, -0); 		// false
+```
+2. Object.assign()
+3. Object.getOwnPropertyDescriptor()
+4. Object.setPrototypeOf()，Object.getPrototypeOf()
+5. Object.keys()，Object.values()，Object.entries() 
+6. Object.fromEntries()
+7. Object.hasOwn() 			// 判断是否为自身的属性
 
 ### Set 数据结构
 ```
@@ -906,18 +1024,46 @@ getImageCached('RMB');
 	for...of... //遍历成员==获取键值
 	for...in... //遍历索引==获取键名
 
-### Iterator(遍历器)
-	ES6 规定，默认的 Iterator 接口部署在数据结构的 Symbol.iterator 属性，或者说，一个数据结构只要具有 Symbol.iterator 属性，就可以认为是“可遍历的”（iterable）；
-	next()方法返回包含value和done两个属性的对象{value:'foo'，done:boolean} // false表示没有结束，true表示结束
+### Iterator(遍历器，迭代器)
 ```
+	ES6 规定，默认的 Iterator 接口部署在数据结构的 Symbol.iterator 属性，或者说，一个数据结构只要具有 Symbol.iterator 属性，就可以认为是可遍历对象（iterable）；
+	标准的Iterator接口函数: 该函数必须返回一个对象，且对象中包含next方法，且执行next()能返回包含 value/done 两个属性的、代表当前成员的信息对象
+	{value:'foo'，done:boolean} // false表示没有结束，true表示结束
+
+	let obj = {
+		data: [ 'hello', 'world' ],
+		[Symbol.iterator]() { 		// 遍历器生成函数，遍历器接口函数，函数返回结果为一个遍历器对象
+			const self = this;
+		    let index = 0;
+		    return { 				//	遍历器对象，具有next方法，该方法返回代表当前成员的信息对象
+		      	next() {
+		        	if (index < self.data.length) {
+		          		return {  	// 代表当前成员的信息对象
+		          			value: self.data[index++],
+		          			done: false
+		          		};
+		        	} else {
+		          		return {
+		           			value: undefined, 
+		           			done: true
+		            	};
+		        	}
+		      	}
+		    };
+		}
+	}
+
+	// Iterable 可遍历对象
 	interface Iterable {
 	  [Symbol.iterator]() : Iterator,
 	}
 
+	 // 遍历器对象
 	interface Iterator {
 	  next(value?: any) : IterationResult,
 	}
 
+	// 成员的信息对象
 	interface IterationResult {
 	  value: any,
 	  done: boolean,
@@ -1173,8 +1319,6 @@ getImageCached('RMB');
 
 ```
 
-
-
 ### Promise对象
 	相当于一个容器,里面保存着某个未来才会结束的事件(通常是一个异步操作)的结果
 	pending(进行中),fulfilled(已成功),rejected(已失败);
@@ -1198,49 +1342,66 @@ getImageCached('RMB');
 		//finally
 	});
 *	Promise实例生成以后,可以用then方法分别指定resolved状态和rejected状态的回调函数
-	```
+```
 	promise.then(function(value) {
 	  // success
 	}, function(error) {
 	  // failure
 	});
-	then方法可以接受两个回调函数作为参数。第一个回调函数是Promise对象的状态变为resolved时调用,第二个回调函数是Promise对象的状态变为rejected时调用。其中,第二个函数是可选的,不一定要提供。这两个函数都接受Promise对象传出的值作为参数。
-	```
+	then方法可以接受两个回调函数作为参数。第一个回调函数是Promise对象的状态变为resolved时调用,第二个回调函数是Promise对象的状态变为rejected时调用。其中,第二个函数是可选的,不一定要提供。这两个函数都接受Promise对象传出的值作为参数。	
+```
+* 	立即 resolved 的 Promise 是在本轮事件循环的末尾执行，总是晚于本轮循环的同步任务。
+```
+	new Promise((resolve, reject) => {
+	  resolve(1);
+	  console.log(2);
+	}).then(r => {
+	  console.log(r);
+	});
+	// 2
+	// 1
+```
+* 	宏任务 macrotask 与微任务 microtask
+```
+	宏任务： setTimeout, setImmediate, setInterval, script(整体代码)
+	微任务： promise.then, process.nextTick,
+```
+
 
 ### Promise对象的方法
-*	Promise.all()方法
-	```
+1. Promise.all()方法
+```
 	Promise.all方法用于将多个Promise实例,包装成一个新的Promise实例
 	Promise.all方法接受一个数组作为参数,p1、p2、p3都是Promise实例,如果不是,就会先调用下面讲到的Promise.resolve方法,将参数转为Promise实例,再进一步处理。
 	const p = Promise.all([p1, p2, p3]);
 	p的状态由p1、p2、p3决定,分成两种情况:
 	（1）只有p1、p2、p3的状态都变成fulfilled,p的状态才会变成fulfilled,此时p1、p2、p3的返回值组成一个数组,传递给p的回调函数
 	（2）只要p1、p2、p3之中有一个被rejected,p的状态就变成rejected,此时第一个被reject的实例的返回值,会传递给p的回调函数
-	```
-*	Promise.race()方法
-	```
-	Promise.race方法同样是将多个Promise实例,包装成一个新的Promise实例
-	const p = Promise.race([p1, p2, p3]);
-	上面代码中,只要p1、p2、p3之中有一个实例率先改变状态,p的状态就跟着改变	
+```
+2. Promise.race()方法
+```
+	Promise.race 方法同样是将多个Promise实例，包装成一个新的 Promise 实例
+	const p = Promise.race([p1, p2, p3]); // 只要 p1、p2、p3 之中有一个实例率先改变状态，p的状态就跟着改变
+
 	const promise = Promise.race([
-	  fetch('/resource'),										//向服务器获取资源,只有5秒时间,否则后面函数结果会被race方法捕获
+	  fetch('/resource'),										//向服务器获取资源，只有5秒时间。否则后面函数结果会被race方法捕获
 	  new Promise(function (resolve, reject) {					
 	    setTimeout(() => reject(new Error('请求超时!')), 5000)   //5秒钟后状态改为reject
 	  })
 	]);
 	promise.then(vlaue=>console.log(value))
 		   .catch(err=>console.error(err));
-	上面代码中,如果5秒之内fetch方法无法返回结果,promise对象的状态就会变为rejected,从而触发catch方法指定的回调函数。
-	```
-*   Promise.resolve()方法
-	```
+	上面代码中,如果5秒之内fetch方法无法返回结果，promise对象的状态就会变为rejected，从而触发catch方法指定的回调函数。
+```
+3. Promise.resolve()方法
+```
 	将现有对象转为Promise对象
 	Promise.resolve('foo');
 	// 等价于
 	new Promise(resolve => resolve('foo'));
-	```
-*	Promise.reject()方法
-	```
+```
+4. Promise.reject()方法
+```
 	let promise = Promise.reject('出错了');
 	// 等同于
 	let promise = new Promise((resolve, reject) => reject('出错了'));
@@ -1248,9 +1409,9 @@ getImageCached('RMB');
 		//doSomething();
 	})
 	.catch(err=>console.log(err));											//出错了
-	```	
-* 	Promise.try()方法
-	```
+```
+5. Promise.try()方法
+```
 	作用：让同步函数同步执行,异步函数异步执行,并且让它们具有统一的API
 	第一种方法:在立即执行函数中添加async函数
 	const f = () => console.log('now');
@@ -1264,15 +1425,51 @@ getImageCached('RMB');
 	console.log('next');
 	// now
 	// next
-	```
-* Promise.allSettled() 方法 ES2020
-	```
+```
+6. Promise.allSettled() 方法 ES2020
+```
 	只有等到参数数组的所有 Promise 对象都发生状态变更（不管是fulfilled还是rejected），返回的 Promise 对象才会发生状态变更。状态总是fulfilled。
-	```
-* Promise.any() 方法 ES2021
-	```
+```
+7. Promise.any() 方法 ES2021
+```
 	只要参数实例有一个变成fulfilled状态，包装实例就会变成fulfilled状态；如果所有参数实例都变成rejected状态，包装实例就会变成rejected状态。
-	```
+
+	Promise.any() 和 Promise.race() 的区别：
+		const p = Promise.race([p1, p2, p3]);
+		只要 p1、p2、p3 之中有一个实例率先改变状态，p的状态就跟着改变；
+
+		const p = Promise.any([p1, p2, p3]);
+		Promise.any()不会因为某个 Promise 变成 rejected 状态而结束，必须等到有一个参数 Promise 变成 fulfilled 状态，或者所有参数 Promise 变成rejected状态才会结束，p的状态再跟着改变；
+```
+8. Promise.prototype.then
+```
+	Promise 实例的 then() 方法最多接受两个参数：用于 Promise 兑现和拒绝情况的回调函数。它立即返回一个等效的 Promise 对象，允许你链接到其他 Promise 方法，从而实现链式调用。
+
+	返回值：
+		立即返回一个新的 Promise 对象，该对象始终处于待定状态，无论当前 Promise 对象的状态如何。
+
+		onFulfilled 和 onRejected 处理函数之一将被执行，以处理当前 Promise 对象的兑现或拒绝。即使当前 Promise 对象已经敲定，这个调用也总是异步发生的。返回的 Promise 对象（称之为 p）的行为取决于处理函数的执行结果，遵循一组特定的规则。如果处理函数：
+
+			返回一个值：p 以该返回值作为其兑现值。
+			没有返回任何值：p 以 undefined 作为其兑现值。
+			抛出一个错误：p 抛出的错误作为其拒绝值。
+			返回一个已兑现的 Promise 对象：p 以该 Promise 的值作为其兑现值。
+			返回一个已拒绝的 Promise 对象：p 以该 Promise 的值作为其拒绝值。
+			返回另一个待定的 Promise 对象：p 保持待定状态，并在该 Promise 对象被兑现/拒绝后立即以该 Promise 的值作为其兑现/拒绝值。
+
+	传入非函数作为参数
+		// .then 或者 .catch 的参数期望是函数，传入非函数则会发生值穿透
+		Promise.resolve(1).then(2).then(console.log); // 1
+		Promise.reject(1).then(2, 2).then(console.log, console.log); // 1
+
+	then() 的异步性
+		Promise.resolve(2).then(console.log); // 微任务
+		console.log(1);
+
+		输出结果：
+		// 1
+		// 2
+```
 
 ### fetch API:获取资源的接口
 	// 通过fetch获取百度的错误提示页面
@@ -1428,8 +1625,9 @@ getImageCached('RMB');
 	  plugins: [
 	    '@babel/plugin-proposal-function-bind',						// 用"::"符号来代替"bind", "call"语法.
 	    '@babel/plugin-proposal-logical-assignment-operators',		// result.name ||= 1;
-	    '@babel/plugin-proposal-nullish-coalescing-operator',		// let name = result.name ?? 'yfx';
-	    '@babel/plugin-proposal-optional-chaining'					// res?.data?.img
+	    '@babel/plugin-proposal-nullish-coalescing-operator',		// let name = result.name.cname ?? 'yfx';
+	    '@babel/plugin-proposal-optional-chaining',					// res?.data?.img
+	    "@babel/plugin-transform-numeric-separator",				// 12_00000_00_000_0
 	  ]
 	}
 ```
