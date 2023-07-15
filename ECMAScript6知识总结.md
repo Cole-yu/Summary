@@ -133,7 +133,6 @@ function SaferHTML(templateData) {
 （2） 多语言转换（国际化处理）
 ```
 
-
 ###	Object.defineProperty(obj, property, descriptor)
 *	作用:该方法会直接在一个对象上定义一个新属性,或者修改一个对象的现有属性,并返回这个对象。
 *	该方法接受三个参数,而且都是必填的:
@@ -314,7 +313,6 @@ move({x: 3, y: 8}); // [3, 8]
 (7) 输入模块的指定方法
 	const { SourceMapConsumer, SourceNode } = require("source-map");
 ```
-
 
 ### rest 参数
 ```

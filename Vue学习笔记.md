@@ -629,6 +629,9 @@
 	<text-document v-bind.sync="doc"></text-document>		//这样doc对象的每一个属性都作为一个独立的prop传入到子组件，然后各自添加用于更新的v-on监听器
 
 ### 插槽
+```
+	自 2.6.0 起有所更新。已废弃的使用 slot attribute 的语法。注意 Vue 版本
+
 	将<slot>元素作为承载分发内容的出口,类似于angualr中的投影机制
 	<navigation-link url="/profile">
 		Your Profile
@@ -638,8 +641,9 @@
 			<slot></slot>
 		</a>
 	当组件渲染的时候<slot>元素会被替换为"Your Profile";插槽内可以包含任何模板代码,包括hmtl或者其他的组件
-
+```
 ### 具名插槽
+```
 	当需要多个插槽,<slot>元素有一个特殊的特性:name
 	<div class="container">
 		<header>
@@ -652,19 +656,23 @@
 			<slot name="footer"></slot>
 		</footer>
 	</div>
-	在向具名插槽提供内容的时候，可以在一个父组件的<template>元素上使用slot属性，也可以直接用在一个普通的元素上
+	在向具名插槽提供内容的时候，可以在一个父组件的<template>元素上使用 v-slot 指令
 	<base-layout>
-		<template slot="header">
-			<h1>Here might be a page title</h1>
-		</template>
-		<p>A paragraph for the mian content.</p>
-		<p>Another one.</p>
-		<template slot="footer">
-			<p>Here is some contact information</p>
-		</template>
+	  <template v-slot:header>
+	    <h1>Here might be a page title</h1>
+	  </template>
+
+	  <template v-slot:default>
+	    <p>A paragraph for the main content.</p>
+	    <p>And another one.</p>
+	  </template>
+
+	  <template v-slot:footer>
+	    <p>Here's some contact info</p>
+	  </template>
 	</base-layout>
 	可以保留一个未命名插槽,这个插槽是默认插槽,他会作为所有未匹配到插槽的内容的统一出口,将内容渲染出来
-
+```
 ### 插槽的默认内容
 	<button type="submit">
 		<slot>Submit</slot>   //在slot标签内容指定默认的内容,如果父组件为这个插槽提供了内容,则默认的内容会被替换掉
@@ -674,39 +682,62 @@
 	父组件模板的所有东西都会在父级作用域内编译，子组件模板的所有东西都会在自己作用域内编译
 
 ### 作用域插槽
+```
 	提供的组件带有一个可从子组件获取数据的可复用的插槽
-	<ul>
-	  <li v-for="todo in todos"  v-bind:key="todo.id" >
-	    <!-- 我们为每个 todo 准备了一个插槽，-->
-	    <!-- 将 `todo` 对象作为一个插槽的 prop 传入。-->
-	    <slot v-bind:todo="todo">
-	      <!-- 回退的内容 -->
-	      {{ todo.text }}
-	    </slot>
-	  </li>
-	</ul>
-	可以选择为代办项定义一个不一样的<template>作为替代方案，并且通过slot-scope特性从子组件获取数据
-	<todo-list v-bind:todos="todos">
-	  <!-- 将 `slotProps` 定义为插槽作用域的名字 -->
-	  <template slot-scope="slotProps">
-	    <!-- 为待办项自定义一个模板，-->
-	    <!-- 通过 `slotProps` 定制每个待办项。-->
-	    <span v-if="slotProps.todo.isComplete">✓</span>
-	    {{ slotProps.todo.text }}
-	  </template>
-	</todo-list>
+	<current-user> 组件：
+	<span>
+		<!-- 将 userObj 对象作为一个 插槽prop user 的值传入 -->
+	  	<slot v-bind:user="userObj">
+	    	{{ user.lastName }}
+	  	</slot>
+	</span>
+	绑定在 <slot> 元素上的 attribute 被称为插槽 prop
 
-*	解构 slot-scope
-	```
+	父组件使用：
+	<current-user>
+	  <template v-slot:default="slotProps">
+	    {{ slotProps.user.firstName }}
+	  </template>
+	</current-user>
+
+	将包含所有插槽 prop 的对象命名为 slotProps
+```
+* 独占默认插槽的缩写语法
+```	
+	<current-user v-slot="slotProps">
+		{{ slotProps.user.firstName }}
+	</current-user>
+
+	注意默认插槽的缩写语法不能和具名插槽混用，因为它会导致作用域不明确：
+	只要出现多个插槽，请始终为所有的插槽使用完整的基于 <template> 的语法：
+
+	<current-user>
+		<template v-slot:default="slotProps">
+	    	{{ slotProps.user.firstName }}
+	  	</template>
+
+		<template v-slot:other="otherSlotProps">
+	    	...
+	  	</template>
+	</current-user>
+```
+*	解构插槽 Prop
+```
 	ES2015 解构语法:
-	<todo-list v-bind:todos="todos">
-		<template slot-scope="{ todo }">
-			<span v-if="todo.isComplete">✓</span>
-			{{ todo.text }}
-		</template>
-	</todo-list>
-	这会使作用域插槽变得更干净一些
-	```
+	<current-user v-slot="{ user }">
+		{{ user.firstName }}
+	</current-user>
+
+	// 给 插槽prop 重命名
+	<current-user v-slot="{ user: person }">
+		{{ person.firstName }}
+	</current-user>
+
+	// 当插槽 prop 是 undefined 的情形，定义默认值
+	<current-user v-slot="{ user = { firstName: 'Guest' } }">
+		{{ user.firstName }}
+	</current-user>
+```
 
 ### 动态组件与异步组件
 *	动态组件
@@ -1523,4 +1554,16 @@
 			'eslint:recommended'		// 使用推荐的语法规范格式
 		]
 	}
+```
+
+### mixin
+1. 选项合并
+```
+	data
+	数据对象在内部会进行递归合并，并在发生冲突时以组件数据优先
+
+	生命周期
+	同名钩子函数将合并为一个数组，因此都将被调用。另外，混入对象的钩子将在组件自身钩子之前调用。
+
+	值为对象的选项，例如 methods、components 和 directives，将被合并为同一个对象。两个对象键名冲突时，取组件对象的键值对(组件优先)。
 ```

@@ -1,10 +1,12 @@
 # TypeScript学习笔记
 
 ### 随笔
+```
+	TypeScript是一种在编译期进行静态类型分析的强类型的程序语言。
 	Angular2框架是用TypeScript编写完成的
 	可以在TypeScript官网的"练习"中直接进行在线编译，学习
 	https://www.tslang.cn/play/index.html
-
+```
 ### 本地编译环境搭建
 	1. 安装本地编译器 npm install -g typescript
 	2. 查看TypeScript版本 tsc -

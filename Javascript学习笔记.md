@@ -83,11 +83,35 @@
 
 ###	Javascript中内置的对象
 1. 	Array
-	```
+```
 	属性有length,prototype,constructor
 	方法：concat,join,pop,push,reverse,shift,slice,sort,splice,toString,unshift,find,findIndex,reduce,map,filter,forEach
-	```
+```
 2.  Boolean
+```
+	Boolean 对象是一个布尔值的对象包装器。
+	【注】：不要将基本类型中的布尔值 true 和 false 与值为 true 和 false 的 Boolean 对象弄混了。
+
+	new Boolean(false) 		// 值为 false 的 Boolean 对象： Boolean {false}
+
+	const x = new Boolean(false);
+	if (x) {
+	  // 这里的代码会被执行
+	}
+
+	Boolean(0) 				// 布尔值 false
+
+	不要用创建 Boolean 对象的方式将一个非布尔值转化成布尔值，直接将 Boolean 当做转换函数来使用即可，或者使用双重非（!!）运算符：
+	推荐：
+		const x = Boolean(expression);
+		const x = !!(expression);
+
+	Boolean.prototype.toString()
+	根据对象的值返回字符串 true 或 false。覆盖了 Object.prototype.toString() 方法。
+
+	Boolean.prototype.valueOf()
+	返回 Boolean 对象的原始值。覆盖了 Object.prototype.valueOf() 方法。
+```
 3.  Date
 	```
 	var date=new Date();            //获取当前日期时间
@@ -259,17 +283,90 @@
 	Location的方法:assign(),reload(),replace()
 	```
 
-### sessionStorage(会话存储)
+### sessionStorage(会话存储) 5MB
 	window.sessionStorage用于临时保存同一窗口(或标签页)的数据,在关闭窗口或标签页之后将会删除这些数据。	
 	保存数据语法:	sessionStorage.setItem("key", "value");
 	读取数据语法:	var lastname = sessionStorage.getItem("key");
 	删除指定键的数据语法:sessionStorage.removeItem("key");
 	删除所有sessionStorage数据:sessionStorage.clear();
 
-### LocalStorage(本地存储)
+### LocalStorage(本地存储) 5MB
 	localStorage用于长久保存整个网站的数据,在浏览器窗口关闭后还保留数据;
 	保存的数据没有过期时间，直到手动去删除。
 	方法和sessionStorage相同(setItem,getItem,removeItem,clear)
+
+### 变量
+* 概念
+```
+	变量与内存（堆和栈）的关系
+	栈区：基本类型的标识符和值，引用类型的标识符和堆内存地址（指针）；
+	堆内存： 引用类型的值；
+```	
+* 基本类型的值与引用类型的值的区别：
+1. 动态属性
+```
+	引用类型的值可以动态的改变其属性，因为它是对象；而基本类型的值不可以；	
+
+	// 动态属性
+	var person = new Object();
+    person.name = 'Matthew';
+    console.log(person.name); // 'Matthew'
+```
+2. 复制变量值
+```
+	基本类型的赋值本质：把值复制到新变量分配的内存空间中，两个变量完全独立；
+
+	// 基本类型的变量赋值
+    var num1 = 5;
+    var num2 = num1;
+
+	// 引用类型的赋值本质：传递引用类型在栈区的标识符所对应的堆内存地址（指针）；
+    var obj1 = new Object();
+    var obj2 = obj1;
+    obj1.name = 'Matthew';
+    console.log(obj2.name);//'Matthew'
+```
+3. 传递参数
+```
+	参数是基本类型时：参数传递是按值传递，参数是真值，函数的形参指向的是参数把值复制到新变量分配的内存空间；
+
+	function add(num) {
+		num++;
+        return num;
+	}
+    var count = 1;
+    var result = add(count);
+    console.log(count);		// 1 没有变化
+    console.log(result);	// 2
+
+	参数是引用类型时：参数传递的是一个引用地址，即引用类型在栈区的标识符所对应的堆内存地址（指针）；
+					形参的值是堆内存地址的另一份拷贝，是这个指针的副本；
+					函数的形参和实参指向的是同一个堆内存；
+
+	示例1：					
+	function setName(obj) {
+		obj.name = 'Matthew';
+        obj = new Object();			// 开辟了新的内存空间
+        obj.name = 'Alex';
+	}
+	var person = new Object();
+	setName(person);				// 此处传递的本质是 person 对象的引用地址，obj 与 person 指向的是同一个堆内存
+    console.log(person.name); 		// 'Matthew'
+
+	示例2：
+    var foo = {n:1};
+		(function(foo){
+       	console.log(foo.n);
+       	foo.n = 3;
+       	var foo = {n:2}; 				// 开辟了新的内存空间
+       	console.log(foo.n);
+     })(foo);
+     console.log(foo.n);
+
+     输出： 1 2 3
+
+     案例扩展：https://blog.csdn.net/a545415/article/details/77738033
+```
 
 ### setInterval(fn,time)
 
@@ -415,8 +512,7 @@
 
 ###	函数解析过程
 ```
-	当函数被解析时，会相应的创建一个函数对象，函数对象中有一个scope属性，这个scope属性维护着一条作用域链（scope chain），
-	作用域链上的每个节点都是一个活动对象；初始值为父级作用域的执行上下文对象的scope属性值。
+	当函数被解析时，会相应的创建一个函数对象，函数对象中有一个scope属性，初始值为父级作用域的执行上下文对象的scope属性值。这个scope属性维护着一条作用域链（scope chain），作用域链上的每个节点都是一个活动对象；
 ```	
 
 ### 函数执行过程
@@ -598,20 +694,20 @@
 
 ### 原型链
 ```
-function Foo(){
-	
-}
-function Fo(){
-	
-}
-Fo 是 Foo 的子类
-instance 是 Fo 类的实例
-let instance = new Fo()
+	function Foo(){
+		
+	}
+	function Fo(){
+		
+	}
+	Fo 是 Foo 的子类
+	instance 是 Fo 类的实例
+	let instance = new Fo()
 
-Fo.prototype.constructor  = Fo
+	Fo.prototype.constructor  = Fo
 
-instance的隐藏原型(__proto__) === Fo类的原型 === Foo构造函数的实例
-instance.__proto__ = Fo.prototype = new Foo() // 原型链
+	instance的隐藏原型(__proto__) === Fo类的原型 === Foo构造函数的实例
+	instance.__proto__ = Fo.prototype = new Foo() // 原型链
 ```
 
 ### Cookie
@@ -673,6 +769,7 @@ instance.__proto__ = Fo.prototype = new Foo() // 原型链
 
 	因此可以得出结论，主线程总是会先查看微任务队列，等到微任务队列中的事件都处理完成后，再去宏任务队列中添加一个事件到任务栈中执行。
 	
-	常见的宏任务有 setTimeout，setInterval；常见的微任务有 new Promise。
-	Promise 构造函数是同步执行的，promise.then 中的函数是异步执行的。
+	常见的宏任务有 script（整体代码），setTimeout，setInterval，setImmediate；
+	常见的微任务有 new Promise，process.nextTick（node.js 环境）；
+	Promise 构造函数是同步执行的，promise.then 中的函数是异步执行的（添加到微任务队列）。
 ```
