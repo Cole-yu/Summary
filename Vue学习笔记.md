@@ -656,6 +656,7 @@
 			<slot name="footer"></slot>
 		</footer>
 	</div>
+
 	在向具名插槽提供内容的时候，可以在一个父组件的<template>元素上使用 v-slot 指令
 	<base-layout>
 	  <template v-slot:header>
