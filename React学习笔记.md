@@ -614,3 +614,40 @@
 
 	结论：我们所写的 JSX，其实最终都会被编译成为 JavaScript 对象
 ```	
+
+### 命令
+```
+	npm run eject 暴露 react 配置文件 【 scripts config 】
+
+	// 在浏览器中打开目标地址
+	const openBrowser = require('react-dev-utils/openBrowser');
+	openBrowser('http://www.baidu.com');
+```
+
+### 学习一个新的前端框架需要知道的几方面内容
+```
+	逻辑复用 mixin
+	父子组件通讯 emit prop
+	插槽（组件内容嵌入） slot
+	路由及编程式导航 route router
+	状态管理 state
+	环境变量如何实现
+	webpack.config.js 配置
+	http请求 axios 请求响应拦截处理
+	如何代理
+```
+
+
+### 函数式组件和class组件
+```
+	函数式组件(推荐)
+	class组件 class Box extend Component{ }
+```
+
+### 概念 
+```
+	设置 state 不会更改现有渲染中的变量，但会请求一次新的渲染。
+	【批处理】： React 会在事件处理函数执行完成之后处理 state 更新。这被称为批处理。
+	【更新函数】： 要在一个事件中多次更新某些 state，你可以使用 setNumber(n => n + 1) 更新函数。
+
+```

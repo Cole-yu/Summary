@@ -8,6 +8,7 @@
 	Object
 	ECMAScript2015新增的数据类型
 	Symbol
+	BigInt
 	```
 *	值类型和引用类型
 	```
@@ -769,7 +770,7 @@
 
 	因此可以得出结论，主线程总是会先查看微任务队列，等到微任务队列中的事件都处理完成后，再去宏任务队列中添加一个事件到任务栈中执行。
 	
-	常见的宏任务有 script（整体代码），setTimeout，setInterval，setImmediate；
+	常见的宏任务有 script（整体代码），setTimeout，setInterval，setImmediate，I/O操作，UI渲染；
 	常见的微任务有 new Promise，process.nextTick（node.js 环境）；
 	Promise 构造函数是同步执行的，promise.then 中的函数是异步执行的（添加到微任务队列）。
 ```

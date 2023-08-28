@@ -1024,16 +1024,16 @@ getImageCached('RMB');
 
 ### Iterator(遍历器，迭代器)
 ```
-	ES6 规定，默认的 Iterator 接口部署在数据结构的 Symbol.iterator 属性，或者说，一个数据结构只要具有 Symbol.iterator 属性，就可以认为是可遍历对象（iterable）；
+	ES6 规定，默认的 Iterator 接口部署在数据结构的 Symbol.iterator 属性，或者说，一个数据结构只要具有 [Symbol.iterator] 属性，就可以认为是可遍历对象（iterable）；
 	标准的Iterator接口函数: 该函数必须返回一个对象，且对象中包含next方法，且执行next()能返回包含 value/done 两个属性的、代表当前成员的信息对象
 	{value:'foo'，done:boolean} // false表示没有结束，true表示结束
 
 	let obj = {
 		data: [ 'hello', 'world' ],
-		[Symbol.iterator]() { 		// 遍历器生成函数，遍历器接口函数，函数返回结果为一个遍历器对象
+		[Symbol.iterator]() { 		// 遍历器接口函数(iterable)，该函数返回结果为一个 指针对象(iterator)
 			const self = this;
 		    let index = 0;
-		    return { 				//	遍历器对象，具有next方法，该方法返回代表当前成员的信息对象
+		    return { 				//	指针对象(iterator)，具有next方法，该方法返回代表当前成员的信息对象(IterationResult)
 		      	next() {
 		        	if (index < self.data.length) {
 		          		return {  	// 代表当前成员的信息对象
@@ -1079,6 +1079,9 @@ getImageCached('RMB');
 ```
 
 ### Generator
+```
+	调用 Generator 函数后，该函数并不执行，返回一个指向内部状态的指针对象（Iterator Object）。
+
 	Generator 函数是一个普通函数,但是有两个特征:
 	一是:function关键字与函数名之间有一个星号;
 	二是:函数体内部使用yield表达式,定义不同的内部状态;
@@ -1087,12 +1090,13 @@ getImageCached('RMB');
 	  yield 'world';
 	  return 'ending';
 	}
-	var hw = helloWorldGenerator();
+	var hw = helloWorldGenerator(); // 含有 next 方法的指针对象(Iterator)
 	输出结果：
 	hw.next() 	// { value: 'hello', done: false }
 	hw.next() 	// { value: 'world', done: false }
 	hw.next() 	// { value: 'ending', done: true }
 	hw.next() 	// { value: undefined, done: true }	
+```
 *	yield表达式
 ```
 	Generator函数返回的遍历器对象，只有调用next方法才会遍历下一个内部状态，所以其实提供了一种可以暂停执行的函数。yield表达式就是暂停标志。
@@ -1603,13 +1607,146 @@ getImageCached('RMB');
 ```
 
 ### ECMAScript Modules
+```
+	ES6 模块加载方案，简称 ESM	
+	ES6 的模块自动采用严格模式，不管你有没有在模块头部加上"use strict";。
+		变量必须声明后再使用
+		函数的参数不能有同名属性，否则报错
+		不能使用with语句
+		不能对只读属性赋值，否则报错
+		不能使用前缀 0 表示八进制数，否则报错
+		不能删除不可删除的属性，否则报错
+		不能删除变量delete prop，会报错，只能删除属性delete global[prop]
+		eval不会在它的外层作用域引入变量
+		eval和arguments不能被重新赋值
+		arguments不会自动反映函数参数的变化
+		不能使用arguments.callee
+		不能使用arguments.caller
+		禁止this指向全局对象
+		不能使用fn.caller和fn.arguments获取函数调用的堆栈
+		增加了保留字（比如protected、static和interface）
+```
+* export 命令
+```
+	export 命令能够对外输出的就是三种接口：函数（Functions）， 类（Classes），var、let、const 声明的变量（Variables）。	
 
-### defer
-	下载完成后,文件要在所有元素解析完成之后执行js代码
+	// 写法一
+	export var m = 1;
 
-### async
-	下载完成后,立即异步执行js代码
+	// 写法二
+	var m = 1;
+	export {m};
 
+	// 写法三
+	var n = 1;
+	export {n as m};
+
+	// 正确
+	export function f() {};
+
+	// 正确
+	function f() {};
+	export {f};
+```
+import 命令
+```
+	import命令输入的变量都是只读的，因为它的本质是输入接口。也就是说，不允许在加载模块的脚本里面，改写接口。
+	如果a是一个对象，改写a的属性是允许的。
+		import {a} from './xxx.js'
+		a.foo = 'hello'; // 合法操作
+
+	import命令具有提升效果，会提升到整个模块的头部，首先执行。import命令是编译阶段执行的，在代码运行之前。
+		foo();
+		import { foo } from 'my_module';
+
+	由于import是静态执行，所以不能使用表达式和变量，这些只有在运行时才能得到结果的语法结构。
+		// 报错
+		import { 'f' + 'oo' } from 'my_module';
+
+		// 报错
+		let module = 'my_module';
+		import { foo } from module;
+
+		// 报错
+		if (x === 1) {
+		  import { foo } from 'module1';
+		} else {
+		  import { foo } from 'module2';
+		}
+```
+* 模块的整体加载
+```
+	除了指定加载某个输出值，还可以使用整体加载，即用星号（*）指定一个对象，所有输出值都加载在这个对象上面。
+		import * as circle from './circle';}
+```
+* export default 命令
+```
+		使用import命令的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。
+		为了给用户提供方便，让他们不用阅读文档就能加载模块，就要用到export default命令，为模块指定默认输出。
+
+			// export-default.js
+			export default function () {
+			  console.log('foo');
+			}
+
+			其他模块加载该模块时，import命令可以为该匿名函数指定任意名字。
+
+			// import-default.js
+			import customName from './export-default';
+			customName(); // 'foo'
+
+		因为export default命令其实只是输出一个叫做default的变量，所以它后面不能跟变量声明语句。
+			// 错误
+			export default var a = 1;
+```
+* 动态加载
+```
+	ES2020提案 引入import()函数，支持动态加载模块。
+		语法： import(specifier)
+		import()返回一个 Promise 对象。下面是一个例子。
+			const main = document.querySelector('main');
+			import(`./section-modules/${someVariable}.js`)
+				.then(module => {
+			    	module.loadPageInto(main);
+			  	})
+			  	.catch(err => {
+			    	main.textContent = err.message;
+			  	});
+```			  	
+* import.meta
+```
+	ES2020 为 import 命令添加了一个元属性import.meta，返回当前模块的元信息
+	import.meta只能在模块内部使用，如果在模块外部使用会报错。
+	（1）import.meta.url 返回当前模块的 URL 路径
+		注意，Node.js 环境中，import.meta.url返回的总是本地路径，即file:URL协议的字符串，比如file:///home/user/foo.js。
+
+	（2）import.meta.scriptElement 是浏览器特有的元属性，返回加载模块的那个<script>元素，相当于document.currentScript属性
+		<script type="module" src="my-module.js" data-foo="abc"></script>
+		import.meta.scriptElement.dataset.foo 	// 输出： abc
+```
+
+### Module 的加载实现
+* 在浏览器中加载
+```
+	<script src="path/to/myModule.js" defer></script>
+	<script src="path/to/myModule.js" async></script>
+	
+	defer 下载完成后，文件要在所有元素解析完成之后执行js代码
+	async 下载完成后，立即异步执行js代码
+	总结：defer是“渲染完再执行”，async是“下载完就执行”；
+		如果有多个defer脚本，会按照它们在页面出现的顺序加载，而多个async脚本是不能保证加载顺序的。
+```
+* 加载规则
+```
+	浏览器加载 ES6 模块，也使用<script>标签，但是要加入type="module"属性。
+	<script type="module" src="./foo.js"></script>
+```
+* ES6 模块与 CommonJS 模块的差异
+```
+	CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。
+	CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
+	CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载，有一个独立的模块依赖的解析阶段。
+```
 
 ### vue2 项目中使用 ES6 实验特性
 ```

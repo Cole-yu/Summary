@@ -4,14 +4,44 @@
 	数据绑定 组件间通讯 生命周期 Vuex(状态管理) 路由 
 
 ### 生命周期
+```
+					setup(vue3)
 	beforeCreate
 	created
 	beforeMount
 	mounted
 	beforeUpdate
 	updated
-	beforeDestroy	
-	destroyed
+	beforeDestroy	beforeUnmounted(vue3)
+	destroyed 		unmounted(vue3)
+	activated
+	deactivated
+	errorCaptured
+
+
+	Vue 子组件和父组件执行顺序
+		加载渲染过程：
+		父组件 beforeCreate
+		父组件 created
+		父组件 beforeMount
+		子组件 beforeCreate
+		子组件 created
+		子组件 beforeMount
+		子组件 mounted
+		父组件 mounted
+
+		更新过程：
+		父组件 beforeUpdate
+		子组件 beforeUpdate
+		子组件 updated
+		父组件 updated
+
+		销毁过程：
+		父组件 beforeDestroy
+		子组件 beforeDestroy
+		子组件 destroyed
+		父组件 destoryed
+```
 
 ### 基础知识
 ```	
@@ -1567,4 +1597,32 @@
 	同名钩子函数将合并为一个数组，因此都将被调用。另外，混入对象的钩子将在组件自身钩子之前调用。
 
 	值为对象的选项，例如 methods、components 和 directives，将被合并为同一个对象。两个对象键名冲突时，取组件对象的键值对(组件优先)。
+```
+
+### 模板编译原理
+```
+	首先，通过compile编译器把template编译成AST语法树（abstract syntax tree 即 源代码的抽象语法结构的树状表现形式），compile是createCompiler的返回值，createCompiler是用以创建编译器的。另外compile还负责合并option。
+	然后，AST会经过generate（将AST语法树转化成render funtion字符串的过程）得到render函数，render的返回值是VNode，VNode是Vue的虚拟DOM节点，里面有（标签名、子节点、文本等等）
+
+	首先解析模版，生成AST语法树(一种用JavaScript对象的形式来描述整个模板)。 使用大量的正则表达式对模板进行解析，遇到标签、文本的时候都会执行对应的钩子进行相关处理。
+	Vue的数据是响应式的，但其实模板中并不是所有的数据都是响应式的。有一些数据首次渲染后就不会再变化，对应的DOM也不会变化。那么优化过程就是深度遍历AST树，按照相关条件对树节点进行标记。这些被标记的节点(静态节点)我们就可以跳过对它们的比对，对运行时的模板起到很大的优化作用。
+	编译的最后一步是将优化后的AST树转换为可执行的代码。
+
+	* 生成AST树
+	* 优化
+	* codegen
+
+	var createCompiler = createCompilerCreator(function baseCompile(template, options) {
+      	var ast = parse(template.trim(), options); // 抽象语法树：用 JavaScript对象的形式来描述整个模板
+		if (options.optimize !== false) {
+          	optimize(ast, options); // 对静态节点做优化
+      	}
+      	// 编译成 render字符串并将静态部分放到 staticRenderFns 中，最后通过 new Function(`` render``) 生成render函数
+      	var code = generate(ast, options);
+      	return {
+        	ast: ast,
+          	render: code.render,
+          	staticRenderFns: code.staticRenderFns
+      	};
+  	});
 ```

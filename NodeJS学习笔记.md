@@ -140,3 +140,14 @@
 	2.  使用supervisor命令启动app.js
 		$ supervisor app.js
 ```
+
+### node.js 常见工具包
+```
+	http-proxy-middleware 项目内代理proxy地址
+	const { createProxyMiddleware } = require("http-proxy-middleware");
+	https://github.com/chimurai/http-proxy-middleware;
+
+	react-dev-utils react 中打开浏览器页面;
+	const openBrowser = require('react-dev-utils/openBrowser');
+	openBrowser('http://www.baidu.com');
+```
