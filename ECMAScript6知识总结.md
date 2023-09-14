@@ -1748,6 +1748,18 @@ import 命令
 	CommonJS 模块的require()是同步加载模块，ES6 模块的import命令是异步加载，有一个独立的模块依赖的解析阶段。
 ```
 
+### ArrayBuffer 对象
+```
+	ArrayBuffer对象代表储存二进制数据的一段内存，它不能直接读写，只能通过视图（TypedArray视图和DataView视图)来读写，视图的作用是以指定格式解读二进制数据。
+
+	const buffer = new ArrayBuffer(16); // 16个字节
+	const int32View = new Int32Array(buffer); // 4个字节
+
+	for (let i = 0; i < int32View.length; i++) {
+		int32View[i] = i * 2;
+	}
+```
+
 ### vue2 项目中使用 ES6 实验特性
 ```
 	cnpm i '@babel/plugin-proposal-optional-chaining' --save-dev

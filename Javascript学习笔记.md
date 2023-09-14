@@ -425,7 +425,7 @@
 	var p3=new Person();		//name='yfx',age=25
 	```
 * 	构造函数模式
-	```
+```
 	function Person(name,age){			//在构造函数中进行属性的私有
 		this.name=name;
 		this.age=age;
@@ -433,7 +433,30 @@
 			console.log('My name is '+this.name);
 		}
 	}
-	```
+
+	var person = new Person('mike', '19');
+
+	new 关键字会进行如下操作：
+		1. 创建一个空对象
+			this = {};
+		2. 链接原型链，将改对象的原型设置为构造函数的原型
+			this.__proto__ = Person.prototype
+		3. 将步骤1创建的对象作为this的上下文内容
+		4. 如果该函数没有返回对象，则把this作为实例对象返回；
+
+		function Person(name,age){			//在构造函数中进行属性的私有
+			// this = {};
+			// this.__proto__ = Person.protoType;
+			// 将 {} 作为下面 this 的上下文内容
+			this.name=name;
+			this.age=age;
+			this.sayName=function(){
+				console.log('My name is '+this.name);
+			}
+			// return this;
+		}
+
+```
 *	混合模式(构造函数+原型)
 	```
 	在构造函数中进行属性的私有,在原型中实现方法的共享(取各个继承方式的优点,推荐)
