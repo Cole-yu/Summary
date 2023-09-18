@@ -954,8 +954,9 @@
     	return reader.result;
   	}
 ```
-3. ArrayBuffer 转 Base64 字符串
+3. ArrayBuffer（二进制字节数组）转 Base64 字符串
 ```
+	用途： 对二进制数据进行编码，以便将其纳入 data: URL 中，在网络中进行传输和存储
 	const base64Str = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer))); // btoa()：从二进制数据“字符串”创建一个 Base-64 编码的 ASCII 字符串（“btoa”应读作“binary to ASCII”）
 	btoa('a') 	// a 转化为 97 转化为 01100001（8位二进制）输出 YQ==
 ```

@@ -1750,7 +1750,7 @@ import 命令
 
 ### ArrayBuffer 对象
 ```
-	ArrayBuffer 对象用来表示通用的、固定长度的原始二进制数据缓冲区。
+	ArrayBuffer 对象用来表示通用的、固定长度的原始二进制数据缓冲区，通常在其他语言中称为“byte array”。
 	ArrayBuffer对象代表储存二进制数据的一段内存，它不能直接读写，只能通过视图（TypedArray视图和DataView视图)来读写，视图的作用是以指定格式解读二进制数据。 ArrayBuffer 是一个可转移对象。
 	可转移对象（Transferable object）：是拥有属于自己的资源的对象，这些资源可以从一个上下文转移到另一个，确保资源一次仅在一个上下文可用。传输后，原始对象不再可用；它不再指向转移后的资源，并且任何读取或者写入该对象的尝试都将抛出异常。
 
@@ -1774,9 +1774,20 @@ import 命令
   	【2】 Buffer 转 ArrayBuffer
   	Buffer 的实例维护了一个属性buffer，亦即ArrayBuffer
   	const arrayBuffer = buffer.buffer; // buffer 为 Buffer 实例
+```
+### TextEncoder、TextDecoder 对象与 Uint8Array 对象
+```
+	String（码位流） 	'abc'
+	Uint8Array（字节流） Uint8Array(3) [97, 98, 99, buffer: ArrayBuffer(3), byteLength: 3, byteOffset: 0, length: 3, Symbol(Symbol.toStringTag): 'Uint8Array']
 
+  	let textEncoder = new TextEncoder();
+  	let uint8Array = textEncoder.encode('abc');
+  	console.log(uint8Array);  	// Uint8Array(3) [97, 98, 99, buffer: ArrayBuffer(3), byteLength: 3, byteOffset: 0, length: 3, Symbol(Symbol.toStringTag): 'Uint8Array']
 
-
+  	let textDecoder = new TextDecoder();
+  	let uint8Array = new Uint8Array([97, 98, 99]);
+  	let str = textDecoder.decode(uint8Array);
+  	console.log(str); 			// abc
 ```
 
 ### vue2 项目中使用 ES6 实验特性
