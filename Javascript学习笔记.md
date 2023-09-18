@@ -956,13 +956,33 @@
 ```
 3. ArrayBuffer 转 Base64 字符串
 ```
-	const base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer))); // btoa()：从二进制数据“字符串”创建一个 Base-64 编码的 ASCII 字符串（“btoa”应读作“binary to ASCII”）
-	base64('a') 	// a 转化为 97 转化为 01100001（8位二进制）输出 YQ==
+	const base64Str = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer))); // btoa()：从二进制数据“字符串”创建一个 Base-64 编码的 ASCII 字符串（“btoa”应读作“binary to ASCII”）
+	btoa('a') 	// a 转化为 97 转化为 01100001（8位二进制）输出 YQ==
 ```
-4. String 转 ArrayBuffer
+4. String 转 Uint8Array、ArrayBuffer
 ```
 	TextEncoder 对象接受码位流作为输入，并提供 UTF-8 字节流作为输出
 	const encoder = new TextEncoder();
-    const view = encoder.encode(input); 	// encoder.encode()接受一个字符串作为输入，返回一个包含 UTF-8 编码的文本的 Uint8Array
-    return view.buffer; 					// Uint8Array 对象的buffer属性返回 ArrayBuffer 对象
+    const uint8Array = encoder.encode('hello world!'); 	// encoder.encode()接受一个字符串作为输入，返回一个包含 UTF-8 编码的文本的 Uint8Array
+    let buf = uint8Array.buffer; 						// Uint8Array 对象的buffer属性返回 ArrayBuffer 对象
+```
+5. String 转 Buffer
+```
+	Buffer.from('hello world', 'utf8');
+```
+6. ArrayBuffer 转 Buffer
+```
+	const ab = new ArrayBuffer(8);
+	const arr = new Uint8Array(ab);
+	arr[0] = 66;
+	arr[1] = 88;
+	const buf = Buffer.from(arr.buffer);
+
+	const ab = new ArrayBuffer(10);
+	const buf = Buffer.from(ab, 0, 2);
+```
+7. Buffer 转 ArrayBuffer
+```
+	let buf = Buffer.from('helllo world!', 'utf8');
+	let arrayBuffer = buf.buffer;	// 利用 buffer 属性
 ```
