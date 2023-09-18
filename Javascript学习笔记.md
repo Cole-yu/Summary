@@ -928,3 +928,41 @@
 			https://es6.ruanyifeng.com/#docs/number
 			https://zhuanlan.zhihu.com/p/630537911			
 ```
+
+###	Blob，ArrayBuffer，File，FileReader，Buffer，TypeArray 的作用和区别
+```
+	Blob（Binary Large object）二进制大型对象，是一个相对high-level的概念，一个Blob对象可以包含一个或多个连续内存，通常是由一个或多个ArrayBuffer对象组成的数组；ArrayBufer 与 Buffer 是多对一的关系。
+	ArrayBuffer 表示通用的、固定长度的原始二进制数据缓冲区。是一块连续内存，所以是low-level的，你可以将这块内存映射为某种数组（TypedArray）或者是自定义的数据视图（DataView），并通过这些格式来读写缓冲区的内容。
+	File 继承 Blob 类，File 对象是特殊类型的 Blob。继承 Blob 的功能并将其扩展使其支持用户系统上的文件。
+	FileReader 对象用于读取存储在用户计算机上的文件（或原始数据缓冲区）的内容，使用 File 或 Blob 对象指定要读取的文件或数据。
+	Buffer 是 Node.js 中的概念，用于表示固定长度的字节序列。Buffer 继承 Uint8Array 类，是一种操作 ArrayBuffer 的类型数组。 class Buffer extends  Uint8Array{}
+	TypeArray 对象是一种用来操作底层二进制数据缓冲区的类数组视图，TypeArray 类是一个“抽象类”。一共包括9种类型，常用的有 Uint8Array, Int8Array, Int16Array, Uint16Array, Int32Array, Uint32Array, Int64Array, Uint64Array, Uint8ClampedArray。
+```
+
+### ArrayBuffer Uint8Array Buffer 等不同对象之间的相互转化
+1. ArrayBuffer 转 Blob
+```
+	ArrayBuffer => Uint8Array => Buffer
+	let buffer =  new Buffer(16);
+	new Blob([new Uint8Array(buffer, offset, length)]);
+```
+2. Blob 转 ArrayBuffer
+```	
+  	const reader = new FileReader();
+  	reader.readAsArrayBuffer(blob);
+  	reader.onload = () => {
+    	return reader.result;
+  	}
+```
+3. ArrayBuffer 转 Base64 字符串
+```
+	const base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer))); // btoa()：从二进制数据“字符串”创建一个 Base-64 编码的 ASCII 字符串（“btoa”应读作“binary to ASCII”）
+	base64('a') 	// a 转化为 97 转化为 01100001（8位二进制）输出 YQ==
+```
+4. String 转 ArrayBuffer
+```
+	TextEncoder 对象接受码位流作为输入，并提供 UTF-8 字节流作为输出
+	const encoder = new TextEncoder();
+    const view = encoder.encode(input); 	// encoder.encode()接受一个字符串作为输入，返回一个包含 UTF-8 编码的文本的 Uint8Array
+    return view.buffer; 					// Uint8Array 对象的buffer属性返回 ArrayBuffer 对象
+```

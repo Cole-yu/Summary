@@ -1750,7 +1750,9 @@ import 命令
 
 ### ArrayBuffer 对象
 ```
-	ArrayBuffer对象代表储存二进制数据的一段内存，它不能直接读写，只能通过视图（TypedArray视图和DataView视图)来读写，视图的作用是以指定格式解读二进制数据。
+	ArrayBuffer 对象用来表示通用的、固定长度的原始二进制数据缓冲区。
+	ArrayBuffer对象代表储存二进制数据的一段内存，它不能直接读写，只能通过视图（TypedArray视图和DataView视图)来读写，视图的作用是以指定格式解读二进制数据。 ArrayBuffer 是一个可转移对象。
+	可转移对象（Transferable object）：是拥有属于自己的资源的对象，这些资源可以从一个上下文转移到另一个，确保资源一次仅在一个上下文可用。传输后，原始对象不再可用；它不再指向转移后的资源，并且任何读取或者写入该对象的尝试都将抛出异常。
 
 	const buffer = new ArrayBuffer(16); // 16个字节
 	const int32View = new Int32Array(buffer); // 4个字节
@@ -1758,6 +1760,23 @@ import 命令
 	for (let i = 0; i < int32View.length; i++) {
 		int32View[i] = i * 2;
 	}
+
+	Nodo.js 中的 Buffer 继承 Uint8Array
+  	declare class Buffer extends Uint8Array{ // 翻到Buffer的声明文件(typescript的*.d.ts文件)，你会看到
+    	//...
+  	}
+
+
+  	【1】 ArrayBuffer 转 Buffer
+  	Buffer.from(arrayBuffer.buffer); // arrayBuffer 为 ArrayBuffer 的某一数据类型视图实例
+  	Buffer.from(uint8Array.buffer); // uint8Array 为 Uint8Array 的实例
+
+  	【2】 Buffer 转 ArrayBuffer
+  	Buffer 的实例维护了一个属性buffer，亦即ArrayBuffer
+  	const arrayBuffer = buffer.buffer; // buffer 为 Buffer 实例
+
+
+
 ```
 
 ### vue2 项目中使用 ES6 实验特性
