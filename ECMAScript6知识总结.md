@@ -463,28 +463,49 @@ arr.at(-1) === arr[arr.length-1] === 'c'
 	[1,2,3].includes(2)    //true
 
 ### 字符串的扩展
+1. String.fromCodePoint(), String.prototype.codePointAt()
 ```
-String.fromCharCode() 方法：从 Unicode 码点返回对应字符
-String.fromCodePoint()
+	JavaScript 内部，字符以 UTF-16 的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode 码点大于0xFFFF的字符），JavaScript 会认为它们是两个字符。
 
-'x'.repeat(3) // xxx
+	（1）两个字节的处理，fromCharCode, charCodeAt
+	String.fromCharCode(num, num1, num2) 静态方法，将一个或多个 Unicode 码位转化为 UTF-16 码元序列创建的字符串
+	num：一个介于 0 和 65535（0xFFFF）之间的数字，表示一个 UTF-16 码元。大于 0xFFFF 的数字会被截断为最后的 16 位。不进行有效性检查。
+	String.fromCharCode(65, 66, 67); // 'ABC'
 
-'x'.padStart(5, 'ab') 	// 'ababx'
-'x'.padEnd(4, 'ab') 	// 'xaba'
+	String.prototype.charCodeAt(index)  // 返回一个整数，值介于 0 和 65535 之间。
+	let s = 'abc';
+	s.charCodeAt(0); // 97
 
-'xxx'.padEnd(2, 'ab') // 'xxx'
+	（2）四个字节的处理（推荐），fromCodePoint, codePointAt
+	String.fromCodePoint(num, num1, num2)
+	num： 一个介于 0 和 0x10FFFF（包括两者）之间的整数，表示一个 Unicode 码位值
+	String.fromCodePoint(20320, 22909, 65281); 		// 你好! 10进制输入
+	String.fromCodePoint(0x4f60, 0x597d, 0xff01); 	// 你好! 16进制输入
 
-replaceAll()
+	String.prototype.codePointAt(index) 返回一个非负整数，该整数是从给定索引开始的字符的 Unicode 码位值
+	let s = '你好！';
+	s.codePointAt(1).toString(16); // “好”的 unicode 码位值 0x597d \u597d
+```
+2. includes, startsWith, endsWith, repeat, padStart，padEnd, trimStart，trimEnd, matchAll, replaceAll（兼容性问题）, at（兼容性问题）
+```
+	'x'.repeat(3) // xxx
 
-matchAll()
+	'x'.padStart(5, 'ab') 	// 'ababx'
+	'x'.padEnd(4, 'ab') 	// 'xaba'
 
-const foo = '  abc';
-foo.trimStart(); // 清除头部空格
+	'xxx'.padEnd(2, 'ab') // 'xxx'
 
-const bar = 'abc  ';
-bar.trimEnd() // 清除尾部空格
+	replaceAll()
 
-str.at()
+	matchAll()
+
+	const foo = '  abc';
+	foo.trimStart(); // 清除头部空格
+
+	const bar = 'abc  ';
+	bar.trimEnd() // 清除尾部空格
+
+	str.at()
 ```
 
 ### 正则的扩展
@@ -537,8 +558,14 @@ matches;
 	ES6 提供了二进制和八进制数值的新的写法，分别用前缀0b（或0B）和0o（或0O）表示
 	0 是数字 零
 	o 是字母 [opq OPQ]
-	0o10 == 8
-	0b11 == 3
+
+	0b10 == 2 二进制
+	0o10 == 8 8进制
+	0x10 == 16 十六进制
+
+	\u 代表是 unicode 编码
+	let str = '\u597d';
+	console.log(str); // '好'
 ```
 2. 数值分隔符
 ```
