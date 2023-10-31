@@ -28,6 +28,17 @@
 	object表示非原始类型，也就是除number，string，boolean，symbol，null或undefined之外的类型。
 ```
 
+### symbol
+```
+	unique symbol
+	symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Symbol 值。
+	比如，5是一个具体的数值，就用5这个字面量来表示，这也是它的值类型。但是，Symbol 值不存在字面量，必须通过变量来引用，所以写不出只包含单个 Symbol 值的那种值类型。
+	为了解决这个问题，TypeScript 设计了symbol的一个子类型unique symbol，它表示单个的、某个具体的 Symbol 值。
+	因为unique symbol表示单个值，所以这个类型的变量是不能修改值的，只能用const命令声明，不能用let声明。
+
+	declare const RefSymbol: unique symbol
+```
+
 ### 变量声明
 ```
 1. let
@@ -90,6 +101,19 @@
 		调用父类的其他方法super.eat()
 ```
 
+### 函数
+```
+
+	let myAdd = function(x: number, y: number): number { return x + y; };
+
+	为函数本身添加返回值类型 : (x: number, y: number) => number
+	TypeScript能够根据返回语句自动推断出返回值类型，因此我们通常省略它。
+
+	【书写完整函数类型】：
+	let myAdd: (x: number, y: number) => number =
+    	function(x: number, y: number): number { return x + y; };
+```
+
 ### 模块
 ```	
 	export ,import 关键字
@@ -133,11 +157,19 @@
 	npm install @types/jquery --save-dev   //安装指令 npm install @types/name --save-dev
 ```	
 
-### 函数
+### 泛型
+```
 	function identity<T>(arg: T): T {
 	    return arg;
 	}
-	我们给identity添加了类型变量T。 T帮助我们捕获用户传入的类型（比如：number），之后我们就可以使用这个类型。 之后我们再次使用了 T当做返回值类型。现在我们可以知道参数类型与返回值类型是相同的了
+
+	我们给identity添加了类型变量T。 T帮助我们捕获用户传入的类型（比如：number），之后我们就可以使用这个类型。 之后我们再次使用了 T当做返回值类型。
+	允许我们跟踪函数里使用的类型的信息：传入的类型与返回的类型应该是相同的
+
+	使用方法：
+	let output = identity<string>("myString");  // type of output will be 'string'
+	let output = identity("myString");  		// type of output will be 'string'
+```
 
 ### 枚举
 	enum Direction {
@@ -358,4 +390,14 @@
 		for(inx in values){
 			console.log(values[inx]);
 		}
+```
+
+
+### 类型谓词 is
+```
+	语法： parameterName is Type， parameterName必须是来自于当前函数签名里的一个参数名。
+
+	function isFish(pet: Fish | Bird): pet is Fish {
+	    return (<Fish>pet).swim !== undefined;
+	}
 ```

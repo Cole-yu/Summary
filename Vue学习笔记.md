@@ -1,5 +1,50 @@
 # Vue学习笔记
 
+### 安装
+```
+ 	// 安装vue2最新稳定版本
+	npm install vue@^2
+```
+1. Webpack 中
+```
+	选择 ES Module (基于构建工具使用) 
+	vue.esm.js（完整版=编译器+运行时）
+	vue.runtime.esm.js （只包含运行时版，搭配vue-loader模板编译）
+```
+2. 浏览器中
+```
+	UMD 通过 <script> 标签直接用在浏览器中
+	vue.js 完整版 vue.min.js
+	vue.runtime.js 运行时版 vue.runtime.min.js
+```
+3. CommonJS 版本
+```
+	老的打包工具中使用，基本用不到了
+```
+4. ES Module (直接用于浏览器)
+```
+	用于在现代浏览器中通过 <script type="module"> 直接导入 ES 模块构建版本。
+	<script type="module">
+		import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.esm.browser.js'
+	</script>
+
+	启用 Import maps
+	<script type="importmap">
+	  	{
+	    	"imports": {
+	    	  	"vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+	    	}
+	  	}
+	</script>
+	<script type="module">
+	  	import vue from 'vue';
+		new Vue({
+			el: '#app',
+		})
+	</script>
+```
+
+
 ### 学习一个框架需要搞清楚的疑问
 	数据绑定 组件间通讯 生命周期 Vuex(状态管理) 路由 
 
