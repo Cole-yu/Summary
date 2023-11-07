@@ -1,6 +1,226 @@
 # Webpack学习总结
-	react中大量使用了webpack
-	把资源打包在一个文件中，减少http请求，提高性能
+
+### 官网
+```
+	https://www.webpackjs.com/
+```
+
+### 概念
+```
+	webpack 是一个用于现代 JavaScript 应用程序的静态模块打包工具。
+	根据模块之间的依赖关系，进行分析打包在整个依赖图中的模块资源，生成最终的浏览器能高效运行的静态资源。
+
+	入口(entry)
+	输出(output)
+	loader
+	插件(plugin)
+	模式(mode)
+	浏览器兼容性(browser compatibility)
+	环境(environment)
+		可以使用 --node-env 选项来设置 process.env.NODE_ENV
+		webpack --node-env development
+		process.env.NODE_ENV === 'development' // true	
+```
+
+### 命令行接口
+```
+	【Webpack 命令行接口文档】：https://www.webpackjs.com/api/cli/#flags
+	npx webpack serve --progress=profile --node-env development --config build/webpack.dev.js
+```
+
+### 代码分离，预获取/预加载
+```
+	prefetch（预获取）：将来某些导航下可能需要的资源
+	preload（预加载）：当前导航下可能需要资源
+
+	预加载和预获取的使用是通过魔法注释，其中prefetch的作用是该文件要等浏览器空闲时下载，而preload是正常跟父包一起下载，但两者都不会阻塞渲染，其中prefetch使用率更高。
+	import(/* webpackPrefetch: true */ './path/to/LoginModal.js');
+```
+
+### Hash ChunkHash ContentHash
+```
+	hash chunkhash contenthash
+	hash本身是通过MD4的散列函数处理后 生成一个128位的hash值（32个十六进制）
+	hash值的生成和整个项目有关系
+	比如我们现在有两个入口index.js和main.js
+	他们分别会输出到不同的bundle文件中 并且在文件名称中我们有使用hash
+	这个时候 如果修改了index.js文件中的内容 那么hash会发生变化
+	就意味着两个文件的名称都会发生变化
+
+	chunkhash可以有效的解决上面的问题 他会根据不同的入口进行解析来生成hash值
+	比如我们修改了index.js 那么main.js的chunkhash是不会发生改变的
+
+	contenthash表示生成的文件hash名称 只和内容有关系
+	比如我们的index.js 引入了一个style.css style.css又被抽取到一个独立的css文件中
+	这个css文件在命名时 如果我们使用的是chunkhash
+	那么当index.js文件的内容发生变化时 css文件的命名也会发生变化
+	这个时候我们可以使用contenthash
+```
+
+### 安装 babel-loader 相关
+```
+	TypeScript/ES6 编译三要素模型：
+		js源码
+		js编译器：babel + 相关preset、plugin
+		js编译配置：.babelrc
+
+	npm install --save-dev babel-loader @babel/core
+
+	webpack.config.js 配置
+		{
+		  module: {
+		    rules: [
+		      {
+		        test: /\.m?js$/,
+		        exclude: /node_modules/,
+		        use: {
+		          loader: "babel-loader",
+		          options: {
+		            presets: ['@babel/preset-env']
+		          }
+		        }
+		      }
+		    ]
+		  }
+		}
+
+	npm install @babel/preset-env --save-dev
+
+	babel.config.json 配置
+		{
+		  "presets": ["@babel/preset-env"]
+		}
+
+	配置文件，Babel 会查找和自动读取它们，所以以下配置文件只需要存在一个即可
+	1. babel.config.*：新建文件,位于项目根目录
+	（1）babel.config.js
+	（2）babel.config.json
+	2 .babelrc.*：新建文件，位于项目根目录
+	（1）.babelrc
+	（2）.babelrc.js
+	（3）.babelrc.json
+	3. package.json 中 babel：不需要创建文件，在原有文件基础上写
+
+	presets 预设：就是一组 Babel 语法插件, 扩展 Babel 功能
+		@babel/preset-env: 一个智能预设，允许您使用最新的 JavaScript
+		@babel/preset-react：一个用来编译 React jsx 语法的预设
+		@babel/preset-typescript：一个用来编译 TypeScript 语法的预设
+
+	PS：官方收编的插件包通常以 "@babel/plugin-" 开头的，而预置集包通常以 "@babel/preset-" 开头。
+```
+
+### 安装 Typescript 相关
+```
+	TypeScript编译三要素模型：
+		ts源代码
+		ts编译器： tsc
+		ts编译配置： tsconfig.json
+
+	ts-loader 通过TypeScript编译器(tsc)来处理TypeScript文件，并转换为JavaScript文件
+
+
+	npm install ts-loader --save-dev
+
+	webpack.config.js 配置
+		module: {
+		    rules: [		
+				{ test: /\.tsx?$/, loader: "ts-loader" },
+			]
+		}
+
+	tsconfig.json 配置
+		{
+		    "compilerOptions": {
+		        "module": "CommonJS",
+		        "noImplicitAny": true,
+		        "removeComments": true,
+		        "preserveConstEnums": true,
+		        "sourceMap": true
+		    },
+		    "include": [
+		        "src/**/*"
+		    ],
+		    "exclude": [
+		        "node_modules",
+		        "**/*.spec.ts"
+		    ]
+		}
+```
+
+### React + Typescript 组合相关
+```
+	使用 Typescript 处理 .tsx 文件
+
+	npm install react react-dom react-router-dom -S
+	npm install @types/react @types/react-dom -D
+	npm install @babel/preset-react -D
+
+	babel.config.json 配置
+		{
+		 	"presets": [
+		    	"@babel/preset-react"
+		  	]
+		}
+
+	tsconfig.json 配置
+		{
+		    "compilerOptions": {
+		        "module": "CommonJS",
+		        "noImplicitAny": false,
+		        "removeComments": true,
+		        "preserveConstEnums": true,
+		        "sourceMap": true,
+		        "jsx": "react", // react模式会生成React.createElement，在使用前不需要再进行转换操作了，输出文件的扩展名为.js
+		    },
+		    "include": [
+		        "src/ts/**/*.ts",
+		        "src/ts/**/*.tsx"
+		    ],
+		    "exclude": [
+		        "node_modules",
+		        "**/*.spec.ts"
+		    ]
+		}
+
+	webpack.config.js 配置
+		{ 
+	        test: /\.tsx?$/,
+	        loader: "ts-loader"
+	    },
+
+    package.json 配置
+	    "devDependencies": {
+		    "@babel/core": "^7.23.2",
+		    "@babel/preset-react": "^7.22.15",
+		    "@types/react": "^18.2.36",
+		    "@types/react-dom": "^18.2.14",
+		    "babel-loader": "^9.1.3",
+		    "ts-loader": "^9.5.0",	    
+		    "webpack": "^5.89.0",
+		    "webpack-cli": "^5.1.4"
+		},
+		"dependencies": {
+		    "react": "^18.2.0",
+		    "react-dom": "^18.2.0",
+		    "react-router-dom": "^6.18.0",
+		    "typescript": "^5.2.2",
+		}
+```
+
+### 关于 devtool
+```
+	eval-cheap-module-source-map 
+	build: slow
+	rebuild: fast （开发时重新编译比较频繁，因此必须要选择rebuild快的）
+	original lines (原文本内容)
+
+	eval-cheap-source-map
+	build: ok
+	rebuild: fast
+	transformed（转换改造过，内容被拆分到各个模块，原件丢失）
+
+	官网文档地址： https://www.webpackjs.com/configuration/devtool/#devtool
+```
 
 ### 安装好webpack后，通过控制台手动输入命令行指令进行打包操作
 	node_modules/.bin/webpack app/main.js public/bundle.js 改为 npx webpack app/main.js --output public/bundle.js
@@ -371,6 +591,7 @@
 
 ### chunkHash 与 hash 的区别	
 ```
+	contenthash
 	chunkHash 基于模块，一次改动就计算一次，用于一堆动态载入的模块的区分计算，输出出口的计算
 	 	config.output.filename='[name].[chunkHash:8].js';
 

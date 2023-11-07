@@ -1,8 +1,13 @@
 # Vue学习笔记
 
 ### 安装
-```
- 	// 安装vue2最新稳定版本
+``` 	
+ 	Vue CLI >= 3 和旧版使用了相同的 vue 命令，所以 Vue CLI 2 (vue-cli) 被覆盖了。如果你仍然需要使用旧版本的 vue init 功能，你可以全局安装一个桥接工具：
+ 	npm install -g @vue/cli 
+	npm install -g @vue/cli-init 		// 桥接工具：`vue init` 的运行效果将会跟 `vue-cli@2.x` 相同
+	vue init webpack my-project 		// 使用脚手架创建vue2
+
+	// 安装vue2最新稳定版本
 	npm install vue@^2
 ```
 1. Webpack 中
