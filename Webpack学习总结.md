@@ -57,7 +57,7 @@
 	这个时候我们可以使用contenthash
 ```
 
-### 安装 babel-loader 相关
+### babel-loader 处理 ES6 语法
 ```
 	TypeScript/ES6 编译三要素模型：
 		js源码
@@ -109,7 +109,7 @@
 	PS：官方收编的插件包通常以 "@babel/plugin-" 开头的，而预置集包通常以 "@babel/preset-" 开头。
 ```
 
-### 安装 Typescript 相关
+### ts-loader 处理 Typescript
 ```
 	TypeScript编译三要素模型：
 		ts源代码
@@ -147,9 +147,9 @@
 		}
 ```
 
-### React + Typescript 组合相关
+### ts-loader 处理 React+TSX 组合（推荐）
 ```
-	使用 Typescript 处理 .tsx 文件
+	使用 tsc 编译 .tsx 文件
 
 	npm install react react-dom react-router-dom -S
 	npm install @types/react @types/react-dom -D
@@ -204,6 +204,130 @@
 		    "react-dom": "^18.2.0",
 		    "react-router-dom": "^6.18.0",
 		    "typescript": "^5.2.2",
+		}
+```
+
+### babel-loader 处理 React+TSX 组合
+```
+	使用 babel 编译 .tsx 文件
+
+	npm install react react-dom react-router-dom -S
+	npm install @types/react @types/react-dom -D	
+	npm install babel-loader @babel/core -D
+	npm install babel-preset-react-app -D
+
+	babel.config.json 配置
+		{
+		 	"presets": [
+		    	"react-app" // npm i babel-preset-react-app -D
+		  	]
+		}	
+
+	webpack.config.js 配置
+		{ 
+	        test: /\.tsx?$/,
+	        loader: "babel-loader"
+	    },
+
+    package.json 配置
+	    "devDependencies": {
+		    "@babel/core": "^7.23.2",
+		    "@babel/preset-react": "^7.22.15",
+		    "@types/react": "^18.2.36",
+		    "@types/react-dom": "^18.2.14",
+		    "babel-loader": "^9.1.3",
+		    "babel-preset-react-app": "^10.0.1",
+		    "webpack": "^5.89.0",
+		    "webpack-cli": "^5.1.4"
+		},
+		"dependencies": {
+		    "react": "^18.2.0",
+		    "react-dom": "^18.2.0",
+		    "react-router-dom": "^6.18.0",
+		    "typescript": "^5.2.2",
+		}
+```
+
+### ts-loader 处理 Vue3+TSX 组合（推荐）
+```
+	使用 tsc 编译 .tsx 文件
+
+	npm install ts-loader -S
+	npm install vue-loader @vue/compiler-sfc -D
+	npm install @vue/cli-plugin-babel -D
+
+	babel.config.json 配置
+		{
+		 	"presets": [
+		 		// "@babel/preset-env"
+		    	"@vue/cli-plugin-babel/preset" 		// @vue/cli-plugin-babel 在"@babel/preset-env"的基础上扩展；其中jsx语法解析的底层依赖 “@vue/babel-plugin-jsx” 插件
+		  	],
+		  	"plugins": [
+		    	// "@vue/babel-plugin-jsx" // "@vue/babel-plugin-jsx" 【JSX语法细节:】 https://github.com/vuejs/babel-plugin-jsx/tree/main
+		  	]
+		}
+
+	tsconfig.json 配置
+		{
+		    "compilerOptions": {
+		        "module": "CommonJS",
+		        "noImplicitAny": false,
+		        "removeComments": true,
+		        "preserveConstEnums": true,
+		        "sourceMap": true,
+		        "jsx": "preserve", // tsc 编译将 tsx 输出文件的扩展名为.jsx
+		    },
+		    "include": [
+		        "src/**/*.ts",
+		        "src/**/*.d.ts",
+		        "src/**/*.tsx",
+		        "src/**/*.vue",
+		    ],
+		    "exclude": [
+		        "node_modules",
+		        "**/*.spec.ts"
+		    ]
+		}
+
+	webpack.config.js 配置
+		{ 
+	        test: /\.tsx?$/,
+	        exclude: /node_modules/,
+	        use: [
+	          	"babel-loader",
+	          	{
+	            	loader: "ts-loader", // tsc 编译
+	            	options: {
+	              		appendTsSuffixTo: [/\.vue$/], // 对应文件添加.ts或.tsx后缀 app.vue.ts
+	              		// transpileOnly: true, // 关闭ts-loader的类型检查，即只进行转译；npm i fork-ts-checker-webpack-plugin -D, new ForkTsCheckerWebpackPlugin()
+	            	}
+	          	}
+	        ]
+	    },
+	    {
+	        test: /\.m?js$/,
+	        exclude: /node_modules/,
+	        use: 'babel-loader'
+	    },
+	    {
+	        test: /\.vue$/,
+	        loader: 'vue-loader',
+	    }
+
+    package.json 配置
+	    "devDependencies": {
+		    "@babel/core": "^7.23.2",
+		    "@vue/cli-plugin-babel": "^5.0.8",
+    		"@vue/compiler-sfc": "^3.3.8",
+		    "babel-loader": "^9.1.3",
+		    "ts-loader": "^9.5.0",
+		    "vue-loader": "^17.3.1",    
+		    "webpack": "^5.89.0",
+		    "webpack-cli": "^5.1.4"
+		},
+		"dependencies": {
+		    "typescript": "^5.2.2",
+		    "vue": "^3.3.8"
 		}
 ```
 
