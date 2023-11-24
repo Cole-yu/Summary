@@ -114,27 +114,6 @@
     	function(x: number, y: number): number { return x + y; };
 ```
 
-### 模块
-```	
-	export ,import 关键字
-
-	在a.ts文件中
-		export var prop;
-
-		export function func(){
-
-		};
-
-		export class Student{
-
-		}
-	在b.ts中
-		import {prop,func,Student} from "./a";
-		console.log(prop);
-		func();
-		var std = new Student();
-```
-
 ### 注解(annotation)
 ```
 	可为类，方法，变量加上更直观的说明，与业务逻辑无关，是供指定的工具或框架使用的。
@@ -400,4 +379,27 @@
 	function isFish(pet: Fish | Bird): pet is Fish {
 	    return (<Fish>pet).swim !== undefined;
 	}
+```
+
+### 模块
+
+### 模块解析
+
+
+### tsconfig.json
+```
+	文档：https://www.tslang.cn/docs/handbook/tsconfig-json.html
+```
+
+### 三斜线指令
+```
+	一个三斜线引用路径是相对于包含它的文件的，如果不是根文件。
+	/// <reference path="..." />
+	/// <reference types="..." />
+
+	/// <reference types="node" />
+	表明这个文件使用了 @types/node/index.d.ts里面声明的名字； 并且，这个包需要在编译阶段与声明文件一起被包含进来。
+
+	使用 noResolve 编译选项
+	如果指定了 noResolve 编译选项，三斜线引用会被忽略；它们不会增加新文件，也不会改变给定文件的顺序。
 ```

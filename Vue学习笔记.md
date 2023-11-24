@@ -9,6 +9,16 @@
 
 	// 安装vue2最新稳定版本
 	npm install vue@^2
+
+	vue2 [源码库地址](https://github.com/vuejs/vue)
+		git clone git@github.com:vuejs/vue.git
+		npm i
+		npm run build
+
+	vue3 [源码库地址](https://github.com/vuejs/core)
+		git clone git@github.com:vuejs/core.git
+		npm i
+		npm run build
 ```
 1. Webpack 中
 ```

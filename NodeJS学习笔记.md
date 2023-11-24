@@ -151,3 +151,31 @@
 	const openBrowser = require('react-dev-utils/openBrowser');
 	openBrowser('http://www.baidu.com');
 ```
+
+### glob 模块
+```
+	glob模块是一个用来匹配文件路径的模块，可以使用通配符来匹配多个文件路径。在Node.js中可以使用glob模块来读取文件、检查文件是否存在、筛选需要处理的文件等。
+
+	import { glob, globSync, globStream, globStreamSync, Glob } from 'glob';
+	let arr = glob.sync('./src/*');
+	console.log('arr', arr);
+	let moduleList = [];
+	for (var x in arr) {
+	    let a = arr[x].split('\\')[1];
+	    moduleList.push(arr[x].split('\\')[1]);
+	}
+	console.log('加载模块:', moduleList);
+
+	await glob() globSync glob.sync() // 同步执行
+	Class Glob 类
+		const g = new Glob(pattern: string | string[], options: GlobOptions)
+```
+
+
+### fs 模块
+```
+	let fs = require('fs');
+	fs.readFile(); // 异步读取文件
+	fs.writeFile(); // 异步写入文件
+
+```

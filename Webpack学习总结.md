@@ -37,9 +37,8 @@
 	import(/* webpackPrefetch: true */ './path/to/LoginModal.js');
 ```
 
-### Hash ChunkHash ContentHash
+### Hash ChunkHash ContentHash 的区别
 ```
-	hash chunkhash contenthash
 	hash本身是通过MD4的散列函数处理后 生成一个128位的hash值（32个十六进制）
 	hash值的生成和整个项目有关系
 	比如我们现在有两个入口index.js和main.js
@@ -51,10 +50,17 @@
 	比如我们修改了index.js 那么main.js的chunkhash是不会发生改变的
 
 	contenthash表示生成的文件hash名称 只和内容有关系
-	比如我们的index.js 引入了一个style.css style.css又被抽取到一个独立的css文件中
+	比如我们的index.js，引入了一个style.css，style.css又被抽取到一个独立的css文件中
 	这个css文件在命名时 如果我们使用的是chunkhash
 	那么当index.js文件的内容发生变化时 css文件的命名也会发生变化
 	这个时候我们可以使用contenthash
+
+	Hash 基于 compilation，在项目编译时改变一次，用于静态资源 第三方库，图片
+
+	ChunkHash 基于模块，一次改动就计算一次，用于一堆动态载入的模块的区分计算，输出出口的计算
+	 	config.output.filename='[name].[chunkHash:8].js';
+
+	Contenthash 基于文件内容发生变化
 ```
 
 ### babel-loader 处理 ES6 语法
@@ -329,6 +335,79 @@
 		    "typescript": "^5.2.2",
 		    "vue": "^3.3.8"
 		}
+```
+
+### browserslist 设置要适配的各市场浏览器版本，指定目标环境
+```
+	Browserslist 帮助我们在浏览器兼容性和包大小之间保持适当的平衡。使用 Browserslist，可以做到覆盖更广泛的受众（浏览器），同时包的体积也会保持最小化
+	browserslist 值会被 @babel/preset-env 和 Autoprefixer 用来确定需要转译的 JavaScript 特性和需要添加的 CSS 浏览器前缀
+
+	1. 在 package.json 中声明
+		"browserslist": [
+		 	"> 0.2%",
+		 	"last 2 versions",
+		 	"not dead"
+		]
+	2. 通过 .browserslistrc 配置
+		> 0.2%
+		last 2 versions
+		not dead
+
+	[数据支撑查询](https://caniuse.com/ciu/browserset)
+	[browserlist](https://browsersl.ist/)
+
+	"not dead" 谨慎使用（移动端可以使用，PC端不建议使用），会过滤掉不再支持的浏览器，如 IE 11
+
+	.browserslistrc
+		[production]	// env 环境
+		> 0.2%
+		last 2 versions
+		not dead
+
+
+	查询当前 .browserslistrc 配置支持的浏览器版本
+	npx browserslist
+	npx browserslist -h  	// 帮助
+	npx browserslist -v 	// 版本
+```
+
+### 安装 polyfill
+1. 使用 core-js/stable，新方案
+```
+	pnpm add @babel/core
+	pnpm add core-js
+
+	babel.config.json .babelrc
+	{
+	  "presets": [
+	    [
+	      "@babel/preset-env",
+	      {
+	        "useBuiltIns": "usage",  // 自动引入
+	        "corejs": "3.33.2"
+	      }
+	    ]
+	  ]
+	}
+
+	从Babel 7.4.0开始，babel/polyfill 已经被弃用，取而代之的是直接包含 core-js/stable (含polyfill ECMAScript特性)
+		import "core-js/stable";
+
+	Babel 包含一个 polyfill，它包含自定义的 regenerator runtime 和 core-js 。这将模拟一个完整的 ES2015+环境，旨在用于应用程序，而不是库/工具。(这个polyfill在使用babel-node时会自动加载)。
+	这意味着你可以使用新的内置方法，如 Promise 或 WeakMap，也可以使用静态方法，如 Array.from 或 Object。
+```
+2. 使用 @babel/polyfill，老方案
+```	
+	在webpack中，有多种方式来包含polyfills，当与@babel/preset-env一起使用时：
+		1. 如果 "useBuiltIns":"usage" 在 .babelrc 中指定，那么在 webpack.config.js 的 entry 字段和源文件中都不要包含 @babel/polyfill。注意，@babel/polyfill仍然需要安装；
+		2. 如果 "useBuiltIns":"entry" 在 .babelrc 中指定，通过 require或import 在应用程序入口点的顶部包含 @babel/polyfill；
+			require("@babel/polyfill");
+			import "@babel/polyfill";
+		3. 如果没有指定 useBuiltIns 键，或者在 .babelrc 中明确使用 useBuiltIns:false 设置 useBuiltIns 键，则直接将 @babel/polyfill 添加到 webpack.config.js 的 entry 数组中。
+			webpack.config.js
+				module.exports = {
+				  entry: ["@babel/polyfill", "./app/js"],
+				};
 ```
 
 ### 关于 devtool
@@ -711,16 +790,6 @@
 
 ### 使用scss 
 	npm install sass-loader node-sass    	// sass-loader 也能解析scss语法
-
-
-### chunkHash 与 hash 的区别	
-```
-	contenthash
-	chunkHash 基于模块，一次改动就计算一次，用于一堆动态载入的模块的区分计算，输出出口的计算
-	 	config.output.filename='[name].[chunkHash:8].js';
-
-	hash 基于compilation，在项目编译时改变一次，用于静态资源 第三方库，图片
-```
 
 ### webapck 添加网页标题
 ```
