@@ -8,8 +8,13 @@
 
 ### 运行 npm publish 报 401 或者 403 的错
 ```
-	- 检查仓库是否被设成了淘宝镜像库：npm config get registry
-	- 如是，则设回原仓库：npm config set registry=http://registry.npmjs.org
+	- 检查仓库是否被设成了淘宝镜像库：
+		npm config get registry
+	- 如是，则设回原仓库：
+		npm config set registry=https://registry.npmjs.org
+		npm config set registry=http://registry.npmjs.org
+		npm config set registry=https://registry.npmjs.com 	// node.js v18.17.0
+
 	
 	-待发布成功后，则再次将仓库地址设为淘宝镜像地址：
 		npm config set registry=https://registry.npm.taobao.org/
@@ -80,6 +85,16 @@
 	pnpm run 脚本命令	// 运行脚本命令
 	pnpm store
 	pnpm link
+
+	升级 pnpm 到最新版
+	npm install -g pnpm@latest
+
+	pnpm install 时报错: ERR_PNPM_LINKING_FAILED Error: EPERM: operation not permitted, rename
+	排查原因: pnpm 版本太高, 校验太严格了导致，使用 pnpm 的 8.6.2版本
+	npm install -g pnpm@8.6.2
+	"engines": {
+		"pnpm": ">=8.6.2"
+	}
 ```
 
 ### npm yarn pnpm 三种包管理器对比

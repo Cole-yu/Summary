@@ -1,4 +1,4 @@
-﻿# git学习总结
+# git学习总结
 ```	
 	git是一款免费开源的分布式版本控制系统，Git是一种工具；
 	Github是用git做版本控制的代码托管平台，GitHub是一种服务；
@@ -30,7 +30,7 @@
 	git branch foo 创建foo分支
 	git checkout bar 切换到分支bar
 	git checkout -b <name> 创建+切换到分支
-	git merge <name>   合并某分支到当前分支
+	git merge <name>   合并某分支到当前分支   未 push 前取消合并 git merge --abort
 	git branch -d <name> 删除本地分支				git branch --delete <name>
 	git push origin -d <name> 删除远程分支		git push origin --delete <name>
 ```
@@ -183,20 +183,35 @@
 ```
 
 ### Tag 标签
+1. 创建标签
 ```
-	1. 创建标签
 	git tag <tagName>
-	2. 推送到远程仓库
+	git tag -a <tagName> -m "附注"
+```
+2. 推送到远程仓库
+```
 	git push origin <tagName>
-	3. 指定版本为标签
+```
+3. 指定版本为标签
+```
 	git tag -a <tagName> <commitId>
-	4. 查看所有标签
+```
+4. 查看所有标签
+```
 	git tag  // 查看本地标签
 	git ls-remote --tags origin // 查看远程仓库标签
-	5. 删除标签
+```
+5. 删除标签
+```
 	git tag -d <tagName>
 	git push origin :refs/tags/<tagName> // 推送到远程仓库
-	6. 查看某个标签详情
+```
+6. 删除远程仓库中的标签
+```
+	git push -d origin <tagName>
+```
+7. 查看某个标签详情
+```
 	git show <tagName> 
 ```
 

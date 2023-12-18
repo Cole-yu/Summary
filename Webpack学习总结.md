@@ -384,7 +384,9 @@
 	      "@babel/preset-env",
 	      {
 	        "useBuiltIns": "usage",  // 自动引入
-	        "corejs": "3.33.2"
+	        "corejs": { // 指定 core-js 的版本号为3, 也可指定具体版本 "corejs": "3.33.2"
+	        	version: 3
+	        }
 	      }
 	    ]
 	  ]
