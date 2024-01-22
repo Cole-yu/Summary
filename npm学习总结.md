@@ -11,10 +11,7 @@
 	- 检查仓库是否被设成了淘宝镜像库：
 		npm config get registry
 	- 如是，则设回原仓库：
-		npm config set registry=https://registry.npmjs.org
-		npm config set registry=http://registry.npmjs.org
 		npm config set registry=https://registry.npmjs.com 	// node.js v18.17.0
-
 	
 	-待发布成功后，则再次将仓库地址设为淘宝镜像地址：
 		npm config set registry=https://registry.npm.taobao.org/
