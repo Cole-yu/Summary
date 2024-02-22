@@ -81,6 +81,28 @@
 	}
 ```	
 
+### 类型别名
+```
+	类型别名: 任何类型的名称；
+	type ID = number | string;
+
+	type Point = {
+	  x: number;
+	  y: number;
+	};
+
+	interface 的几乎所有功能都在 type 中可用，主要区别在于类型别名无法重新打开类型以添加​​新属性，而接口始终可扩展。
+```
+
+### 类型断言
+```
+	const myCanvas = <HTMLCanvasElement>document.getElementById("main_canvas");
+	const x = "hello" as number;
+
+	typeof 类型保护
+	instanceof 类型保护
+```
+
 ### 类
 ```
 	面向对象

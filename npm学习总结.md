@@ -14,7 +14,7 @@
 		npm config set registry=https://registry.npmjs.com 	// node.js v18.17.0
 	
 	-待发布成功后，则再次将仓库地址设为淘宝镜像地址：
-		npm config set registry=https://registry.npm.taobao.org/
+		npm config set registry=https://registry.npmmirror.com
 ```
 
 ### npm 更新
