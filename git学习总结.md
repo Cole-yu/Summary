@@ -228,3 +228,18 @@
 	:wq 键 点击回车后，保存更改并退出
 	语法相关链接： https://blog.csdn.net/qq_27127385/article/details/103627332
 ```
+
+### Git 检测不到新增文件的修复方法
+```
+1. 清除 Git 缓存：
+	git rm -r --cached .
+
+2. 重新添加文件：	
+	git add . 
+
+3. 提交更改：
+	git commit -m "日志信息"
+
+4. 推送：
+	git push
+```

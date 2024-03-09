@@ -344,3 +344,13 @@
 		display的值为inline-block、table-cell、table-caption
 		position的值为absolute或fixed
 ```	
+
+### 行内元素和块级元素整理
+```
+行内元素: span img a abbr b big br em i input label strong code
+块级元素: div p h1-h6 form
+		ul li ol dl dd dt
+		table caption thead tbody tfoot tr th td
+		article header section footer aside hr pre address
+		口诀：三大列表和表格、六大标题和表单、段落地址要分块
+```
