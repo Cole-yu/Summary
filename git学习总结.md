@@ -131,7 +131,10 @@
 ```
 
 ### git 版本回退
-
+```
+	git merge master 后在未提交情况下，使用 git reset --hard 从暂存区退回到工作区
+	git reset --hard // 从暂存区退回到工作区
+```
 
 ### Git 全局设置
 ```
