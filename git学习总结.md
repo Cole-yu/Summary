@@ -55,7 +55,7 @@
 
 ### stash (存放)的使用
 ```
-	git stash save 'name'	
+	git stash save 'name'
 	git stash list
 	git stash apply [stash]		// 将某个stash的变更应用到当前工作目录，git stash pop [stash]
 
