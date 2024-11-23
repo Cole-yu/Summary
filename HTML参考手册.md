@@ -266,4 +266,13 @@
 	FALLBACK:
 	/html5/ /404.html
 
+### <script> 标签的 async 与 defer 属性
+```
+属性介绍：
+	async: 表示应该立即开始下载脚本，但不阻塞页面执行其他动作（比如下载资源或等待其他脚本加载），此时和页面的渲染是异步的。只对外部脚本文件有效。
+	defer: 表示脚本可以延迟到文档完全被解析和显示之后再执行。只对外部脚本文件有效。
 
+参考资料：
+	https://blog.csdn.net/QY_99/article/details/126223941
+	https://blog.csdn.net/qq_54140719/article/details/133176028
+```
