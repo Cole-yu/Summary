@@ -977,6 +977,25 @@ getImageCached('RMB');
 	let obj = Object.create(proxy);
 	obj.time // 35
 ```
+3. 实现 Web 服务的客户端
+```
+	const service = createWebService('http://example.com/data');
+
+	service.employees().then(json => {
+	  const employees = JSON.parse(json);
+	  // ···
+	});
+
+	function createWebService(baseUrl) {
+	  return new Proxy({}, {
+	    get(target, propKey, receiver) {
+	      return () => httpGet(baseUrl + '/' + propKey);
+	    }
+	  });
+	}
+
+	最终发送的HTTP请求地址: http://example.com/data/employees
+```
 
 ### Reflect
 ```
