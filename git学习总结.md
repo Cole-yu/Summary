@@ -246,3 +246,18 @@
 4. 推送：
 	git push
 ```
+
+### git 使用中碰到的问题
+```
+1. git输入命令后需要按Q退出，按enter键没用
+【解决方法】 
+完全禁用分页： git config --global core.pager "cat"
+```
+
+### Head 和 Merge Head
+```
+在 Git 版本控制中，HEAD 指向当前工作分支的最新提交（如 main 分支），而 MERGE_HEAD 仅在合并操作时临时存在，指向被合并分支的提交。
+
+HEAD: 始终指向当前所在分支的最新提交（如 ref: refs/heads/main），代表工作目录的实时状态；
+MERGE_HEAD：仅在合并过程中临时生成，合并完成后自动删除。
+```
