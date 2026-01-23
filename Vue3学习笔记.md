@@ -42,3 +42,122 @@
 	Teleport
 	Suspense
 ```
+
+### 编译宏
+```
+编译时宏‌不是运行时函数，而是在代码编译阶段被 Vue 编译器识别并转换为等价的选项式 API 代码（如 props 选项），最终不会出现在打包后的 JavaScript 文件中。 ‌
+编译时宏‌仅限 <script setup>‌：它只能在 <script setup> 的顶层使用，不能在条件语句、函数内部或其他文件中调用。
+defineProps, defineEmits, defineModel, defineExpose, defineOptions, defineSlots 这些是 Vue 3 中的编译时宏，它在 <script setup> 语法糖中被特殊处理，无需从 Vue 中导入即可直接使用。 ‌
+```
+
+### 不同文件模式的写法方式
+```
+方式一，在使用 <script setup> 的单文件组件(.vue)中，props 可以使用 defineProps() 宏来声明：
+// mv-count.vue
+<template>
+	<div class="component-card mv-counter-wrap">
+      <h2>Counter 组件</h2>
+      <p>当前计数：{{ count }}</p>
+      <div>
+        <button @click="increment">+ 增加</button>
+      </div>
+    </div>
+</template>
+
+<script setup>
+	import { ref } from "vue";
+	const emit = defineEmits(['count-change']);
+
+	// const props = defineProps(["count", "txt"]);
+	const props = defineProps({
+		initialCount: {
+			type: Number,
+			required: false,
+      		default: 0,
+      		validator: (value) => value >= 0;
+		},
+	});
+
+	const count = ref(props.initialCount);
+
+    // 增加计数的方法
+    const increment = () => {
+      count.value++;
+      // 触发自定义事件，向父组件传递当前计数
+      emit("count-change", count.value);
+    };
+</script>
+
+方式二，在没有使用 <script setup> 的组件中，props 可以使用 props 选项来声明：
+// mv-count.js
+import { ref } from 'vue';
+export default {
+  emits: ["count-change"],
+  // props: ['initialCount'],
+  props: {
+  	initialCount: {
+		type: Number,
+		required: false,
+      	default: 0,
+      	validator: (value) => value >= 0;
+	},
+  },
+  // setup() 接收 props 作为第一个参数
+  setup(props, { emit, attrs, expose, slots }) {
+  	const count = ref(props.initialCount);
+
+    // 增加计数的方法
+    const increment = () => {
+      count.value++;
+      // 触发自定义事件，向父组件传递当前计数
+      emit("count-change", count.value);
+    };
+
+    return {
+    	count,
+    	increment,
+    }
+  },
+  // 组件模板
+  template: `
+    <div class="component-card mv-counter-wrap">
+		<h2>Counter 组件</h2>
+      	<p>当前计数：{{ count }}</p>
+      	<button @click="increment">+ 增加</button>
+    </div>
+  `
+}
+```
+
+### 组件v-model
+```
+使用<script setup>单文件模式
+
+<!-- child.vue -->
+<template>
+  <div>Parent bound v-model is: {{ model }}</div>
+  <button @click="update">Increment</button>
+</template>
+
+<script setup>
+// const model = defineModel();
+const model = defineModel({
+	default: 0,
+	// require: true, // 使 v-model 必填
+});
+
+function update() {
+  model.value++;
+}
+</script>
+
+父组件
+<!-- parent.vue -->
+<template>
+	<Child v-model="countModel" />
+</template>
+
+defineModel() 返回的值是一个 ref。
+
+model.value 和父组件的 v-model=countModel 的值同步
+```

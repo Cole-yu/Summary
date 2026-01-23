@@ -8,8 +8,14 @@
 	https://www.tslang.cn/play/index.html
 ```
 ### 本地编译环境搭建
-	1. 安装本地编译器 npm install -g typescript
-	2. 查看TypeScript版本 tsc -
+```
+1. 安装本地编译器 npm install -g typescript
+	Node 12.18.4 版本不支持 Typescript 5.x以上；
+	例： npm install typescript@4.8.4 -g
+2. 查看TypeScript版本 tsc -v // 4.8.4
+3. 编译a.ts文件成a.js文件
+    tsc a.ts // 将生成一个a.ts文件
+```
 
 ### 数据类型
 ```
