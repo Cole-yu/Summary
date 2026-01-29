@@ -2,10 +2,10 @@
 
 ### 随笔
 ```
-	TypeScript是一种在编译期进行静态类型分析的强类型的程序语言。
-	Angular2框架是用TypeScript编写完成的
-	可以在TypeScript官网的"练习"中直接进行在线编译，学习
-	https://www.tslang.cn/play/index.html
+TypeScript是一种在编译期进行静态类型分析的强类型的程序语言。
+Angular2框架是用TypeScript编写完成的
+可以在TypeScript官网的"练习"中直接进行在线编译，学习
+https://www.tslang.cn/play/index.html
 ```
 ### 本地编译环境搭建
 ```
@@ -19,30 +19,32 @@
 
 ### 数据类型
 ```
-1. 数字
-2. 布尔值
-3. 字符串
-4. 数组
-5. 元组Tuple
-6. 枚举
-7. Any
-8. Void
-9. Null
-10. Undefined
-11. Never
+1. 数字 number
+2. 布尔值 boolean
+3. 字符串 string
+4. 数组 // Array<number> number[]
+5. 元组Tuple // 元组类型允许表示一个已知元素数量和类型的数组 let x: [string, number];
+6. 枚举 // enum Color {Red, Green, Blue} let c: Color = Color.Green;
+7. Any // let notSure: any = 4;
+8. Void // void 
+9. Null // null
+10. Undefined // undefined
+11. Never // never
 12. Object
 	object表示非原始类型，也就是除number，string，boolean，symbol，null或undefined之外的类型。
 ```
 
 ### symbol
 ```
-	unique symbol
-	symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Symbol 值。
-	比如，5是一个具体的数值，就用5这个字面量来表示，这也是它的值类型。但是，Symbol 值不存在字面量，必须通过变量来引用，所以写不出只包含单个 Symbol 值的那种值类型。
-	为了解决这个问题，TypeScript 设计了symbol的一个子类型unique symbol，它表示单个的、某个具体的 Symbol 值。
-	因为unique symbol表示单个值，所以这个类型的变量是不能修改值的，只能用const命令声明，不能用let声明。
+当使用 const 声明 Symbol 变量时，TypeScript 会自动推断其为 unique symbol 类型。
+const x = Symbol(); // 类型自动推断为 unique symbol
 
-	declare const RefSymbol: unique symbol
+unique symbol: 用于表示‌单个具体的 Symbol 值‌，这个类型的变量是不能修改值的，只能用const命令声明，不能用let声明。
+	const y: unique symbol = Symbol();
+
+symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Symbol 值。
+比如，5是一个具体的数值，就用5这个字面量来表示，这也是它的值类型。但是，Symbol 值不存在字面量，必须通过变量来引用，所以写不出只包含单个 Symbol 值的那种值类型。
+为了解决这个问题，TypeScript 设计了symbol的一个子类型unique symbol，它表示单个的、某个具体的 Symbol 值。
 ```
 
 ### 变量声明
@@ -56,34 +58,99 @@
 展开运算符
 ```
 
-### 接口
+### 接口(interface)
+
 ```
-1. 接口作为类的参数声明
-	interface Person{
-		name:string;
-		age:number
+1. 接口可以描述带有属性的普通对象。
+	interface Person {
+		name: string;
+		age: number;
 	}
 
-	class Student{
-		construct(public config:Person){
-
+	class Student {
+		construct (config: Person) {
+			...
 		}
 	}
 
-	var std = new Student({
-		name:"yfx";
-		age:18
+	let student = new Student({
+		name: "yfx";
+		age: 18
 	}};
 
-2. 	接口中声明一个方法，在所有实现类中实现方法
-	interface Animal{
-		eat();
+2. 接口可以描述函数类型。
+	interface SearchFunc {
+	  (source: string, subString: string): boolean;
 	}
 
-	class Tiger{
-		eat(){
-			console.log("i eat meat");
-		}
+	let mySearch: SearchFunc;
+	mySearch = function(source: string, subString: string) {
+	  let result = source.search(subString);
+	  return result > -1;
+	}
+
+3. 可索引的类型：描述那些能够“通过索引得到”的类型
+	interface StringArray {
+	  [index: number]: string; // 索引签名，表示了当用number去索引StringArray时会得到string类型的返回值
+	}
+
+	let myArray: StringArray;
+	myArray = ["Bob", "Fred"];
+
+	let myStr: string = myArray[0];
+
+	上面例子里，我们定义了StringArray接口，它具有索引签名。 这个索引签名表示了当用number去索引StringArray时会得到string类型的返回值。
+
+4. 类类型：接口可以描述一个类的基本实现要求，明确的强制一个类去符合某种契约
+	interface ClockInterface {
+	    currentTime: Date;
+	    setTime(d: Date);
+	}
+
+	class Clock implements ClockInterface {
+	    currentTime: Date;
+	    setTime(d: Date) {
+	        this.currentTime = d;
+	    }
+	    constructor(h: number, m: number) { }
+	}
+
+5. 接口可以继承接口
+	interface Shape {
+	    color: string;
+	}
+
+	interface Square extends Shape {
+	    sideLength: number;
+	}
+
+6. 接口可以继承类
+	class Control {
+	    private state: any;
+	}
+
+	interface SelectableControl extends Control {
+	    select(): void;
+	}
+
+	class Button extends Control implements SelectableControl {
+	    select() { }
+	}
+
+7。 【注】：类不可以用继承(extends)接口，类只能实现(implements)接口；但接口是可以继承类
+	interface Parent {
+		// ...
+	}
+	class Child extends Parent { // 错误的写法: 类不能继承接口，只能实现(implements)
+		// error!!!
+	}
+
+	class Child implements Parent { // 类实现接口
+		// right
+	}
+
+	interface Parent extends OtherClass { // 接口继承类
+		// right
 	}
 ```	
 
@@ -103,10 +170,18 @@
 ### 类型断言
 ```
 	const myCanvas = <HTMLCanvasElement>document.getElementById("main_canvas");
-	const x = "hello" as number;
 
 	typeof 类型保护
 	instanceof 类型保护
+
+	类型断言有两种形式。
+		其一是“尖括号”语法：
+		let someValue: any = "this is a string";
+		let strLength: number = (<string>someValue).length;
+
+		另一个为as语法：
+		let someValue: any = "this is a string";
+		let strLength: number = (someValue as string).length;
 ```
 
 ### 类
@@ -179,12 +254,14 @@
 ```
 
 ### 枚举
+```
 	enum Direction {
 	    Up = 1,
 	    Down = 2,
 	    Left = 3,
 	    Right = 4
 	}
+```
 
 ### 字符串新特性
 ```
@@ -339,6 +416,7 @@
 		true
 		abc
 ```
+
 ### 析构表达式
 ```	
 	function getStock(){
