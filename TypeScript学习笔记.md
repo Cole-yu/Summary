@@ -43,8 +43,9 @@ unique symbol: 用于表示‌单个具体的 Symbol 值‌，这个类型的变
 	const y: unique symbol = Symbol();
 
 symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Symbol 值。
-比如，5是一个具体的数值，就用5这个字面量来表示，这也是它的值类型。但是，Symbol 值不存在字面量，必须通过变量来引用，所以写不出只包含单个 Symbol 值的那种值类型。
-为了解决这个问题，TypeScript 设计了symbol的一个子类型unique symbol，它表示单个的、某个具体的 Symbol 值。
+比如，5是一个具体的数值，就用5这个字面量来表示，这也是它的值类型。但是，Symbol 值不存在字面量，必须通过变量来引用，
+所以写不出只包含单个 Symbol 值的那种值类型。为了解决这个问题，TypeScript 设计了symbol的一个子类型unique symbol，
+它表示单个的、某个具体的 Symbol 值。
 ```
 
 ### 变量声明
@@ -99,7 +100,8 @@ symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Sy
 
 	let myStr: string = myArray[0];
 
-	上面例子里，我们定义了StringArray接口，它具有索引签名。 这个索引签名表示了当用number去索引StringArray时会得到string类型的返回值。
+	上例中已经定义了 StringArray接口，它具有索引签名。 这个索引签名表示了当用number去索引StringArray时，
+	会得到 string 类型的返回值。
 
 4. 类类型：接口可以描述一个类的基本实现要求，明确的强制一个类去符合某种契约
 	interface ClockInterface {
@@ -254,7 +256,8 @@ TypeScript能够根据返回语句自动推断出返回值类型，因此我们�
 	}
 	let myIdentity: GenericIdentityFn = identity;
 
-	可以把泛型参数（类型变量）当作整个接口的一个参数，就能知道具体使用的是哪个泛型类型（比如： Dictionary<string>而不只是Dictionary）。使用方法：
+	可以把泛型参数（类型变量）当作整个接口的一个参数，就能知道具体使用的是哪个泛型类型（比如： 
+	Dictionary<string> 而不只是Dictionary）。使用方法：
 	interface GenericIdentityFn<T> {
     	(arg: T): T;
 	}
@@ -330,7 +333,8 @@ enum Direction {
     Right
 }
 
-定义了一个数字枚举，Up使用初始化为 1，其余的成员会从 1开始自动增长。 换句话说， Direction.Up的值为 1， Down为 2， Left为 3， Right为 4。
+定义了一个数字枚举，Up使用初始化为 1，其余的成员会从 1开始自动增长。 换句话说，Direction.Up的值为 1，
+Down为 2， Left为 3， Right为 4。
 
 enum Direction {
     Up,
@@ -338,15 +342,15 @@ enum Direction {
     Left,
     Right,
 }
-
-定义Up的值为 0，Down的值为 1等等。
+这个例子定义则 Up的值为 0，Down的值为 1等等。
 ```
 
 ### 高级类型
 ```
 1. 交叉类型 &
-	交叉类型是将多个类型合并为一个类型。用符号（&）连接每个类型 可以把现有的多种类型叠加到一起成为一种类型，它包含了所需的所有类型的特性。 
-	例如， Person & Serializable & Loggable 同时是 Person 和 Serializable 和 Loggable。 就是说这个类型的对象同时拥有了这三种类型的成员。
+	交叉类型是将多个类型合并为一个类型。用符号（&）连接每个类型 可以把现有的多种类型叠加到一起成为一种类型，
+	它包含了所需的所有类型的特性。 例如， Person & Serializable & Loggable 同时是 Person 和 Serializable 
+	和 Loggable。 就是说这个类型的对象同时拥有了这三种类型的成员。
 
 2. 	联合类型 |
 	联合类型表示一个值可以是几种类型之一；用竖线（|）分隔每个类型。
