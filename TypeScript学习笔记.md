@@ -80,18 +80,18 @@ symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Sy
 
 2. 接口可以描述函数类型。
 	interface SearchFunc {
-	  (source: string, subString: string): boolean;
+		(source: string, subString: string): boolean;
 	}
 
 	let mySearch: SearchFunc;
 	mySearch = function(source: string, subString: string) {
-	  let result = source.search(subString);
-	  return result > -1;
+		let result = source.search(subString);
+		return result > -1;
 	}
 
 3. 可索引的类型：描述那些能够“通过索引得到”的类型
 	interface StringArray {
-	  [index: number]: string; // 索引签名，表示了当用number去索引StringArray时会得到string类型的返回值
+		[index: number]: string; // 索引签名，表示了当用number去索引StringArray时会得到string类型的返回值
 	}
 
 	let myArray: StringArray;
@@ -103,38 +103,38 @@ symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Sy
 
 4. 类类型：接口可以描述一个类的基本实现要求，明确的强制一个类去符合某种契约
 	interface ClockInterface {
-	    currentTime: Date;
-	    setTime(d: Date);
+		currentTime: Date;
+		setTime(d: Date);
 	}
 
 	class Clock implements ClockInterface {
-	    currentTime: Date;
-	    setTime(d: Date) {
-	        this.currentTime = d;
-	    }
-	    constructor(h: number, m: number) { }
+		currentTime: Date;
+		setTime(d: Date) {
+			this.currentTime = d;
+		}
+		constructor(h: number, m: number) { }
 	}
 
 5. 接口可以继承接口
 	interface Shape {
-	    color: string;
+		color: string;
 	}
 
 	interface Square extends Shape {
-	    sideLength: number;
+		sideLength: number;
 	}
 
 6. 接口可以继承类
 	class Control {
-	    private state: any;
+		private state: any;
 	}
 
 	interface SelectableControl extends Control {
-	    select(): void;
+		select(): void;
 	}
 
 	class Button extends Control implements SelectableControl {
-	    select() { }
+		select() { }
 	}
 
 7。 【注】：类不可以用继承(extends)接口，类只能实现(implements)接口；但接口是可以继承类
@@ -152,69 +152,55 @@ symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Sy
 	interface Parent extends OtherClass { // 接口继承类
 		// right
 	}
-```	
-
-### 类型别名
-```
-	类型别名: 任何类型的名称；
-	type ID = number | string;
-
-	type Point = {
-	  x: number;
-	  y: number;
-	};
-
-	interface 的几乎所有功能都在 type 中可用，主要区别在于类型别名无法重新打开类型以添加​​新属性，而接口始终可扩展。
 ```
 
 ### 类型断言
 ```
-	const myCanvas = <HTMLCanvasElement>document.getElementById("main_canvas");
+const myCanvas = <HTMLCanvasElement>document.getElementById("main_canvas");
 
-	typeof 类型保护
-	instanceof 类型保护
+typeof 类型保护
+instanceof 类型保护
 
-	类型断言有两种形式。
-		其一是“尖括号”语法：
-		let someValue: any = "this is a string";
-		let strLength: number = (<string>someValue).length;
+类型断言有两种形式。
+	其一是“尖括号”语法：
+	let someValue: any = "this is a string";
+	let strLength: number = (<string>someValue).length;
 
-		另一个为as语法：
-		let someValue: any = "this is a string";
-		let strLength: number = (someValue as string).length;
+	另一个为as语法：
+	let someValue: any = "this is a string";
+	let strLength: number = (someValue as string).length;
 ```
 
 ### 类
 ```
-	面向对象
+面向对象
 
-	1. 构造函数 construct
+1. 构造函数 construct
 
-	2. 静态属性 static
+2. 静态属性 static
 
-	3. 访问控制符
-		public(默认)		类的内部和外部
-		private			类的内部
-		protected  		类的内部和子类
+3. 访问控制符
+	public(默认)		类的内部和外部
+	private			类的内部
+	protected  		类的内部和子类
 
-	4. 类的继承(extends),获得父类的属性和方法
+4. 类的继承(extends)，获得父类的属性和方法
 
-	5. super关键字
-		调用父类的构造方法super()
-		调用父类的其他方法super.eat()
+5. super关键字
+	调用父类的构造方法super()
+	调用父类的其他方法super.eat()
 ```
 
 ### 函数
 ```
-
-	let myAdd = function(x: number, y: number): number { return x + y; };
-
-	为函数本身添加返回值类型 : (x: number, y: number) => number
-	TypeScript能够根据返回语句自动推断出返回值类型，因此我们通常省略它。
-
-	【书写完整函数类型】：
+函数类型可以为函数定义类型。包含两部分：参数类型和返回值类型。
+书写完整函数类型：
 	let myAdd: (x: number, y: number) => number =
-    	function(x: number, y: number): number { return x + y; };
+		function(x: number, y: number): number { return x + y; };
+
+为函数本身添加返回值类型: (x: number, y: number) => number
+TypeScript能够根据返回语句自动推断出返回值类型，因此我们通常省略它。
+	let myAdd = function(x: number, y: number): number { return x + y; };
 ```
 
 ### 注解(annotation)
@@ -241,250 +227,523 @@ symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Sy
 
 ### 泛型
 ```
+1. 泛型函数
 	function identity<T>(arg: T): T {
-	    return arg;
+		return arg;
 	}
 
-	我们给identity添加了类型变量T。 T帮助我们捕获用户传入的类型（比如：number），之后我们就可以使用这个类型。 之后我们再次使用了 T当做返回值类型。
-	允许我们跟踪函数里使用的类型的信息：传入的类型与返回的类型应该是相同的
+	T 被称为类型变量，用于捕获用户传入的类型（比如: number），同时 T 也可以作为返回值类型。使用方法：
+		let output = identity<string>("myString");  // type of output will be 'string'
+		let output = identity("myString");  		// type of output will be 'string'
 
-	使用方法：
-	let output = identity<string>("myString");  // type of output will be 'string'
-	let output = identity("myString");  		// type of output will be 'string'
+2. 泛型类型（泛型函数的类型）
+	泛型函数的类型与非泛型函数的类型没什么不同，只是有一个类型参数在最前面，像函数声明一样
+	let myIdentity: <T>(arg: T) => T = identity; // let myIdentity = identity;
+
+	也可以使用不同的泛型参数名，只要在数量上和使用方式上能对应上就可以
+	let myIdentity: <U>(arg: U) => U = identity;
+
+	T，U 被称为泛型参数名
+
+	可以使用带有调用签名的对象字面量来定义泛型函数
+	let myIdentity: {<T>(arg: T): T} = identity;
+
+3. 泛型接口
+	interface GenericIdentityFn {
+    	<T>(arg: T): T;
+	}
+	let myIdentity: GenericIdentityFn = identity;
+
+	可以把泛型参数（类型变量）当作整个接口的一个参数，就能知道具体使用的是哪个泛型类型（比如： Dictionary<string>而不只是Dictionary）。使用方法：
+	interface GenericIdentityFn<T> {
+    	(arg: T): T;
+	}
+	let myIdentity: GenericIdentityFn<number> = identity;
+
+4. 泛型类
+		class GenericNumber<T> {
+		    zeroValue: T;
+		    add: (x: T, y: T) => T;
+		}
+		let myGenericNumber = new GenericNumber<number>();
+
+5. 泛型约束
+	interface Lengthwise {
+		length: number;
+	}
+
+	function loggingIdentity<T extends Lengthwise>(arg: T): T {
+		console.log(arg.length);  // Now we know it has a .length property
+		return arg;
+	}
+
+	loggingIdentity({length: 10, value: 3});
+
+6. 在泛型里使用类类型
+	在TypeScript使用泛型创建工厂函数时，需要引用构造函数的类类型：
+
+	function create<T>(c: {new(): T; }): T {
+	    return new c();
+	}
+
+	使用原型属性推断并约束构造函数与类实例的关系：
+
+	class BeeKeeper {
+	    hasMask: boolean;
+	}
+
+	class ZooKeeper {
+	    nametag: string;
+	}
+
+	class Animal {
+	    numLegs: number;
+	}
+
+	class Bee extends Animal {
+	    keeper: BeeKeeper;
+	}
+
+	class Lion extends Animal {
+	    keeper: ZooKeeper;
+	}
+
+	function createInstance<A extends Animal>(c: new () => A): A {
+	    return new c(); // 涉及设计模式中的工厂模式
+	}
+
+	createInstance(Lion).keeper.nametag;  // typechecks!
+	createInstance(Bee).keeper.hasMask;   // typechecks!
+
+	这行代码示例中： function createInstance<A extends Animal>(c: new () => A): A {  return new c(); }
+		new () = A 表示一个构造函数，返回一个类型为 A 的实例；
+		c 是这个构造函数的变量名；
+		A extends Animal 表示泛型参数 A 是 Animal 类型或其子类；
 ```
 
 ### 枚举
 ```
-	enum Direction {
-	    Up = 1,
-	    Down = 2,
-	    Left = 3,
-	    Right = 4
+enum Direction {
+    Up = 1,
+    Down,
+    Left,
+    Right
+}
+
+定义了一个数字枚举，Up使用初始化为 1，其余的成员会从 1开始自动增长。 换句话说， Direction.Up的值为 1， Down为 2， Left为 3， Right为 4。
+
+enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+定义Up的值为 0，Down的值为 1等等。
+```
+
+### 高级类型
+```
+1. 交叉类型 &
+	交叉类型是将多个类型合并为一个类型。用符号（&）连接每个类型 可以把现有的多种类型叠加到一起成为一种类型，它包含了所需的所有类型的特性。 
+	例如， Person & Serializable & Loggable 同时是 Person 和 Serializable 和 Loggable。 就是说这个类型的对象同时拥有了这三种类型的成员。
+
+2. 	联合类型 |
+	联合类型表示一个值可以是几种类型之一；用竖线（|）分隔每个类型。
+	number | string | boolean 表示一个值可以是 number，string 或 boolean。
+
+	function padLeft(padding: string | number) {
+		el.style.padding = padding;
 	}
+
+
+	如果一个值是联合类型，只能访问此联合类型的所有类型里共有的成员（属性或方法）。
+		type UnionType = string | number;
+
+		正确：访问所有类型共有的成员
+			let value: UnionType = "hello";
+			console.log(value.toString());	// ✅ 正确，所有类型都有 toString 方法
+
+		错误：访问特定类型独有的成员
+			// value.length; 		// ❌ 错误，number 类型没有 length 属性
+			// value.toFixed(); 	// ❌ 错误，string 类型没有 toFixed 方法
+
+	对象联合类型
+		interface Bird {
+		    fly();
+		    layEggs();
+		}
+
+		interface Fish {
+		    swim();
+		    layEggs();
+		}
+
+		type Animal = Bird | Fish;
+
+		function layEggs(animal: Animal) {
+		    animal.layEggs(); 	// 正确，两个类型中都存在
+		    animal.fly();		// 错误，不能确定 animal 是否有 fly 方法
+		    animal.swim(); 		// 错误，不能确定 animal 是否有 swim 方法
+		}
+
+3. 类型别名
+	给一个类型起个新名字，可以作用于原始值，联合类型，元组以及其它任何你需要手写的类型。
+	type MyString = string;
+
+4. 字符串字面量类型
+	字符串字面量类型可以指定字符串必须的固定值，实现类似枚举类型的字符串。
+	type Easing = "ease-in" | "ease-out" | "ease-in-out";
+	只能从三种允许的字符中选择其一来做为参数传递，传入其它值则会产生错误。
+
+5. 索引类型（Index types）
+	function pluck<T, K extends keyof T>(o: T, names: K[]): T[K][] {
+	  return names.map(n => o[n]);
+	}
+	interface Person {
+	    name: string;
+	    age: number;
+	}
+	let person: Person = {
+	    name: 'Jarid',
+	    age: 35,
+	};
+	let strings: string[] = pluck(person, ['name']); // ok, string[]
+
+keyof T，索引类型查询操作符
+	对于任何类型 T， keyof T的结果为 T上已知的公共属性名的联合
+	let personProps: keyof Person; // 'name' | 'age'
+
+T[K]，索引访问操作符，只要确保类型变量 K extends keyof T，即 K 代表 T 的某个键名或属性； T[K] 代表某个键值或属性值。
+	function getProperty<T, K extends keyof T>(o: T, name: K): T[K] {
+	    return o[name]; // o[name] is of type T[K]
+	}
+
+索引类型和字符串索引签名，keyof 和 T[K] 与字符串索引签名进行交互：
+	interface Map<T> {
+		[key: string]: T; // [key: string] 即是字符串索引签名
+	}
+	let keys: keyof Map<number>; 	// string 键名类型
+	let value: Map<number>['foo']; 	// number 键值类型
+
+6. 映射类型
+	将一个已知的类型映射处理成一个需要的类型
+	interface PersonPartial {
+	    name: string;
+	    age: number;
+	}
+
+	将一个已知的类型每个属性都变成只读的
+		type Readonly<T> = {
+		    readonly [P in keyof T]: T[P];
+		}
+
+	将一个已知的类型每个属性都变为可选的
+		type Partial<T> = {
+		    [P in keyof T]?: T[P];
+		}
+
+	type PersonReadonly = Readonly<Person>;
+	type PersonPartial = Partial<Person>;
+
+	【注】: Readonly<T>、 Partial<T>、 Pick 和 Record 一同被包含进了TypeScript的标准库里。
+
+Pick 类型：
+	type Pick<T, K extends keyof T> = {
+		[P in K]: T[P];
+	}
+
+	示例：
+		interface User {
+			id: number;
+			name: string;
+			age: number;
+			email: string;
+			password: string; // 敏感字段
+		}
+
+		type UserNameAge = Pick<User, 'name' | 'age'>;
+
+		UserNameAge 类型就等价于：
+			{
+			  name: string;
+			  age: number;
+			}
+
+Record 类型：
+	type Record<K extends string, T> = {
+	    [P in K]: T;
+	}
+
+	示例：
+		type MyRecord = Record<'a' | 'b' | 'c', number>;
+		MyRecord 等价于：
+			{
+				a: number;
+				b: number;
+				c: number;
+			}
+
+7. TypeScript的标准库里的其他类型：
+	Pick<T, K> -- 只包含 T 中由 K 指定的属性；
+	Exclude<T, U> -- 从T中剔除可以赋值给U的类型；
+	Extract<T, U> -- 提取T中可以赋值给U的类型；
+	NonNullable<T> -- 从T中剔除null和undefined。
+	ReturnType<T> -- 获取函数返回值类型。
+	InstanceType<T> -- 获取构造函数类型的实例类型。
+
+	Exclude<keyof T, K> 在T中所有的属性中剔除K的属性。
+	Omit<T, K>类型可以用 Pick<T, Exclude<keyof T, K>> 来表示
+```
+
+### 类型别名(type)
+```
+类型别名: 给一个类型起个新名字，可以作用于原始值，联合类型，元组以及其它任何需要手写的类型。
+	type Point = {
+		x: number;
+		y: number;
+	};
+
+	type ID = string | number;
+	type NameResolver = () => string;
+	type NameOrResolver = ID | NameResolver;
+
+类型别名也可以是泛型
+	type Point<T> = {
+		x: T;
+		y: T;
+	};
+
+类型别名与接口的区别？
+	interface 几乎都能实现使用 type 的所有功能，主要区别在于类型别名无法重新打开类型以添加​​新属性，不能被 extends和 implements；
+	而接口始终可扩展，应该尽量使用接口去代替类型别名。
+
+使用类型别名的情形：
+	无法通过接口来描述一个类型并且需要使用联合类型或元组类型，这时通常会使用类型别名。
 ```
 
 ### 字符串新特性
 ```
-	1. 多行字符串
-		`<div>
-			<div>
-				<span></span>
-			</div>
-		`</div>
-	2. 字符串模板
-		var name="yfx";
-		console.log(`<div><span>姓名</span>${name}</div>`);
-	3. 自动拆分字符串
-		function test(template, name, age) { 
-			console.log( "template:" template);
-			console.log( "name:" + name);
-			console.log( "age:" + age);
-		}
+1. 多行字符串
+	`<div>
+		<div>
+			<span></span>
+		</div>
+	`</div>
+2. 字符串模板
+	var name="yfx";
+	console.log(`<div><span>姓名</span>${name}</div>`);
+3. 自动拆分字符串
+	function test(template, name, age) { 
+		console.log( "template:" template);
+		console.log( "name:" + name);
+		console.log( "age:" + age);
+	}
 
-		var name = "yfx";
+	var name = "yfx";
 
-		var getAge = function () { 
-			return 18;
-		}
+	var getAge = function () { 
+		return 18;
+	}
 
-		test`hello my name is ${name},i'm ${getAge()}`;  // 调用test()方法
+	test`hello my name is ${name},i'm ${getAge()}`;  // 调用test()方法
 
-		控制台输出
-			template: Array(3)   // ["hello my name is ", ",i'm ", ""]
-			name:yfx
-			age:18
+	控制台输出
+		template: Array(3)   // ["hello my name is ", ",i'm ", ""]
+		name:yfx
+		age:18
 ```
 
 ### 参数类型
 ```
-	类型检查机制，类型推断机制，Java的参数类型在参数前面，TypeScript的参数类型在后面,用':'分开
+类型检查机制，类型推断机制，Java的参数类型在参数前面，TypeScript的参数类型在后面，用':'分开
 
-	var name:string = "yfx";
+var name:string = "yfx";
 
-	function test():void{  //返回为空的函数
+function test():void{  //返回为空的函数
 
+}
+
+string,number,boolean,any
+
+void只能用在方法的返回结果上
+
+自定义类型
+class Student{
+	name:string;
+	age:number;
+	construct(name:string,age:number){
+		this.name=name;
+		this.age=age;
 	}
+}
 
-	string,number,boolean,any
-
-	void只能用在方法的返回结果上
-
-	自定义类型
-	class Student{
-		name:string;
-		age:number;
-		construct(name:string,age:number){
-			this.name=name;
-			this.age=age;
-		}
-	}
-
-	var yfx:Student = new Student("yufeixiang",18);
+let yfx:Student = new Student("yufeixiang",18);
 ```
 
 ### 参数默认值
 ```
-	function test(a:string, b:string, c:string="xiang"):void{
-		console.log("name: "+ a + b + c);
-	}
+function test(a:string, b:string, c:string="xiang"):void{
+	console.log("name: "+ a + b + c);
+}
 
-	test("yu","fei");  //name: yufeixiang
+test("yu","fei");  //name: yufeixiang
 
-	注意：带默认值的参数必须放在最后面
+注意：带默认值的参数必须放在最后面
 ```
 
 ### 可选参数(？)
 ```
-	function test(a:string, b?:string, c:string="xiang"):void{
-		console.log("name: "+ a + b + c);
-	}
+function test(a:string, b?:string, c:string="xiang"):void{
+	console.log("name: "+ a + b + c);
+}
 
-	test("yu","fei");  //name: yufeixiang
+test("yu","fei");  //name: yufeixiang
 
-	注意：需要处理可选参数没有的情况，可选参数必须放在必选参数后面
+注意：需要处理可选参数没有的情况，可选参数必须放在必选参数后面
 
-	必选参数> 可选参数=默认参数
+必选参数> 可选参数=默认参数
 
-	可选参数与默认参数优先级一样；谁在前面，实参变会赋值给谁
+可选参数与默认参数优先级一样；谁在前面，实参变会赋值给谁
 ```
 
 ### Rest and Spread操作符(...)
 ```
-	展开剩余运算符...
+展开剩余运算符...
 
-	使用场景一
-	var args:Array<string>=["yu","fei","xiang"];
-	function test(a:string, b:string, c:string="xiang"):void{
-		console.log("name: "+ a + b + c);
-	}
-	test(...args);  // name: yufeixang
+使用场景一
+var args:Array<string>=["yu","fei","xiang"];
+function test(a:string, b:string, c:string="xiang"):void{
+	console.log("name: "+ a + b + c);
+}
+test(...args);  // name: yufeixang
 
-	使用场景二
-	// func方法可以传入任意数量的参数
-	function func(...agrs){  
-		agrs.forEach(function(arg){
-			console.log(arg);
-		});
-	}
+使用场景二
+// func方法可以传入任意数量的参数
+function func(...agrs){  
+	agrs.forEach(function(arg){
+		console.log(arg);
+	});
+}
 ```
 
 ### generator函数
 ```
-	控制函数的执行过程，手动暂停和恢复代码执行 yield,next
+控制函数的执行过程，手动暂停和恢复代码执行 yield,next
 
-	function* doSomething(){
-		console.log("start");
-		// yield;					// yield后面可以为空
-	  	yield "yfx";    			// yield后面如果有表达式，将程序暂停后，将表达式结果作为值返回
-	  	console.log("end");
-	}
-	var func = doSomething();	
+function* doSomething(){
+	console.log("start");
+	// yield;					// yield后面可以为空
+  	yield "yfx";    			// yield后面如果有表达式，将程序暂停后，将表达式结果作为值返回
+  	console.log("end");
+}
+var func = doSomething();	
 
-	console.log(func.next().value);                //  yfx通过next.value获取到yield的结果
-	console.log(func.next().done);
-	
-	// 也可以将结果进行缓存
-	// var temp=func.next();  
-	// console.log(temp.value);
-	// console.log(temp.done);
-	// func.next();
+console.log(func.next().value);                //  yfx通过next.value获取到yield的结果
+console.log(func.next().done);
 
-	输出结果：
-		start
-		yfx
-		end
-		true
+// 也可以将结果进行缓存
+// var temp=func.next();  
+// console.log(temp.value);
+// console.log(temp.done);
+// func.next();
 
-	function*doSomething(){
-		console.log("start");
-	  	yield "yufeixang";
-	  	console.log("end");
-	}
-	var func = doSomething();
-	console.log(func.next().done);				// false
-	console.log(func.next().value);				// undefined
-	console.log(func.next().done);				// true
-	console.log(func.next().done);				//true
-	console.log('abc');							// abc
+输出结果：
+	start
+	yfx
+	end
+	true
 
-	控制台输出结果:
-		start
-		false
-		end
-		undefined
-		true
-		true
-		abc
+function*doSomething(){
+	console.log("start");
+  	yield "yufeixang";
+  	console.log("end");
+}
+var func = doSomething();
+console.log(func.next().done);				// false
+console.log(func.next().value);				// undefined
+console.log(func.next().done);				// true
+console.log(func.next().done);				//true
+console.log('abc');							// abc
+
+控制台输出结果:
+	start
+	false
+	end
+	undefined
+	true
+	true
+	abc
 ```
 
 ### 析构表达式
 ```	
-	function getStock(){
-		return {
-			code:"IBM",
-			price:100
+function getStock(){
+	return {
+		code:"IBM",
+		price:100
+	}
+}
+var {code,price} = getStock();   // 属性名一致，将创建两个全局变量code,price
+
+对象析构场景
+function getStock(){
+	return {
+		code:"IBM",
+		price:{
+			oldPrice:100,
+			newPrice:200
 		}
 	}
-	var {code,price} = getStock();   // 属性名一致，将创建两个全局变量code,price
+}
+var { code:codeX, price:{oldPrice} } = getScock(); //属性名不一致，解构赋值
+console.log(codeX);  	// IBM
+console.log(oldPrice);  // 100
 
-	对象析构场景
-	function getStock(){
-		return {
-			code:"IBM",
-			price:{
-				oldPrice:100,
-				newPrice:200
-			}
-		}
-	}
-	var { code:codeX, price:{oldPrice} } = getScock(); //属性名不一致，解构赋值
-	console.log(codeX);  	// IBM
-	console.log(oldPrice);  // 100
-
-	数组析构
-	var arrar1 = [1,2,3,4];
-	var [num1, , , num4]=arr1;
-	console.log(num1);  	// 1
-	console.log(num4);		// 4	
+数组析构
+var arrar1 = [1,2,3,4];
+var [num1, , , num4]=arr1;
+console.log(num1);  	// 1
+console.log(num4);		// 4
 ```
 
 ### 箭头表达式
 ```	
-	var arr=[1,2,3,4];
-	arr.filter((value)=>value%2==0);	
-	
-	this关键字
+var ar r= [1,2,3,4];
+arr.filter(value => value%2 == 0);
+
+this关键字
 ```
 
 ### 循环遍历
 ```	
-	<1> for
-		for(var i=0;i<values.length;i++){
-			console.log(values[i])
-		}
+<1> for
+	for(var i=0; i<values.length; i++){
+		console.log(values[i])
+	}
 
-	<2> forEach
-		values.forEach((value)=>console.log(value));
+<2> forEach
+	values.forEach((value) => console.log(value));
 
-	<3> for...of...  // 键值,可以用来字符串,数组,对象...
-		for(value of values){
-			console.log(value);
-		}
+<3> for...of...  // 键值,可以用来字符串,数组,对象...
+	for(value of values){
+		console.log(value);
+	}
 
-	<4> for...in...  // 键名
-		for(inx in values){
-			console.log(values[inx]);
-		}
+<4> for...in...  // 键名
+	for(inx in values){
+		console.log(values[inx]);
+	}
 ```
 
 
 ### 类型谓词 is
 ```
-	语法： parameterName is Type， parameterName必须是来自于当前函数签名里的一个参数名。
+语法： parameterName is Type， parameterName必须是来自于当前函数签名里的一个参数名。
 
-	function isFish(pet: Fish | Bird): pet is Fish {
-	    return (<Fish>pet).swim !== undefined;
-	}
+function isFish(pet: Fish | Bird): pet is Fish {
+    return (<Fish>pet).swim !== undefined;
+}
 ```
 
 ### 模块
@@ -494,18 +753,18 @@ symbol类型包含所有的 Symbol 值，但是无法表示某一个具体的 Sy
 
 ### tsconfig.json
 ```
-	文档：https://www.tslang.cn/docs/handbook/tsconfig-json.html
+文档：https://www.tslang.cn/docs/handbook/tsconfig-json.html
 ```
 
 ### 三斜线指令
 ```
-	一个三斜线引用路径是相对于包含它的文件的，如果不是根文件。
-	/// <reference path="..." />
-	/// <reference types="..." />
+一个三斜线引用路径是相对于包含它的文件的，如果不是根文件。
+/// <reference path="..." />
+/// <reference types="..." />
 
-	/// <reference types="node" />
-	表明这个文件使用了 @types/node/index.d.ts里面声明的名字； 并且，这个包需要在编译阶段与声明文件一起被包含进来。
+/// <reference types="node" />
+表明这个文件使用了 @types/node/index.d.ts里面声明的名字； 并且，这个包需要在编译阶段与声明文件一起被包含进来。
 
-	使用 noResolve 编译选项
-	如果指定了 noResolve 编译选项，三斜线引用会被忽略；它们不会增加新文件，也不会改变给定文件的顺序。
+使用 noResolve 编译选项
+如果指定了 noResolve 编译选项，三斜线引用会被忽略；它们不会增加新文件，也不会改变给定文件的顺序。
 ```
