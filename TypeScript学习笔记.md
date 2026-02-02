@@ -201,7 +201,7 @@ instanceof 类型保护
 		function(x: number, y: number): number { return x + y; };
 
 为函数本身添加返回值类型: (x: number, y: number) => number
-TypeScript能够根据返回语句自动推断出返回值类型，因此我们通常省略它。
+TypeScript能够根据返回语句自动推断出返回值类型，因此通常省略它。
 	let myAdd = function(x: number, y: number): number { return x + y; };
 ```
 
@@ -392,7 +392,7 @@ enum Direction {
 		}
 
 3. 类型别名
-	给一个类型起个新名字，可以作用于原始值，联合类型，元组以及其它任何你需要手写的类型。
+	给一个类型起个新名字，可以作用于原始值，联合类型，元组以及其它任何需要手写的类型。
 	type MyString = string;
 
 4. 字符串字面量类型
@@ -418,10 +418,11 @@ keyof T，索引类型查询操作符
 	对于任何类型 T， keyof T的结果为 T上已知的公共属性名的联合
 	let personProps: keyof Person; // 'name' | 'age'
 
-T[K]，索引访问操作符，只要确保类型变量 K extends keyof T，即 K 代表 T 的某个键名或属性； T[K] 代表某个键值或属性值。
+T[K]，索引访问操作符，只要确保类型变量 K extends keyof T，即 K 代表 T 的某个键名/属性； T[K] 代表某个键值/属性值。
 	function getProperty<T, K extends keyof T>(o: T, name: K): T[K] {
 	    return o[name]; // o[name] is of type T[K]
 	}
+	本例中，类型语法反映了表达式语法。 这意味着 person['name'] 具有类型 Person['name'] — 在该例子里则为 string类型。
 
 索引类型和字符串索引签名，keyof 和 T[K] 与字符串索引签名进行交互：
 	interface Map<T> {
@@ -751,6 +752,82 @@ function isFish(pet: Fish | Bird): pet is Fish {
 ```
 
 ### 模块
+```
+1. “内部模块”现在称做“命名空间”，“外部模块”现在则简称为“模块”，也就是说 module X {} 相当于现在推荐的写法 namespace X {}；
+
+// ZipCodeValidator.js
+export const numberRegexp = /^[0-9]+$/;
+class ZipCodeValidator {
+    isAcceptable(s: string) {
+        return s.length === 5 && numberRegexp.test(s);
+    }
+}
+export { ZipCodeValidator };
+// export { ZipCodeValidator as MainValidator }; // 重命名
+
+// main.js
+import { ZipCodeValidator as MainValidator } from "./ZipCodeValidator";
+let mainValidator = new MainValidator();
+
+将整个模块导入到一个变量，并通过它来访问模块的导出部分
+	import * as validator from "./ZipCodeValidator";
+	let myValidator = new validator.ZipCodeValidator();
+
+2. 默认导出
+（1）每个模块都可以有一个default导出，默认导出使用 default关键字标记；
+（2）并且一个模块只能够有一个default导出，需要使用一种特殊的导入形式来导入 default导出；
+（3）类和函数声明可以直接被标记为默认导出；
+（4）标记为默认导出的类和函数的名字是可以省略的；
+（5）default导出也可以是一个值；
+	export default function (s: string) {
+	    return s.length === 5;
+	}
+	export default "123";
+
+export * from "./utils";
+
+3. 创建模块结构指导
+（1）如果仅导出单个 class 或 function，使用 export default；
+	export default class SomeType {
+		constructor() {
+			...
+		}
+	}
+
+（2）如果要导出多个对象，把它们放在顶层里导出；
+	export class SomeType { /* ... */ }
+	export function someFunc() { /* ... */ }
+	import { SomeType, someFunc } from "./MyThings";
+
+（3）使用命名空间导入模式当要导出大量内容的时候；
+	// MyLargeModule.ts
+	export class Dog { ... }
+	export class Cat { ... }
+	export class Tree { ... }
+	export class Flower { ... }
+
+	// Consumer.ts
+	import * as myLargeModule from "./MyLargeModule.ts";
+	let x = new myLargeModule.Dog();
+
+（4）使用重新导出进行扩展；
+	// ProgrammerCalculator.js
+	import { Calculator } from "./Calculator";
+	class ProgrammerCalculator extends Calculator {
+		...
+	}
+	export { ProgrammerCalculator as Calculator };
+
+	// TestProgrammerCalculator.js
+	import { Calculator } from "./ProgrammerCalculator";
+	let c = new Calculator(2);
+
+（5）模块里不要使用命名空间；
+	命名空间在使用模块时几乎没什么价值，重新检查以确保没有对模块使用命名空间：
+	❌ 文件的顶层声明是 export namespace Foo { ... } （删除Foo并把所有内容向上层移动一层 ✅）；
+	❌ 文件只有一个export class 或 export function （考虑使用 export default ✅）；
+	❌ 多个文件的顶层具有同样的 export namespace Foo {} （不要以为这些会合并到一个Foo中）；
+```
 
 ### 模块解析
 
