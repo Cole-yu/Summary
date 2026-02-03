@@ -829,6 +829,22 @@ export * from "./utils";
 	❌ 多个文件的顶层具有同样的 export namespace Foo {} （不要以为这些会合并到一个Foo中）；
 ```
 
+### 命名空间
+```
+1. “内部模块”现在称做“命名空间”，“外部模块”现在则简称为“模块”，也就是说 module X {} 相当于现在推荐的写法 namespace X {}；
+
+2. 别名
+	简化命名空间操作的方法是使用import q = x.y.z给常用的对象起一个短的名字；
+	namespace Shapes {
+		export namespace Polygons {
+			export class Triangle { }
+			export class Square { }
+		}
+	}
+	import polygons = Shapes.Polygons;
+	let sq = new polygons.Square(); // Same as "new Shapes.Polygons.Square()"
+```
+
 ### 模块解析
 
 
