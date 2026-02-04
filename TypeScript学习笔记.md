@@ -741,7 +741,6 @@ this关键字
 	}
 ```
 
-
 ### 类型谓词 is
 ```
 语法： parameterName is Type， parameterName必须是来自于当前函数签名里的一个参数名。
@@ -786,7 +785,57 @@ let mainValidator = new MainValidator();
 
 export * from "./utils";
 
-3. 创建模块结构指导
+3. 外部模块声明（declare module 语法）
+declare module 是 TypeScript 模块声明的核心语法，主要用于为非 TypeScript 编写的模块（如第三方JS库、CSS/图片等资源文件）补充
+类型定义，让 TS 能识别这些模块的类型、避免类型报错，属于环境声明（Ambient Declarations），仅用于类型检查，不会编译为 JS 代码。
+
+（1）标准完整语法
+	// 全局环境声明文件（.d.ts）中使用
+	declare module "模块名" {
+		// 模块内部的类型导出声明
+		export const 变量名: 类型;
+		export function 函数名(参数: 类型): 返回值类型;
+		export interface 接口名 {}
+		export default 默认导出内容;
+		// 其他类型声明...
+	}
+
+（2）关键说明
+	使用场景：必须写在类型声明文件（.d.ts 后缀）中，通常项目根目录的 typings/、types/ 文件夹或根目录的 global.d.ts 是规范存放位置；
+	作用域：默认是全局声明，TS 编译器会自动识别项目中的 .d.ts 文件；
+	无实现代码：declare module 仅声明类型结构，不编写业务逻辑实现。
+
+（3）两种核心使用场景
+	场景1：为第三方 JS 库声明类型；
+	当使用没有自带类型定义的第三方 npm 包（如老旧 JS 库）时，用 declare module 补充类型，
+	解决 TS7016: Could not find a declaration file for module 'xxx' 报错。
+
+		<!-- types/utils-lib.d.ts -->
+		declare module "utils-lib" {
+			export const version: string;
+			export function add(a: number, b: number): number;
+			...
+		}
+
+	场景2：为非 JS 资源文件声明类型；
+	TS 默认无法识别 .css/.scss/.png/.svg 等资源模块，会报类型错误，通过模块声明通配符 * 批量声明资源模块类型。
+
+		// 声明图片资源（导出为文件路径字符串）
+		declare module "*.png" {
+			const src: string;
+			export default src;
+		}
+
+（4）外部模块简写
+	假如不想在使用一个新模块之前花时间去编写声明，可以采用声明的简写形式以便能够快速使用它。
+	<!-- declarations.d.ts -->
+	declare module "hot-new-module";
+
+	简写模块里所有导出的类型将是 any
+	import x, {y} from "hot-new-module";
+	x(y);
+
+4. 创建模块结构指导
 （1）如果仅导出单个 class 或 function，使用 export default；
 	export default class SomeType {
 		constructor() {
@@ -833,8 +882,34 @@ export * from "./utils";
 ```
 1. “内部模块”现在称做“命名空间”，“外部模块”现在则简称为“模块”，也就是说 module X {} 相当于现在推荐的写法 namespace X {}；
 
-2. 别名
-	简化命名空间操作的方法是使用import q = x.y.z给常用的对象起一个短的名字；
+2. 多文件中的命名空间
+	三斜线指令以 /// 开头，用于向编译器传递编译时的配置信息或文件依赖关系，必须出现在文件顶部，且仅能位于
+	其他注释之后、任何代码语句之前。
+	
+	<!-- Validation.ts 文件 -->
+	namespace Validation {
+		export interface StringValidator {
+			isAcceptable(s: string): boolean;
+		}
+	}
+
+	<!-- LettersOnlyValidator.ts 文件 -->
+	/// <reference path="Validation.ts" />
+	namespace Validation {
+		const lettersRegexp = /^[A-Za-z]+$/;
+		export class LettersOnlyValidator implements StringValidator {
+			isAcceptable(s: string) {
+				return lettersRegexp.test(s);
+			}
+		}
+	}
+
+	声明文件间的依赖关系，可以控制文件的编译顺序，三斜线指令确保被引用的文件在当前文件之前被处理。
+
+3. 别名
+（1）简化命名空间操作的方法是使用 import q = x.y.z 给常用的对象起一个短的名字；
+	使用 import ... = ... 语法可以为复杂的命名空间路径创建简短别名，提升代码可读性，并且该语法适用于类型和命名空间符号；
+
 	namespace Shapes {
 		export namespace Polygons {
 			export class Triangle { }
@@ -843,14 +918,83 @@ export * from "./utils";
 	}
 	import polygons = Shapes.Polygons;
 	let sq = new polygons.Square(); // Same as "new Shapes.Polygons.Square()"
+
+（2）别名与变量的区别
+	这种 import ... = ... 的语法与普通的变量赋值类似（如 var a = b），但它适用于类型和具有命名空间含义的符号。
+	此外，对于值来说，import 创建的是一个新的引用，而不是共享原始变量的引用。这意味着如果修改了别名变量的值，原始变量不会受到影响。
+
+4. 使用其它的 JavaScript 库时，为了描述不是用 TypeScript 编写的类库的类型，需要声明类库导出的API。 由于大部分程序库只提供少数的
+	顶级对象，命名空间是用来表示它们的一个好办法；之所以称其为声明是因为它不是外部程序的具体实现，通常在 .d.ts 里写这些声明。
+
+（1）外部声明的命名空间
+
+	<!-- D3.d.ts 文件（部分摘录）  -->
+	declare namespace D3 {
+		export interface Selectors {
+			select: {
+				(selector: string): Selection;
+				(element: EventTarget): Selection;
+			};
+		}
+
+		export interface Event {
+			x: number;
+			y: number;
+		}
+
+		export interface Base extends Selectors {
+			event: Event;
+		}
+	}
+
+	declare var d3: D3.Base;
+```
+
+### 命名空间和模块
+```
+1. 使用import引用模块文件，而不是 /// <reference>
+编译器首先尝试去查找相应路径下的.ts，.tsx再或者.d.ts。 如果这些文件都找不到，编译器会查找 外部模块声明。 
+
+模块声明
+declare module "SomeModule" {
+	export function fn(): string;
+}
+
+2. 不必要的命名空间
+不应该对模块使用命名空间，使用命名空间是为了提供逻辑分组和避免命名冲突。 模块文件本身已经是一个逻辑分组，
+并且它的名字是由导入这个模块的代码指定，所以没有必要为导出的对象增加额外的模块层。
+
+不推荐的用法---❌：
+	<!-- shapes.ts -->
+	export namespace Shapes {
+		export class Triangle { /* ... */ }
+		export class Square { /* ... */ }
+	}
+
+	<!-- shapeConsumer.ts -->
+	import * as shapes from "./shapes";
+	let t = new shapes.Shapes.Triangle(); // shapes.Shapes?
 ```
 
 ### 模块解析
-
-
-### tsconfig.json
 ```
-文档：https://www.tslang.cn/docs/handbook/tsconfig-json.html
+1. 编译器会遵循以下二种模块解析策略： Classic 或 Node；
+
+2. 根据模块引用是相对的还是非相对的，分为“相对模块导入”和“非相对模块导入”；
+	（1）相对导入是以/，./或../开头的。
+		import Entry from "./components/Entry";
+		import "/mod";
+
+	（2）所有其它形式的导入被当作非相对的。 下面是一些例子：
+		import * as $ from "jQuery";
+		import { Component } from "@angular/core";
+
+文档: https://www.tslang.cn/docs/handbook/module-resolution.html
+```
+
+### tsconfig.json 解读
+```
+文档: https://www.tslang.cn/docs/handbook/tsconfig-json.html
 ```
 
 ### 三斜线指令
