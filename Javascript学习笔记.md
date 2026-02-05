@@ -987,3 +987,96 @@
 	let buf = Buffer.from('helllo world!', 'utf8');
 	let arrayBuffer = buf.buffer;	// 利用 buffer 属性
 ```
+
+### ServiceWorker API
+1. 注册
+```
+使用 ServiceWorkerContainer.register() 方法首次注册 service worker。
+
+注册成功后，service worker 将遵守以下生命周期：
+下载
+安装
+激活
+
+（1）如果这是首次启用 service worker，页面会首先尝试安装，安装成功后它会被激活；
+（2）如果现有 service worker 已启用，新版本会在后台安装，但仍不会被激活——这个时序称为 worker in waiting；
+（3）直到所有已加载的页面不再使用旧的 service worker 才会激活新的 service worker；
+（4）只要页面不再依赖旧的 service worker，新的 service worker 会被激活（成为 active worker）；
+（5）使用 ServiceWorkerGlobalScope.skipWaiting() 可以更快地进行激活，active worker 可以使用 Clients.claim() 声明现有的页面
+```
+
+2. 基本步骤
+```
+通常遵循以下基本步骤来使用 service worker：
+（1）获取 service worker 代码，然后使用 serviceWorkerContainer.register() 来注册。
+	如果成功，service worker 将在 ServiceWorkerGlobalScope 中执行；这本质上是一种特殊的上下文，在主脚本执行线程之外运行，
+	没有访问 DOM 的权限。Service Worker 现在已为处理事件做好准备。
+（2）安装完成。install 事件始终是发送给 service worker 的第一个事件（这可用于启动填充 IndexedDB 和缓存站点资源的过程）。
+	在此步骤期间，应用程序正在为离线可用做准备。
+（3）当 install 程序处理完成时，service worker 被视为已安装。此时，service worker 的先前版本可能处于激活的状态并控制着打开的页面。
+	由于不希望同一 service worker 的两个不同版本同时运行，因此新版本尚未激活。
+（4）一旦 service worker 的旧版本控制的页面都已关闭，就可以安全地停用旧版本，并且新安装的 service worker 将收到 activate 事件。
+	activate 的主要用途是去清理 service worker 之前版本使用的资源。新的 service worker 可以调用 skipWaiting() 要求立即激活，
+	而无需要求打开的页面关闭。然后，新的 service worker 将立即收到 activate 事件，并将接管任何打开的页面。
+（5）激活后，service worker 将立即控制页面，但是只会控制那些在 register() 成功后打开的页面。
+	换句话说，文档必须重新加载才能真正的受到控制，因为文档在有或者没有 service worker 的情况下开始存在，并在其生命周期内维护它。
+	为了覆盖次默认行为并在页面打开的情况下，service worker 可以调用 clients.claim() 方法。
+（6）每当获取新版本的 service worker 时，都会再次发生此循环，并在新版本的激活期间清理上一个版本的残留。
+```
+
+3. 应用场景
+```
+后台数据同步
+响应来自其他源的资源请求
+集中接收计算成本高的数据更新，比如地理位置和陀螺仪信息，这样多个页面就可以利用同一组数据
+在客户端进行 CoffeeScript、LESS、CJS/AMD 等模块编译和依赖管理（用于开发目的）
+后台服务钩子
+自定义模板用于特定 URL 模式
+性能增强，比如预取用户可能需要的资源，比如相册中的后面数张图片
+```
+
+4. 示例
+```
+<!-- main.js -->
+if ('serviceWorker' in navigator) {
+	window.addEventListener('load', () => {
+		navigator.serviceWorker.register('./sw.js', {
+			scope: './'
+		}).then(registration => {
+			console.log('success', registration);
+
+			if (registration.installing) {
+				console.log("正在安装 Service worker");
+			} else if (registration.waiting) {
+				console.log("已安装 Service worker installed");
+			} else if (registration.active) {
+				console.log("激活 Service worker");
+			}
+
+			registration.active.postMessage("send from main.js file");
+		})
+		.catch(err => {
+			console.log('fail', err);
+		});
+
+		// navigator.serviceWorker 返回一个 ServiceWorkerContainer 对象
+		navigator.serviceWorker.addEventListener('message', function (e) {
+			console.log(`222 - main.js - ${Date.now()}:  ${e.data}`);
+		});
+	});
+}
+
+<!-- sw.js -->
+self.addEventListener('install', function (event) {
+	console.log('Service Worker install');
+	self.skipWaiting(); // 立即激活新的 service worker
+});
+
+self.addEventListener('message', function (event) {
+	console.log(`11112 - sw.js - ${Date.now()}:  ${event.data}`);
+	event.source.postMessage('我是sw 将发送信息到 page');
+});
+
+// sw.js 内可以使用 self 也可以使用 this，每个sw仅会安装一次，除非发生更新；
+// self 即为 ServiceWorkerGlobalScope 的实例对象；
+```
