@@ -11,8 +11,8 @@ https://www.tslang.cn/play/index.html
 ```
 1. 安装本地编译器 npm install -g typescript
 	Node 12.18.4 版本不支持 Typescript 5.x以上；
-	例： npm install typescript@4.8.4 -g
-2. 查看TypeScript版本 tsc -v // 4.8.4
+	例： npm install typescript@4.9.5 -g
+2. 查看TypeScript版本 tsc -v // 4.9.5
 3. 编译a.ts文件成a.js文件
     tsc a.ts // 将生成一个a.ts文件
 ```
@@ -876,6 +876,13 @@ declare module 是 TypeScript 模块声明的核心语法，主要用于为非 T
 	❌ 文件的顶层声明是 export namespace Foo { ... } （删除Foo并把所有内容向上层移动一层 ✅）；
 	❌ 文件只有一个export class 或 export function （考虑使用 export default ✅）；
 	❌ 多个文件的顶层具有同样的 export namespace Foo {} （不要以为这些会合并到一个Foo中）；
+
+5. declare global 语法
+declare global 是 TypeScript 中用于在模块文件内扩展全局命名空间的语法，它允许你在一个被标记为「模块」（包含 import/export）
+的文件中，修改或扩展全局作用域的类型（比如 Window、Array、String 等内置接口，或自定义全局类型）。简单来说：它是「模块文件」和
+「全局作用域」之间的桥梁，让你在模块化代码中也能修改全局类型。
+
+核心原则：declare global 是「模块中扩展全局」的语法，无模块标识（import/export）时使用必然报错。
 ```
 
 ### 命名空间
@@ -995,6 +1002,40 @@ declare module "SomeModule" {
 ### tsconfig.json 解读
 ```
 文档: https://www.tslang.cn/docs/handbook/tsconfig-json.html
+
+{
+  "compilerOptions": {
+    "allowJs": true, // 允许 TS 编译器处理 .js 文件，不禁止导入 .js 文件
+    "checkJs": true, // 在 .js 文件中报告错误
+    "target": "ES5", // 编译后的 JS 语法版本，指定 TS 编译器将 TS 代码编译成哪个 ECMAScript 版本的 JS 代码
+    // "lib": ["ES5", "DOM"], // 指定 TS 在类型检查时要包含的标准库文件，lib 默认会跟随 target 自动加载对应版本的核心库
+    "module": "CommonJS", // 编译后使用的模块系统类型（ESM->import,export, CommonJS->require）
+    "moduleResolution": "Node", // 模块解析策略：Node 和 Classic
+    "resolveJsonModule": true, // JSON 文件可以作为模块直接导入，基于 JSON 文件的结构自动生成类型信息
+    "jsx": "preserve", // 在 .tsx文件里支持JSX
+    "jsxImportSource": "vue", // 告诉编译器处理JSX语法的工厂函数（如jsx()，h()）来自哪个包
+    "downlevelIteration": true, // target = ES5下 启用 downlevelIteration 标志以支持迭代器语法：for(const [key, value] of Map.entries()){ }
+    "allowSyntheticDefaultImports": true, // 允许从没有设置默认导出的模块中默认导入
+    "esModuleInterop": true, // 处理 ES 模块（ESM）与 CommonJS 模块（require）之间的导入导出差异
+    "strict": true, // 启用所有严格类型检查选项
+    "strictNullChecks": true, // 严格的 null检查
+    "noUnusedLocals": false, // 未使用的局部变量
+    "noImplicitAny": false, // any类型    
+    "forceConsistentCasingInFileNames": true, // 强制统一输入输出文件名大小写
+    "isolatedModules": true, // 每个文件作为单独的模块存在，都可以被独立编译不报错
+    "types": [
+      "node",
+    ],
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
 ```
 
 ### 三斜线指令
