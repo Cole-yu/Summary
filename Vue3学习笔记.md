@@ -49,6 +49,142 @@ const raw = {};
 const proxy = reactive(raw);
 // 代理对象和原始对象不是全等的
 console.log(proxy === raw); // false
+
+
+1. 为什么需要使用带有 .value 的 ref？
+
+// 伪代码，不是真正的实现
+const myRef = {
+  _value: 0,
+  get value() {
+    track()
+    return this._value
+  },
+  set value(newValue) {
+    this._value = newValue
+    trigger()
+  }
+}
+
+-----源码解读-----
+function ref(value) {
+  return createRef(value, false);
+}
+
+function createRef(rawValue, shallow) {
+  if (isRef(rawValue)) {
+    return rawValue;
+  }
+  return new RefImpl(rawValue, shallow);
+}
+
+class RefImpl {
+  constructor(value, __v_isShallow) {
+    this.__v_isShallow = __v_isShallow;
+    this.dep = undefined;
+    this.__v_isRef = true;
+    this._rawValue = __v_isShallow ? value : toRaw(value);
+    this._value = __v_isShallow ? value : toReactive(value);
+  }
+  get value() {
+    trackRefValue(this);
+    return this._value;
+  }
+  set value(newVal) {
+    const useDirectValue = this.__v_isShallow || isShallow(newVal) || isReadonly(newVal);
+    newVal = useDirectValue ? newVal : toRaw(newVal);
+    if (hasChanged(newVal, this._rawValue)) {
+      this._rawValue = newVal;
+      this._value = useDirectValue ? newVal : toReactive(newVal);
+      triggerRefValue(this, newVal);
+    }
+  }
+}
+
+const toReactive = (value) => isObject(value) ? reactive(value) : value;
+
+function reactive(target) {
+  // if trying to observe a readonly proxy, return the readonly version.
+  if (isReadonly(target)) {
+    return target;
+  }
+  return createReactiveObject(target, false, mutableHandlers, mutableCollectionHandlers, reactiveMap); // Proxy对象
+}
+
+function createReactiveObject(target, isReadonly, baseHandlers, collectionHandlers, proxyMap) {
+  if (!isObject(target)) {
+    {
+      console.warn(`value cannot be made reactive: ${String(target)}`);
+    }
+    return target;
+  }
+  // target is already a Proxy, return it.
+  // exception: calling readonly() on a reactive object
+  if (target["__v_raw" /* ReactiveFlags.RAW */] &&
+    !(isReadonly && target["__v_isReactive" /* ReactiveFlags.IS_REACTIVE */])) {
+    return target;
+  }
+  // target already has corresponding Proxy
+  const existingProxy = proxyMap.get(target);
+  if (existingProxy) {
+    return existingProxy;
+  }
+  // only specific value types can be observed.
+  const targetType = getTargetType(target);
+  if (targetType === 0 /* TargetType.INVALID */) {
+    return target;
+  }
+  const proxy = new Proxy(target, targetType === 2 /* TargetType.COLLECTION */ ? collectionHandlers : baseHandlers);
+  proxyMap.set(target, proxy);
+  return proxy;
+}
+```
+
+### 额外的 ref 解包细节
+```
+1. 作为 reactive 对象的属性
+一个 ref 会在作为响应式对象的属性被访问或修改时自动解包
+
+const count = ref(0);
+const state = reactive({
+  count
+});
+
+console.log(state.count); // 0
+
+state.count = 1
+console.log(count.value); // 1
+
+2. 数组和集合的注意事项
+当 ref 作为响应式数组或原生集合类型 (如 Map) 中的元素被访问时，它不会被解包。
+const books = reactive([ref('Vue 3 Guide')]);
+// 这里需要 .value
+console.log(books[0].value);
+
+const map = reactive(new Map([['count', ref(0)]]));
+// 这里需要 .value
+console.log(map.get('count').value);
+
+3. 在模板中解包的注意事项
+在模板渲染上下文中，只有顶级的 ref 属性才会被解包。
+
+const count = ref(0);
+const object = { id: ref(1) };
+count 和 object 是顶级属性，但 object.id 不是顶级属性，在计算表达式时 object.id 没有被解包，仍然是一个 ref 对象
+
+模板语法中：正确 ✅
+{{ count + 1 }} // 表达式按预期工作
+
+模板语法中：错误 ❌
+{{ object.id + 1 }} // [object Object]1，在计算表达式时 object.id 没有被解包，仍然是一个 ref 对象
+
+模板语法中：正确 ✅
+const { id } = object; // 定义新属性 id 为顶级属性
+{{ id + 1 }}
+
+如果 ref 是文本插值的最终计算值 (即 {{ }} 标签)，那么它将被解包，内容将正确渲染
+模板语法中：正确 ✅
+{{ object.id }} // 在插值表达式中为最终计算值
 ```
 
 ### 内置组件
