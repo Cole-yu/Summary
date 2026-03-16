@@ -187,6 +187,129 @@ const { id } = object; // 定义新属性 id 为顶级属性
 {{ object.id }} // 在插值表达式中为最终计算值
 ```
 
+### v-if 与 v-show
+```
+v-if 是“真实的”按条件渲染，因为它确保了在切换时，条件区块内的事件监听器和子组件都会被销毁与重建。
+v-if 也是惰性的：如果在初次渲染时条件值为 false，则不会做任何事。条件区块只有当条件首次变为 true 时才被渲染。
+
+v-show 元素无论初始条件如何始终会被渲染，只有 CSS display 属性会被切换。
+如果表达式为 true：元素的 display 属性为默认值（如 block/inline），正常显示；
+如果表达式为 false：Vue 会给该元素添加内联样式 display: none，元素存在于 DOM 中但不可见。
+
+v-if 有更高的切换开销，而 v-show 有更高的初始渲染开销。
+
+总结:
+  1. v-if 初始渲染：遵循「惰性原则」，条件为 false 时完全跳过渲染，无 DOM 节点、无生命周期执行，
+    初始开销极低；条件为 true 时才创建 DOM 并执行生命周期。
+  2. v-show 初始渲染：无惰性，无论条件真假，都会先创建 DOM 并执行完整生命周期，
+    仅通过 display: none 控制隐藏，初始始终有 DOM 渲染开销。
+  3. 选型依据：初始条件大概率为 false 且很少切换（如权限控制），用 v-if 节省初始渲染资源；
+    初始条件可能频繁切换（如开关），用 v-show 避免后续 DOM 重建开销。
+```
+
+### 侦听器
+1. watch 与 watchEffect​
+```
+watch 和 watchEffect 都能响应式地执行有副作用的回调。它们之间的主要区别是追踪响应式依赖的方式：
+  (1) watch 只追踪明确侦听的数据源。它不会追踪任何在回调中访问到的东西。另外，仅在数据源确实改变时才会触发回调。
+    watch 会避免在发生副作用时追踪依赖，因此，能更加精确地控制回调函数的触发时机。
+
+  (2) watchEffect，则会在副作用发生期间追踪依赖。它会在同步执行过程中，自动追踪所有能访问到的响应式属性。
+    这更方便，而且代码往往更简洁，但有时其响应性依赖关系会不那么明确。
+```
+
+2. 侦听器的副作用清理
+```
+(1) 使用 onWatcherCleanup()  API 来注册一个清理函数，当侦听器失效并准备重新运行时会被调用。
+import { watch, onWatcherCleanup } from 'vue';
+
+watch(id, (newId) => {
+  const controller = new AbortController();
+
+  fetch(`/api/${newId}`, { signal: controller.signal }).then(() => {
+    // 回调逻辑
+  });
+
+  onWatcherCleanup(() => {
+    // 终止过期请求
+    controller.abort();
+  });
+});
+
+(2) 使用 onCleanup 函数
+onCleanup 函数作为 watch 中回调函数第三个参数“(newId, oldId, onCleanup)”传递给侦听器回调，
+以及 watchEffect 作用函数的第一个参数。
+
+watch(id, (newId, oldId, onCleanup) => {
+  // ...
+  onCleanup(() => {
+    // 清理逻辑
+  });
+});
+
+watchEffect((onCleanup) => {
+  // ...
+  onCleanup(() => {
+    // 清理逻辑
+  });
+});
+```
+
+3. 侦听器回调的触发时机
+```
+默认情况下，侦听器回调会在父组件更新 (如有) 之后、所属组件的 DOM 更新之前被调用。
+
+Post Watchers 如果想在侦听器回调中能访问被 Vue 更新之后的所属组件的 DOM，你需要指明 flush: 'post'。
+
+watch(source, callback, {
+  flush: 'post'
+});
+
+watchEffect(callback, {
+  flush: 'post'
+});
+
+后置刷新的 watchEffect() 有个更方便的别名 watchPostEffect()。
+
+import { watchPostEffect } from 'vue';
+watchPostEffect(() => {
+  /* 在 Vue 更新后执行 */
+});
+```
+
+4. 同步侦听器
+```
+创建一个同步触发的侦听器，它会在 Vue 进行任何更新之前触发：
+
+watch(source, callback, {
+  flush: 'sync'
+});
+
+watchEffect(callback, {
+  flush: 'sync'
+});
+
+同步触发的 watchEffect() 有个更方便的别名 watchSyncEffect()。
+
+import { watchSyncEffect } from 'vue';
+watchSyncEffect(() => {
+  /* 在响应式数据变化时同步执行 */
+});
+```
+
+5. 停止侦听器
+```
+在 setup() 或 <script setup> 中用同步语句创建的侦听器，会自动绑定到宿主组件实例上，并且会在宿主组件卸载时自动停止。
+因此，在大多数情况下，无需关心怎么停止一个侦听器。
+
+要手动停止一个侦听器，调用 watch 或 watchEffect 返回的函数：
+const unwatch = watch(source, (newId, oldId) => {});
+unwatch(); // ...当该侦听器不再需要时
+
+const unwatch = watchEffect(() => {});
+unwatch();
+```
+
 ### 内置组件
 ```
 Transition

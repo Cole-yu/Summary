@@ -201,7 +201,7 @@ instanceof 类型保护
 
 ### 函数
 ```
-函数类型可以为函数定义类型。包含两部分：参数类型和返回值类型。
+函数类型可以为函数定义类型，包含两部分：参数类型和返回值类型。
 书写完整函数类型：
 	let myAdd: (x: number, y: number) => number =
 		function(x: number, y: number): number { return x + y; };
@@ -209,6 +209,21 @@ instanceof 类型保护
 为函数本身添加返回值类型: (x: number, y: number) => number
 TypeScript能够根据返回语句自动推断出返回值类型，因此通常省略它。
 	let myAdd = function(x: number, y: number): number { return x + y; };
+
+(1) 函数的重载
+
+// 1. 重载签名列表（只写类型，不写函数体）
+function 函数名(参数1: 类型): 返回值类型;
+function 函数名(参数1: 类型, 参数2: 类型): 返回值类型;
+
+// 2. 实现签名（唯一的函数体，必须兼容所有重载）
+function 函数名(参数1: 类型, 参数2?: 类型): 返回值类型 {
+  // 函数逻辑
+}
+
+函数重载只能用函数声明（function），不能用箭头函数。
+
+使用场景： 函数入参类型 / 个数不同，且返回值类型和入参强相关
 ```
 
 ### 注解(annotation)
