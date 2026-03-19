@@ -1045,6 +1045,10 @@ declare module "SomeModule" {
     "noImplicitAny": false, // any类型    
     "forceConsistentCasingInFileNames": true, // 强制统一输入输出文件名大小写
     "isolatedModules": true, // 每个文件作为单独的模块存在，都可以被独立编译不报错
+    "skipLibCheck": true, // 忽略所有的声明文件（ *.d.ts）的类型检查；跳过大幅提升编译速度 + 解决第三方库类型冲突
+    冲突
+    // 只在 tsc 命令时生效。ts-loader + webpack 环境中，tsconfig.json 的 noEmit 配置 不！生！效！
+    "noEmit": true, // 不生成输出TS编译后的JS文件；默认为 noEmit:false，生成输出文件；Webpack 项目**可省略！**
     "types": [
       "node",
     ],
