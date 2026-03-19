@@ -1167,3 +1167,62 @@ export type { type, interface }; // 批量导出
 	declare let bridgeContext: import("./src/plugins/BridgeContext").BridgeContext;
 	// 所有模块中使用到变量 bridgeContext，编译器都知道这个实例对象全局存在，且能提示对应属性和方法
 ```
+
+##### declare module "模块名" 语法详解
+```
+declare module 是 TypeScript 模块扩充 / 类型声明 语法，作用：
+	给已存在的模块补充类型定义（最常用）
+	给无类型的第三方库写类型声明
+	给框架内置模块（如 vue、vue-router）扩展类型
+
+语法格式：
+	// 扩展 / 补充指定模块的 TS 类型
+	declare module '模块名' {
+		// 在这里补充或覆盖该模块的类型
+	}
+
+两种核心用法
+	用法1: 给无类型的第三方库声明类型；比如一个没有 TS 类型的 JS 库 xxx-lib：
+示例1.
+		declare module 'xxx-lib' {
+			export function doSomething(): void;
+			export const version: string;
+		}
+	用法2: 扩充框架 / 库内置模块；
+
+declare module 总结：
+	作用：扩展 / 补充现有模块的 TS 类型
+	场景：给框架、库、无类型文件添加类型
+	规则：TS 自动合并类型，不覆盖原类型
+
+模块内 export 的作用：扩展原模块的导出类型，让本地写的类型合并到目标模块（如 vue）中
+	在 declare module 'vue' { } 内部写 export，不是普通的模块导出，核心作用：扩展原模块内部的导出类型
+	vue 模块本身就有导出了一个接口 GlobalComponents：
+		// vue3 源码
+		export interface GlobalComponents {
+			Teleport: DefineComponent<TeleportProps>
+			Suspense: DefineComponent<SuspenseProps>
+			KeepAlive: DefineComponent<KeepAliveProps>
+			BaseTransition: DefineComponent<BaseTransitionProps>
+		}
+
+示例2.
+	<!-- 本地项目 ./src/typings/components.d.ts 文件 -->
+	import { GlobalComponents } from 'vue'; // 引入 Vue 内置的全局组件类型接口，为后续扩展做准备
+	// 扩展 vue 这个模块的类型定义
+	declare module 'vue' {
+		// GlobalComponents 是 Vue 专门用来注册全局组件类型的接口
+		// export：把扩展后的接口重新导出，合并到 Vue 原类型中
+		export interface GlobalComponents {
+
+			// 注册全局组件 AppProvider，BetterScroll，ButtonIcon，CountTo 让 TS 识别这些
+			AppProvider: typeof import('@/components/common/app-provider.vue')['default'],
+			BetterScroll: typeof import('@/components/custom/better-scroll.vue')['default'],
+			ButtonIcon: typeof import('@/components/custom/button-icon.vue')['default'],
+			CountTo: typeof import('@/components/custom/count-to.vue')['default'],
+			......
+		}
+	}
+
+TS 会执行接口合并： 把本地写的 GlobalComponents 声明 和 Vue 原本的 GlobalComponents 合并成一个
+```
