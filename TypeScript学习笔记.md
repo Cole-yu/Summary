@@ -822,7 +822,9 @@ declare module 是 TypeScript 模块声明的核心语法，主要用于为非 T
 	}
 
 （2）关键说明
-	使用场景：必须写在类型声明文件（.d.ts 后缀）中，通常项目根目录的 typings/、types/ 文件夹或根目录的 global.d.ts 是规范存放位置；
+	使用场景：
+	必须写在类型声明文件（.d.ts 后缀）中，通常项目根目录的 typings/、types/ 文件夹或根目录的 global.d.ts 是规范存放位置；
+
 	作用域：默认是全局声明，TS 编译器会自动识别项目中的 .d.ts 文件；
 	无实现代码：declare module 仅声明类型结构，不编写业务逻辑实现。
 
@@ -1036,7 +1038,8 @@ declare module "SomeModule" {
     "resolveJsonModule": true, // JSON 文件可以作为模块直接导入，基于 JSON 文件的结构自动生成类型信息
     "jsx": "preserve", // 在 .tsx文件里支持JSX
     "jsxImportSource": "vue", // 告诉编译器处理JSX语法的工厂函数（如jsx()，h()）来自哪个包
-    "downlevelIteration": true, // target = ES5下 启用 downlevelIteration 标志以支持迭代器语法：for(const [key, value] of Map.entries()){ }
+    "downlevelIteration": true,
+    // target = ES5 下启用 downlevelIteration 标志以支持迭代器语法：for(const [key, value] of Map.entries()){ }
     "allowSyntheticDefaultImports": true, // 允许从没有设置默认导出的模块中默认导入
     "esModuleInterop": true, // 处理 ES 模块（ESM）与 CommonJS 模块（require）之间的导入导出差异
     "strict": true, // 启用所有严格类型检查选项
@@ -1086,4 +1089,81 @@ declare module "SomeModule" {
 
 使用 noResolve 编译选项
 如果指定了 noResolve 编译选项，三斜线引用会被忽略；它们不会增加新文件，也不会改变给定文件的顺序。
+```
+
+### 声明文件
+```
+// global.d.ts
+import BridgeContext from "./src/plugins/BridgeContext";
+declare global {
+  	export interface Window {
+		// bridgeContext: InstanceType<typeof BridgeContext>;
+     	bridgeContext: BridgeContext;
+  	}
+}
+export {}; // declare global 是「模块中扩展全局」的语法，搭配模块标识（import/export）时使用
+
+1. InstanceType<typeof 类名> 语法详解
+
+	typeof BridgeContext = 类本身的类型
+	InstanceType<构造函数类型> = 实例类型
+
+	汽车 = 类
+	汽车类型 = typeof 汽车
+	汽车实例 = new 汽车()
+
+	// Ctor 类型 = 构造函数本身的类型
+	type Ctor = typeof BridgeContext; // 返回 BridgeContext 实例的构造函数
+
+	InstanceType<T> 是 Typescript 内置工具类型
+	InstanceType<构造函数类型> = 实例类型; // 传入一个构造函数类型，返回它 new 出来的实例类型
+
+	InstanceType<typeof BridgeContext> 完整翻译：
+		先拿 typeof BridgeContext → 获取类的构造函数类型
+		再套 InstanceType<> → 从构造函数类型中提取出实例类型
+		最终结果 = new BridgeContext () 出来的那个实例的类型
+
+	type 实例类型 = InstanceType<typeof BridgeContext>;
+	// 等价于直接写：BridgeContext（实例本身）
+
+	let bridgeContext: InstanceType<typeof BridgeContext>;
+	等价于
+	let bridgeContext: BridgeContext;
+	// 只需在 .d.ts 文件中引入 BridgeContext，import BridgeContext from './src/plugins/BridgeContext';
+```
+
+##### 注意事项
+```
+在 ts 文件中，type 和 interface 需要使用 export type { type, interface } 才能重新导出类型。
+
+export interface Person = { name: string }; // 单独一个一个导出
+export type { type, interface }; // 批量导出
+```
+
+##### 使用依赖
+```
+在 .d.ts 声明文件中
+
+1. 如果库依赖于某个全局库，使用 /// <reference types="..." /> 指令
+	/// <reference types="someLib" />
+	function getThing(): someLib.thing;
+
+2. 如果库依赖于模块，使用 import 语句
+	import * as moment from "moment";
+	function getThing(): moment;
+
+	// global.d.ts
+	import BridgeContext from "./src/plugins/BridgeContext";
+	declare global {
+		type BaseConfig = Record<string, string>;
+		var bridgeContext: BridgeContext; // 等价于 window.bridgeContext
+		export interface Window {
+			baseConfig: BaseConfig; // window.baseConfig
+		}
+	}
+	export {};
+
+	// app.d.ts	
+	declare let bridgeContext: import("./src/plugins/BridgeContext").BridgeContext;
+	// 所有模块中使用到变量 bridgeContext，编译器都知道这个实例对象全局存在，且能提示对应属性和方法
 ```
