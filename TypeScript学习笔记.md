@@ -304,10 +304,24 @@ function 函数名(参数1: 类型, 参数2?: 类型): 返回值类型 {
 	loggingIdentity({length: 10, value: 3});
 
 6. 在泛型里使用类类型
-	在TypeScript使用泛型创建工厂函数时，需要引用构造函数的类类型：
+	在 TypeScript 中使用泛型创建工厂函数时，需要通过类的构造函数来引用类类型。
 
+	核心概念： 
+		引用就是“代表，表示，描述”这个意思；
+		「类类型」 就是 「类本身」，用 「类的构造函数」 来表示 「类类型」 new() => T；
+		「实例类型」 则用 「类」 表示 c:T；
+		泛型工厂的核心约束：<T> 是 「实例类型」，要接收 「类本身」 必须用 new () => T 描述
+	结论：
+		在 TS 泛型工厂里，不能直接写类做类型注解，必须用构造函数签名 "new () => 实例类型" 来表示 「类类型」
+		这就是 「通过类的构造函数来引用类类型」 。
+
+	示例：
 	function create<T>(c: {new(): T; }): T {
 	    return new c();
+	}
+
+	function create<T>(c: new() => T): T {
+		return new c();
 	}
 
 	使用原型属性推断并约束构造函数与类实例的关系：
@@ -339,8 +353,12 @@ function 函数名(参数1: 类型, 参数2?: 类型): 返回值类型 {
 	createInstance(Lion).keeper.nametag;  // typechecks!
 	createInstance(Bee).keeper.hasMask;   // typechecks!
 
-	这行代码示例中： function createInstance<A extends Animal>(c: new () => A): A {  return new c(); }
-		new () = A 表示一个构造函数，返回一个类型为 A 的实例；
+	代码示例：
+		function createInstance<A extends Animal>(c: new () => A): A {
+			return new c();
+		}
+	  详解：
+		new () = A 表示一个 「类的构造函数」，返回一个 「实例类型」 为 A 的实例对象；
 		c 是这个构造函数的变量名；
 		A extends Animal 表示泛型参数 A 是 Animal 类型或其子类；
 ```
