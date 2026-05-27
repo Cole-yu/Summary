@@ -732,6 +732,29 @@
 
 	instance的隐藏原型(__proto__) === Fo类的原型 === Foo构造函数的实例
 	instance.__proto__ = Fo.prototype = new Foo() // 原型链
+
+	【子类本身】
+	Child.__proto__ -----> Parent（父类构造函数，继承静态方法）
+
+	【子类实例】
+	new Child().__proto__ -----> Child.prototype -----> Parent.prototype
+
+	子类构造函数的 __proto__ = 父类构造函数（继承静态属性）
+	子类原型的 __proto__ = 父类原型（继承实例方法）
+
+	为什么子类本身要有 __proto__？
+	核心目的：实现「静态属性 / 静态方法」的继承！
+	class Parent {
+	  // 父类静态方法
+	  static sayHi() {
+	    console.log("Hi from Parent");
+	  }
+	}
+
+	class Child extends Parent {}
+
+	// 子类没有定义 sayHi，但能直接调用！
+	Child.sayHi(); // Hi from Parent
 ```
 
 ### Cookie
